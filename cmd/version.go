@@ -30,7 +30,7 @@ func (items VersionInfo) JSON() []byte {
 	return bts
 }
 
-func NewVersionCmd(name string, slice [][2]string) (command *cobra.Command) {
+func NewVersion(name string, slice [][2]string) (command *cobra.Command) {
 	var (
 		jsonFmt bool
 		fSet    *pflag.FlagSet

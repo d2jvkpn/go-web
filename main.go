@@ -41,10 +41,13 @@ func main() {
 
 	root := &cobra.Command{Use: project.GetString("usage")}
 
-	root.AddCommand(cmd.NewVersionCmd(
+	root.AddCommand(cmd.NewVersion(
 		"version",
 		misc.BuildInfo(extract("project"), extract("version")),
 	))
+
+	root.AddCommand(cmd.NewConfig("config"))
+	root.AddCommand(cmd.NewServe("serve"))
 
 	root.Execute()
 }
