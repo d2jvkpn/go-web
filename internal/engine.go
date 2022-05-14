@@ -6,6 +6,8 @@ import (
 	"io/fs"
 	"net/http"
 
+	"github.com/d2jvkpn/goapp/internal/api"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -49,7 +51,7 @@ func NewEngine(release bool) (engi *gin.Engine, err error) {
 	engi.RouterGroup.StaticFS("/static", http.FS(fsys))
 
 	//
-	LoadAPI(&engi.RouterGroup)
+	api.LoadAPI(&engi.RouterGroup)
 
 	return
 }

@@ -4,6 +4,7 @@ import (
 	_ "embed"
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/d2jvkpn/goapp/pkg/misc"
 
@@ -18,8 +19,9 @@ var (
 
 func NewApiTest() (command *cobra.Command) {
 	var (
-		fp, name string
-		fSet     *pflag.FlagSet
+		fp string
+		// name string
+		fSet *pflag.FlagSet
 	)
 
 	command = &cobra.Command{
@@ -37,23 +39,36 @@ func NewApiTest() (command *cobra.Command) {
 				err        error
 				rt         *misc.RequestTmpls
 			)
+
 			if rt, err = misc.LoadRequestTmpls("api config", fp); err != nil {
 				log.Fatalln(err)
 			}
 
-			if statusCode, body, err = rt.Request(name); err != nil {
-				fmt.Printf("!!! %v\n", err)
+			for _, v := range args {
+				statusCode, body, err = rt.Request(v)
+				e := "nil"
+				if err != nil {
+					e = err.Error()
+				}
+
+				fmt.Printf(
+					">>> Api: %s, StatusCode: %d, Error: %q\n%s\n\n",
+					v, statusCode, e, body,
+				)
+
+				if err != nil {
+					os.Exit(1)
+				}
 			}
-			fmt.Printf("StatusCode: %d, Body:\n  %s\n", statusCode, body)
 		},
 	}
 
 	fSet = command.Flags()
 	fSet.StringVar(&fp, "config", "", "yaml config file path")
-	fSet.StringVar(&name, "name", "", "api name defined in config file")
+	// fSet.StringVar(&name, "name", "", "api name defined in config file")
 
 	_ = cobra.MarkFlagRequired(fSet, "config")
-	_ = cobra.MarkFlagRequired(fSet, "name")
+	// _ = cobra.MarkFlagRequired(fSet, "name")
 
 	return command
 }
