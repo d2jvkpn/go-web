@@ -30,16 +30,16 @@ func (items VersionInfo) JSON() []byte {
 	return bts
 }
 
-func NewVersion(name string, slice [][2]string) (command *cobra.Command) {
+func NewVersion(slice [][2]string) (command *cobra.Command) {
 	var (
 		jsonFmt bool
 		fSet    *pflag.FlagSet
 	)
 
 	command = &cobra.Command{
-		Use:   name,
-		Short: "version",
-		Long:  `version information`,
+		Use:   "version",
+		Short: "version inforamtion",
+		Long:  `version and build information`,
 
 		Run: func(cmd *cobra.Command, args []string) {
 			items := VersionInfo(slice)

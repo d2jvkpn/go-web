@@ -15,7 +15,7 @@ var (
 func NewConfig(name string) (command *cobra.Command) {
 	return &cobra.Command{
 		Use:   name,
-		Short: "config",
+		Short: "config file demo",
 		Long:  `config file demo`,
 
 		Run: func(cmd *cobra.Command, args []string) {

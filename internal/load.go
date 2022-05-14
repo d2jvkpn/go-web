@@ -12,9 +12,10 @@ import (
 )
 
 var (
-	_Relase bool
-	_Config *viper.Viper
-	_Server *http.Server
+	_Relase   bool
+	_Config   *viper.Viper
+	_Server   *http.Server
+	BuildInfo [][2]string
 )
 
 func Load(fp string, release bool) (err error) {

@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/d2jvkpn/goapp/cmd"
+	"github.com/d2jvkpn/goapp/internal"
 	"github.com/d2jvkpn/goapp/pkg/misc"
 
 	"github.com/spf13/cobra"
@@ -16,10 +17,6 @@ import (
 var (
 	//go:embed Project.yaml
 	projectStr string
-	buildTime  string
-	gitBranch  string
-	gitCommit  string
-	gitTime    string
 )
 
 func init() {
@@ -27,8 +24,9 @@ func init() {
 
 func main() {
 	var (
-		err     error
-		project *viper.Viper
+		err       error
+		buildInfo [][2]string
+		project   *viper.Viper
 	)
 
 	if project, err = misc.ReadConfigString("project", projectStr, "yaml"); err != nil {
@@ -38,16 +36,14 @@ func main() {
 	extract := func(key string) [2]string {
 		return [2]string{key, project.GetString(key)}
 	}
+	buildInfo = misc.BuildInfo(extract("project"), extract("version"))
+	internal.BuildInfo = buildInfo
 
 	root := &cobra.Command{Use: project.GetString("usage")}
 
-	root.AddCommand(cmd.NewVersion(
-		"version",
-		misc.BuildInfo(extract("project"), extract("version")),
-	))
-
+	root.AddCommand(cmd.NewVersion(buildInfo))
 	root.AddCommand(cmd.NewConfig("config"))
-	root.AddCommand(cmd.NewServe("serve"))
+	root.AddCommand(cmd.NewServe())
 
 	root.Execute()
 }

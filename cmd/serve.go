@@ -11,7 +11,7 @@ import (
 	"github.com/spf13/pflag"
 )
 
-func NewServe(name string) (command *cobra.Command) {
+func NewServe() (command *cobra.Command) {
 	var (
 		config, addr string
 		release      bool
@@ -19,8 +19,8 @@ func NewServe(name string) (command *cobra.Command) {
 	)
 
 	command = &cobra.Command{
-		Use:   name,
-		Short: "serve",
+		Use:   "serve",
+		Short: "serve http",
 		Long:  `serve http`,
 
 		Run: func(cmd *cobra.Command, args []string) {
@@ -41,7 +41,7 @@ func NewServe(name string) (command *cobra.Command) {
 
 	fSet = command.Flags()
 	fSet.StringVar(&addr, "addr", ":8080", "http serve address")
-	fSet.StringVar(&config, "config", filepath.Join("configs", "dev.yaml"), "config file path")
+	fSet.StringVar(&config, "config", filepath.Join("configs", "local.yaml"), "config file path")
 	fSet.BoolVar(&release, "release", false, "run in release mode")
 
 	return command
