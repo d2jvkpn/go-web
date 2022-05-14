@@ -2,6 +2,7 @@ package misc
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -89,6 +90,7 @@ func (item *RequestTmpls) request(tmpl *RequestTmpl, prelude bool) (
 	var (
 		bts    []byte
 		v, p   string
+		out    bytes.Buffer
 		reader io.Reader
 		req    *http.Request
 		res    *http.Response
@@ -127,7 +129,18 @@ func (item *RequestTmpls) request(tmpl *RequestTmpl, prelude bool) (
 	defer res.Body.Close()
 
 	bts, err = io.ReadAll(res.Body)
-	body = string(bts)
+
+	isJSON := strings.Contains(res.Header.Get("Content-Type"), "application/json")
+	if len(bts) > 0 && isJSON {
+		if e := json.Indent(&out, bts, "", "  "); e == nil {
+			body = string(out.Bytes())
+		} else {
+			body = string(bts)
+		}
+	} else {
+		body = string(bts)
+	}
+
 	if err != nil {
 		return
 	}
