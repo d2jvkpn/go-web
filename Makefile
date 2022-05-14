@@ -1,3 +1,3 @@
 run:
-	APP_GitForce=true bash go_build.sh
+	APP_GitForce=true bash build.sh
 	./target/goapp version
