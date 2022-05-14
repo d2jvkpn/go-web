@@ -129,9 +129,7 @@ func (item *RequestTmpls) request(tmpl *RequestTmpl, prelude bool) (
 	defer res.Body.Close()
 
 	bts, err = io.ReadAll(res.Body)
-
-	isJSON := strings.Contains(res.Header.Get("Content-Type"), "application/json")
-	if len(bts) > 0 && isJSON {
+	if len(bts) > 0 && strings.Contains(res.Header.Get("Content-Type"), "application/json") {
 		if e := json.Indent(&out, bts, "", "  "); e == nil {
 			body = string(out.Bytes())
 		} else {
@@ -144,17 +142,16 @@ func (item *RequestTmpls) request(tmpl *RequestTmpl, prelude bool) (
 	if err != nil {
 		return
 	}
-	if !prelude {
-		return
-	}
 
-	for i := range tmpl.Outputs {
-		output := &tmpl.Outputs[i]
-		if v, err = output.Get(bts); err != nil {
-			return
+	if prelude {
+		for i := range tmpl.Outputs {
+			output := &tmpl.Outputs[i]
+			if v, err = output.Get(bts); err != nil {
+				return
+			}
+			// item.header.Set(output.Header, v)
+			item.Headers[output.Header] = v
 		}
-		// item.header.Set(output.Header, v)
-		item.Headers[output.Header] = v
 	}
 
 	return
