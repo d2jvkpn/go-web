@@ -19,8 +19,7 @@ var (
 
 func NewApiTest() (command *cobra.Command) {
 	var (
-		fp string
-		// name string
+		fp   string
 		fSet *pflag.FlagSet
 	)
 
@@ -34,26 +33,25 @@ func NewApiTest() (command *cobra.Command) {
 
 		Run: func(cmd *cobra.Command, args []string) {
 			var (
-				statusCode int
-				body       string
-				err        error
-				rt         *misc.RequestTmpls
+				statusCode   int
+				body, errStr string
+				err          error
+				rt           *misc.RequestTmpls
 			)
 
 			if rt, err = misc.LoadRequestTmpls("api config", fp); err != nil {
 				log.Fatalln(err)
 			}
 
+			errStr = "nil"
 			for _, v := range args {
-				statusCode, body, err = rt.Request(v)
-				e := "nil"
-				if err != nil {
-					e = err.Error()
+				if statusCode, body, err = rt.Request(v); err != nil {
+					errStr = err.Error()
 				}
 
 				fmt.Printf(
 					">>> Api: %s, StatusCode: %d, Error: %q\n%s\n\n",
-					v, statusCode, e, body,
+					v, statusCode, errStr, body,
 				)
 
 				if err != nil {
@@ -65,10 +63,7 @@ func NewApiTest() (command *cobra.Command) {
 
 	fSet = command.Flags()
 	fSet.StringVar(&fp, "config", "", "yaml config file path")
-	// fSet.StringVar(&name, "name", "", "api name defined in config file")
-
 	_ = cobra.MarkFlagRequired(fSet, "config")
-	// _ = cobra.MarkFlagRequired(fSet, "name")
 
 	return command
 }
