@@ -1,7 +1,8 @@
 # APP_GitForce=true
 version:
 	bash build.sh
-	./target/goapp version
+	mv ./target/goapp main
+	./main version
 
 serve:
 	bash build.sh

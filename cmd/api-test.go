@@ -23,7 +23,7 @@ func NewApiTest() (command *cobra.Command) {
 	)
 
 	command = &cobra.Command{
-		Use:   "api test",
+		Use:   "api-test",
 		Short: "api test",
 		Long:  `http request test by provide a yaml config and api name`,
 
