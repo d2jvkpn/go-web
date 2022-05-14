@@ -44,6 +44,7 @@ func main() {
 	root.AddCommand(cmd.NewVersion(buildInfo))
 	root.AddCommand(cmd.NewConfig("config"))
 	root.AddCommand(cmd.NewServe())
+	root.AddCommand(cmd.NewApiTest())
 
 	root.Execute()
 }

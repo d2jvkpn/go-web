@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"html/template"
 	"io/fs"
 	"net/http"
 	"time"
@@ -10,6 +11,7 @@ import (
 
 func Serve(addr string) (err error) {
 	var (
+		tmpl *template.Template
 		fsys fs.FS
 		engi *gin.Engine
 	)
@@ -22,9 +24,16 @@ func Serve(addr string) (err error) {
 		engi = gin.Default()
 	}
 
+	// engi.LoadHTMLGlob("templates/*.tmpl")
+	if tmpl, err = template.ParseFS(_Templates, "templates/*.tmpl"); err != nil {
+		return err
+	}
+	engi.SetHTMLTemplate(tmpl)
+	engi.Use(Cors)
+
 	engi.NoRoute(func(ctx *gin.Context) {
 		// ctx.AbortWithStatus(http.StatusNotFound)
-		ctx.JSON(http.StatusNotFound, gin.H{"code": -1, "message": "not found"})
+		ctx.JSON(http.StatusNotFound, gin.H{"code": -1, "message": "not found", "data": nil})
 	})
 
 	if fsys, err = fs.Sub(_Static, "static"); err != nil {

@@ -21,6 +21,8 @@ var (
 
 	//go:embed static
 	_Static embed.FS
+	//go:embed templates
+	_Templates embed.FS
 )
 
 type ServeOption func(*gin.RouterGroup) error
