@@ -1,11 +1,19 @@
 package internal
 
 import (
+	"embed"
 	"html/template"
 	"io/fs"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+)
+
+var (
+	//go:embed static
+	_Static embed.FS
+	//go:embed templates
+	_Templates embed.FS
 )
 
 func NewEngine(release bool) (engi *gin.Engine, err error) {
@@ -41,7 +49,7 @@ func NewEngine(release bool) (engi *gin.Engine, err error) {
 	engi.RouterGroup.StaticFS("/static", http.FS(fsys))
 
 	//
-	LoadAPI(engi)
+	LoadAPI(&engi.RouterGroup)
 
 	return
 }

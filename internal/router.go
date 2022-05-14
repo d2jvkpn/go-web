@@ -7,8 +7,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func LoadAPI(engi *gin.Engine, handlers ...gin.HandlerFunc) {
-	open := engi.Group("/api/v1/open", handlers...)
+func LoadAPI(rg *gin.RouterGroup, handlers ...gin.HandlerFunc) {
+	open := rg.Group("/api/v1/open", handlers...)
 
 	open.GET("/hello", func(ctx *gin.Context) {
 		key := "Authorization"
