@@ -15,8 +15,8 @@ var (
 func NewConfig(name string) (command *cobra.Command) {
 	return &cobra.Command{
 		Use:   name,
-		Short: "config file demo",
-		Long:  `config file demo`,
+		Short: "print serve config file",
+		Long:  "print serve config file (yaml format)",
 
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Println(serveConfig)
