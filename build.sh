@@ -10,13 +10,13 @@ gitBranch="$(git rev-parse --abbrev-ref HEAD)" # current branch
 gitCommit=$(git rev-parse --verify HEAD) # git log --pretty=format:'%h' -n 1
 gitTime=$(git log -1 --format="%at" | xargs -I{} date -d @{} +%FT%T%:z)
 
-uncommitted=$(git status --short)
-#- unpushed=$(git diff origin/$gitBranch..HEAD --name-status)
+#uncommitted=$(git status --short)
+#unpushed=$(git diff origin/$gitBranch..HEAD --name-status)
 
-if [[ $(printenv APP_GitForce) != "true" ]]; then
-    test -z "$uncommitted" || { echo "You have uncommitted changes!"; exit 1; }
-    #- test -z "$unpushed" || { echo "You have unpushed commits!"; exit 1; }
-fi
+#if [[ $(printenv APP_GitForce) != "true" ]]; then
+#    test -z "$uncommitted" || { echo "You have uncommitted changes!"; exit 1; }
+#    #- test -z "$unpushed" || { echo "You have unpushed commits!"; exit 1; }
+#fi
 
 ldflags=" \
   -X main.buildTime=${buildTime} \
