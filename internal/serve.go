@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"io/fs"
 	"net/http"
 	"time"
 
@@ -8,7 +9,10 @@ import (
 )
 
 func Serve(addr string) (err error) {
-	var engi *gin.Engine
+	var (
+		fsys fs.FS
+		engi *gin.Engine
+	)
 
 	if _Relase {
 		gin.SetMode(gin.ReleaseMode)
@@ -22,6 +26,13 @@ func Serve(addr string) (err error) {
 		// ctx.AbortWithStatus(http.StatusNotFound)
 		ctx.JSON(http.StatusNotFound, gin.H{"code": -1, "message": "not found"})
 	})
+
+	if fsys, err = fs.Sub(_Static, "static"); err != nil {
+		return err
+	}
+	engi.RouterGroup.StaticFS("/static", http.FS(fsys))
+
+	LoadAPI(engi)
 
 	_Server = &http.Server{
 		ReadTimeout:       10 * time.Second,
