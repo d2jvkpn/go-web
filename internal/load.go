@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	_Relase   bool
+	_Release  bool
 	_Config   *viper.Viper
 	_Server   *http.Server
 	BuildInfo [][2]string
@@ -42,7 +42,7 @@ func Load(fp string, release bool) (err error) {
 	if _Config, err = misc.ReadConfigFile("config", fp); err != nil {
 		return
 	}
-	_Relase = release
+	_Release = release
 
 	return
 }
