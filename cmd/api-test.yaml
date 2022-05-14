@@ -11,7 +11,7 @@ prelude:
   body: |
     {"number": "15900001111", "password": "123456"}
   outputs:
-  - { key: "data.token", header: "Authorization", tmpl: "Bearer {}" }
+  - {key: "data.token", header: "Authorization", tmpl: "Bearer {}"}
 
 apis:
 - name: hello

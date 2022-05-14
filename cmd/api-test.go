@@ -25,7 +25,10 @@ func NewApiTest() (command *cobra.Command) {
 	command = &cobra.Command{
 		Use:   "api-test",
 		Short: "api test",
-		Long:  `http request test by provide a yaml config and api name`,
+		Long: fmt.Sprintf(
+			"http request test by provide api name and a yaml config:\n```yaml\n%s```",
+			apiTestConfig,
+		),
 
 		Run: func(cmd *cobra.Command, args []string) {
 			var (
