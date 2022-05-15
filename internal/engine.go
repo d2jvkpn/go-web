@@ -54,8 +54,8 @@ func NewEngine(release bool) (engi *gin.Engine, err error) {
 	engi.RouterGroup.StaticFS("/static", http.FS(fsys))
 
 	//
-	api.LoadAPI(&engi.RouterGroup)
-	ws.LoadWS(&engi.RouterGroup)
+	api.Load(&engi.RouterGroup)
+	ws.Load(&engi.RouterGroup)
 
 	return
 }

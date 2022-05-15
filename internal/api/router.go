@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func LoadAPI(rg *gin.RouterGroup, handlers ...gin.HandlerFunc) {
+func Load(rg *gin.RouterGroup, handlers ...gin.HandlerFunc) {
 	open := rg.Group("/api/v1/open", handlers...)
 
 	open.GET("/hello", hello)

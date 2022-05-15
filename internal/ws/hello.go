@@ -5,22 +5,31 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
-	melody "gopkg.in/olahol/melody.v1"
+	. "gopkg.in/olahol/melody.v1"
 )
 
 func hello(ctx *gin.Context) {
-	mel := melody.New()
-	name := ctx.DefaultQuery("name", "world")
+	mel := New()
+	name := ctx.DefaultQuery("name", "World")
+	id := fmt.Sprintf("name=%s, ip=%s", name, ctx.ClientIP())
 
-	mel.HandleConnect(func(sess *melody.Session) {
-		log.Printf(">>> new ws connection to hello: %s\n", ctx.ClientIP())
+	mel.HandleConnect(func(sess *Session) {
+		log.Printf(">>> hello new ws connection: %q\n", id)
 	})
 
-	mel.HandleMessage(func(sess *melody.Session, msg []byte) {
+	mel.HandleDisconnect(func(sess *Session) {
+		log.Printf("<<< hello ws disconnected: %q\n", id)
+	})
+
+	mel.HandleError(func(sess *Session, err error) {
+		log.Printf("!!! hello ws error: %q, error=%q\n", id, err)
+	})
+
+	mel.HandleMessage(func(sess *Session, msg []byte) {
 		// m.Broadcast(msg)
-		log.Printf("<-- recv: %q\n", msg)
+		log.Printf("<-- %q recv: %q\n", id, msg)
 		send := fmt.Sprintf("%s, nice to meet you!", name)
-		log.Printf("--> send: %q\n", send)
+		log.Printf("--> %q send: %q\n", id, send)
 		sess.Write([]byte(send))
 	})
 
