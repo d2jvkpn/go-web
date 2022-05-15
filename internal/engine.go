@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/d2jvkpn/goapp/internal/api"
+	"github.com/d2jvkpn/goapp/internal/ws"
 
 	"github.com/gin-gonic/gin"
 )
@@ -54,6 +55,7 @@ func NewEngine(release bool) (engi *gin.Engine, err error) {
 
 	//
 	api.LoadAPI(&engi.RouterGroup)
+	ws.LoadWS(&engi.RouterGroup)
 
 	return
 }

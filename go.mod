@@ -4,10 +4,12 @@ go 1.18
 
 require (
 	github.com/gin-gonic/gin v1.7.7
+	github.com/gorilla/websocket v1.5.0
 	github.com/spf13/cobra v1.4.0
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.11.0
 	github.com/tidwall/gjson v1.14.1
+	gopkg.in/olahol/melody.v1 v1.0.0-20170518105555-d52139073376
 )
 
 require (
