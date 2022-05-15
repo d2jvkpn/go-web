@@ -157,16 +157,25 @@ func (item *RequestTmpls) request(tmpl *RequestTmpl, prelude bool) (
 	return
 }
 
-func (item *RequestTmpls) Request(name string) (
-	statusCode int, body string, err error) {
-	var (
-		ok   bool
-		tmpl *RequestTmpl
-	)
-
-	if tmpl, ok = item.apiMap[name]; !ok {
-		return -3, "", fmt.Errorf("api not found")
+func (item *RequestTmpls) Match(names ...string) (tmpls []*RequestTmpl, err error) {
+	tmpls = make([]*RequestTmpl, 0, len(names))
+	if len(names) == 0 {
+		return
 	}
+
+	for _, v := range names {
+		if tmpl, ok := item.apiMap[v]; !ok {
+			return nil, fmt.Errorf("api not found: %s", v)
+		} else {
+			tmpls = append(tmpls, tmpl)
+		}
+	}
+
+	return
+}
+
+func (item *RequestTmpls) Request(tmpl *RequestTmpl) (
+	statusCode int, body string, err error) {
 
 	for i := range item.Prelude {
 		r := &item.Prelude[i]

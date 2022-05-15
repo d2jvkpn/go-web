@@ -20,7 +20,12 @@ func TestDoRequest(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if statusCode, body, err := item.Request("hello"); err != nil {
+	tmpls, err := item.Match("hello")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if statusCode, body, err := item.Request(tmpls[0]); err != nil {
 		t.Fatal(err)
 	} else {
 		fmt.Printf("statusCode: %d\nbody: %s\n", statusCode, body)

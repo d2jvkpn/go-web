@@ -36,6 +36,7 @@ func NewApiTest() (command *cobra.Command) {
 				statusCode   int
 				body, errStr string
 				err          error
+				tmpls        []*misc.RequestTmpl
 				rt           *misc.RequestTmpls
 			)
 
@@ -43,15 +44,19 @@ func NewApiTest() (command *cobra.Command) {
 				log.Fatalln(err)
 			}
 
+			if tmpls, err = rt.Match(args...); err != nil {
+				log.Fatal(err)
+			}
+
 			errStr = "nil"
-			for _, v := range args {
+			for _, v := range tmpls {
 				if statusCode, body, err = rt.Request(v); err != nil {
 					errStr = err.Error()
 				}
 
 				fmt.Printf(
-					">>> API: %q, StatusCode: %d, Error: %q\n%s\n\n",
-					v, statusCode, errStr, body,
+					">>> API: %s, Path: %s, StatusCode: %d, Error: %q\n%s\n\n",
+					v.Name, v.Path, statusCode, errStr, body,
 				)
 
 				if err != nil {
