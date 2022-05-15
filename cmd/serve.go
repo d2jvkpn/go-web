@@ -21,7 +21,7 @@ func NewServe() (command *cobra.Command) {
 	command = &cobra.Command{
 		Use:   "serve",
 		Short: "serve http",
-		Long:  `serve http`,
+		Long:  `running serve http`,
 
 		Run: func(cmd *cobra.Command, args []string) {
 			var err error
