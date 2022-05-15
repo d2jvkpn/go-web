@@ -2,6 +2,7 @@ package misc
 
 import (
 	"bytes"
+	_ "embed"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -10,6 +11,11 @@ import (
 
 	"github.com/spf13/viper"
 	"github.com/tidwall/gjson"
+)
+
+var (
+	//go:embed request_tmpls.yaml
+	requestTmpls string
 )
 
 ///
@@ -83,6 +89,10 @@ func LoadRequestTmpls(name, fp string) (item *RequestTmpls, err error) {
 	//	}
 
 	return
+}
+
+func (itm *RequestTmpls) Yaml() string {
+	return requestTmpls
 }
 
 func (item *RequestTmpls) request(tmpl *RequestTmpl, prelude bool) (

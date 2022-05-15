@@ -6,7 +6,7 @@ import (
 )
 
 func TestLoadRequestTmpls(t *testing.T) {
-	item, err := LoadRequestTmpls("config", "../../cmd/api-test.yaml")
+	item, err := LoadRequestTmpls("config", "request_tmpls.yaml")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -15,7 +15,7 @@ func TestLoadRequestTmpls(t *testing.T) {
 }
 
 func TestDoRequest(t *testing.T) {
-	item, err := LoadRequestTmpls("config", "../../cmd/api-test.yaml")
+	item, err := LoadRequestTmpls("config", "request_tmpls.yaml")
 	if err != nil {
 		t.Fatal(err)
 	}
