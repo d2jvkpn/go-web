@@ -1,6 +1,7 @@
 package ws
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"sync"
@@ -13,6 +14,7 @@ import (
 
 var (
 	_ClientId uint64
+	_Mel      *Melody = New()
 )
 
 type Client struct {
@@ -43,41 +45,47 @@ func hello(ctx *gin.Context) {
 		ctx.DefaultQuery("name", "World"),
 	)
 
-	mel, once := New(), new(sync.Once)
-	// log.Printf("%+v\n", mel.Config)
-	mel.Config.PingPeriod = 10 * time.Second
+	once := new(sync.Once)
+	// log.Printf("%+v\n", _Mel.Config)
+	_Mel.Config.PingPeriod = 10 * time.Second
 
-	mel.HandleConnect(func(sess *Session) {
-		log.Printf(">>> hello new ws connection: %q\n", client)
+	_Mel.HandleConnect(func(sess *Session) {
+		log.Printf(">>> hello new ws connection: %q, ip=%s\n", client, client.Ip)
 	})
 
-	mel.HandleDisconnect(func(sess *Session) {
+	_Mel.HandleDisconnect(func(sess *Session) {
 		log.Printf("<<< hello ws disconnected: %q\n", client)
 	})
 
-	mel.HandleError(func(sess *Session, err error) {
+	_Mel.HandleError(func(sess *Session, err error) {
 		log.Printf("!!! hello ws error: %q, error=%q\n", client, err)
 	})
 
-	mel.HandlePong(func(sess *Session) {
+	_Mel.HandlePong(func(sess *Session) {
 		client.PongTime = time.Now()
 		log.Printf("<~~ %q recv pong\n", client)
 	})
 
-	mel.HandleMessage(func(sess *Session, msg []byte) {
+	_Mel.HandleMessage(func(sess *Session, msg []byte) {
+		log.Printf("<-- %q recv: %q\n", client, msg)
+
 		once.Do(func() {
-			data := fmt.Sprintf(`{"type":"clientId","clientId":%d}`, client.Id)
-			_ = sess.Write([]byte(data))
+			data := map[string]interface{}{
+				"code":    0,
+				"type":    "client",
+				"message": fmt.Sprintf("%s, nice to meet you!", client.Name),
+				"data":    gin.H{"clientId": client.Id},
+			}
+			log.Printf("--> %q send client information\n", client)
+			bts, _ := json.Marshal(data)
+			_ = sess.Write(bts)
 		})
 
 		// m.Broadcast(msg)
-		send := fmt.Sprintf("%s, nice to meet you!", client.Name)
-		log.Printf("<-> %q recv: %q, send: %q\n", client, msg, send)
-		_ = sess.Write([]byte(send))
 	})
 
-	// _ = mel.HandleRequest(ctx.Writer, ctx.Request)
-	_ = mel.HandleRequestWithKeys(
+	// _ = _Mel.HandleRequest(ctx.Writer, ctx.Request)
+	_ = _Mel.HandleRequestWithKeys(
 		ctx.Writer, ctx.Request,
 		map[string]interface{}{"client": client},
 	)

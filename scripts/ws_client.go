@@ -95,7 +95,7 @@ func HandleMessage(conn *websocket.Conn, mutex *sync.Mutex) {
 			log.Printf("<-- !!! ReadMessage error: %[1]T, %[1]v\n", err)
 			break
 		}
-		log.Printf("<-- ReadMessage: type=%d, msg=%q\n", typ, bytes.TrimSpace(bts))
+		log.Printf("<-- ReadMessage: type=%d, msg=%s\n", typ, bytes.TrimSpace(bts))
 		if typ == websocket.CloseMessage {
 			break
 		}
