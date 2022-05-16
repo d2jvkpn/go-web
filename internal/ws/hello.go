@@ -15,54 +15,70 @@ var (
 	_ClientId uint64
 )
 
-func hello(ctx *gin.Context) {
-	var (
-		// client information
-		clientId    uint64    = atomic.AddUint64(&_ClientId, 1)
-		name        string    = ctx.DefaultQuery("name", "World")
-		ip          string    = ctx.ClientIP()
-		connectTime time.Time = time.Now()
-		pongTime    time.Time
-	)
-	_, _ = connectTime, pongTime
+type Client struct {
+	Id          uint64
+	Ip          string
+	Name        string
+	ConnectTime time.Time
+	PongTime    time.Time
+}
 
-	id := fmt.Sprintf("name=%s, ip=%s, clientId=%d", name, ip, clientId)
+func NewClient(id uint64, ip, name string) *Client {
+	return &Client{
+		Id:          id,
+		Ip:          ip,
+		Name:        name,
+		ConnectTime: time.Now(),
+	}
+}
+
+func (client Client) String() string {
+	return fmt.Sprintf("name=%s, id=%d", client.Name, client.Id)
+}
+
+func hello(ctx *gin.Context) {
+	client := NewClient(
+		atomic.AddUint64(&_ClientId, 1),
+		ctx.ClientIP(),
+		ctx.DefaultQuery("name", "World"),
+	)
+
 	mel, once := New(), new(sync.Once)
 	// log.Printf("%+v\n", mel.Config)
 	mel.Config.PingPeriod = 10 * time.Second
 
 	mel.HandleConnect(func(sess *Session) {
-		log.Printf(">>> hello new ws connection: %q\n", id)
+		log.Printf(">>> hello new ws connection: %q\n", client)
 	})
 
 	mel.HandleDisconnect(func(sess *Session) {
-		log.Printf("<<< hello ws disconnected: %q\n", id)
+		log.Printf("<<< hello ws disconnected: %q\n", client)
 	})
 
 	mel.HandleError(func(sess *Session, err error) {
-		log.Printf("!!! hello ws error: %q, error=%q\n", id, err)
+		log.Printf("!!! hello ws error: %q, error=%q\n", client, err)
 	})
 
 	mel.HandlePong(func(sess *Session) {
-		pongTime = time.Now()
-		log.Printf("<~~ %q recv pong\n", id)
+		client.PongTime = time.Now()
+		log.Printf("<~~ %q recv pong\n", client)
 	})
 
 	mel.HandleMessage(func(sess *Session, msg []byte) {
 		once.Do(func() {
-			data := fmt.Sprintf(`{"type":"clientId","clientId":%d}`, clientId)
+			data := fmt.Sprintf(`{"type":"clientId","clientId":%d}`, client.Id)
 			_ = sess.Write([]byte(data))
 		})
 
 		// m.Broadcast(msg)
-		log.Printf("<-- %q recv: %q\n", id, msg)
-		send := fmt.Sprintf("%s, nice to meet you!", name)
-		log.Printf("--> %q send: %q\n", id, send)
+		log.Printf("<-- %q recv: %q\n", client, msg)
+		send := fmt.Sprintf("%s, nice to meet you!", client.Name)
+		log.Printf("--> %q send: %q\n", client, send)
 		_ = sess.Write([]byte(send))
 	})
 
 	// _ = mel.HandleRequest(ctx.Writer, ctx.Request)
 	_ = mel.HandleRequestWithKeys(ctx.Writer, ctx.Request, map[string]interface{}{
-		"name": name, "ip": ctx.ClientIP(),
+		"client": client,
 	})
 }
