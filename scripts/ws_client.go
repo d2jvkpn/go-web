@@ -5,15 +5,19 @@ import (
 	"flag"
 	"log"
 	"net/url"
+	"strconv"
+	"time"
 
 	"github.com/gorilla/websocket"
 )
 
 func main() {
 	var (
-		err  error
-		link *url.URL
-		conn *websocket.Conn
+		pingId int
+		err    error
+		link   *url.URL
+		ticker *time.Ticker
+		conn   *websocket.Conn
 	)
 
 	addr := flag.String(
@@ -35,7 +39,35 @@ func main() {
 	}
 	defer conn.Close()
 
+	ticker = time.NewTicker(30 * time.Second)
+	// send ping to server may be not necessary
+	go func() {
+		for {
+			select {
+			case <-ticker.C:
+				pingId++
+				data := []byte(strconv.Itoa(pingId))
+				log.Printf("~~> send ping: %q\n", data)
+				_ = conn.WriteMessage(websocket.PingMessage, []byte(data))
+			}
+		}
+	}()
+
+	// overwrite default handler(when receive a ping)
+	conn.SetPingHandler(func(data string) (err error) {
+		log.Printf("<~~ recv ping: %q, response pong\n", data)
+		_ = conn.WriteMessage(websocket.PongMessage, []byte(data))
+		return nil
+	})
+
+	// overwrite default handler(when receive a pong after send a ping)
+	conn.SetPongHandler(func(data string) (err error) {
+		log.Printf("<~~ recv pong: %q\n", data)
+		return nil
+	})
+
 	HandleMessage(conn)
+	ticker.Stop()
 }
 
 func HandleMessage(conn *websocket.Conn) {
