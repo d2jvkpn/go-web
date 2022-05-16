@@ -17,7 +17,8 @@
 ####
 target/
 wk_*/
-main
+/main*
+/goapp*
 logs
 *.log
 tmp/
