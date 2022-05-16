@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/url"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -16,6 +17,7 @@ func main() {
 		pingId int
 		err    error
 		link   *url.URL
+		mutex  *sync.Mutex
 		ticker *time.Ticker
 		conn   *websocket.Conn
 	)
@@ -40,6 +42,7 @@ func main() {
 	defer conn.Close()
 
 	ticker = time.NewTicker(30 * time.Second)
+	mutex = new(sync.Mutex) // avoid panic: concurrent write to websocket connection
 	// send ping to server may be not necessary
 	go func() {
 		for {
@@ -48,7 +51,9 @@ func main() {
 				pingId++
 				data := []byte(strconv.Itoa(pingId))
 				log.Printf("~~> send ping: %q\n", data)
+				mutex.Lock()
 				_ = conn.WriteMessage(websocket.PingMessage, []byte(data))
+				mutex.Unlock()
 			}
 		}
 	}()
@@ -56,7 +61,9 @@ func main() {
 	// overwrite default handler(when receive a ping)
 	conn.SetPingHandler(func(data string) (err error) {
 		log.Printf("<~~ recv ping: %q, response pong\n", data)
+		mutex.Lock()
 		_ = conn.WriteMessage(websocket.PongMessage, []byte(data))
+		mutex.Unlock()
 		return nil
 	})
 
@@ -66,11 +73,11 @@ func main() {
 		return nil
 	})
 
-	HandleMessage(conn)
+	HandleMessage(conn, mutex)
 	ticker.Stop()
 }
 
-func HandleMessage(conn *websocket.Conn) {
+func HandleMessage(conn *websocket.Conn, mutex *sync.Mutex) {
 	var (
 		typ int
 		bts []byte
@@ -79,7 +86,9 @@ func HandleMessage(conn *websocket.Conn) {
 
 	msg := "Hello, I'm a novice."
 	log.Printf("--> WriteMessage: %q\n", msg)
+	mutex.Lock()
 	conn.WriteMessage(websocket.TextMessage, []byte(msg))
+	mutex.Unlock()
 
 	for {
 		if typ, bts, err = conn.ReadMessage(); err != nil {

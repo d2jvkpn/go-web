@@ -39,20 +39,20 @@ func hello(ctx *gin.Context) {
 	})
 
 	mel.HandlePong(func(sess *Session) {
-		log.Printf("~~~ %q recv pong\n", id)
+		log.Printf("<~~ %q recv pong\n", id)
 	})
 
 	mel.HandleMessage(func(sess *Session, msg []byte) {
 		once.Do(func() {
 			data := fmt.Sprintf(`{"type":"clientId","clientId":%d}`, clientId)
-			sess.Write([]byte(data))
+			_ = sess.Write([]byte(data))
 		})
 
 		// m.Broadcast(msg)
 		log.Printf("<-- %q recv: %q\n", id, msg)
 		send := fmt.Sprintf("%s, nice to meet you!", name)
 		log.Printf("--> %q send: %q\n", id, send)
-		sess.Write([]byte(send))
+		_ = sess.Write([]byte(send))
 	})
 
 	// _ = mel.HandleRequest(ctx.Writer, ctx.Request)
