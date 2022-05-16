@@ -18,14 +18,14 @@ var (
 )
 
 type Client struct {
-	Id          uint64
+	Id          string
 	Ip          string
 	Name        string
 	ConnectTime time.Time
 	PongTime    time.Time
 }
 
-func NewClient(id uint64, ip, name string) *Client {
+func NewClient(id, ip, name string) *Client {
 	return &Client{
 		Id:          id,
 		Ip:          ip,
@@ -35,12 +35,12 @@ func NewClient(id uint64, ip, name string) *Client {
 }
 
 func (client Client) String() string {
-	return fmt.Sprintf("name=%s, id=%d", client.Name, client.Id)
+	return fmt.Sprintf("name=%s, id=%s", client.Name, client.Id)
 }
 
 func hello(ctx *gin.Context) {
 	client := NewClient(
-		atomic.AddUint64(&_ClientId, 1),
+		fmt.Sprintf("%04d", atomic.AddUint64(&_ClientId, 1)),
 		ctx.ClientIP(),
 		ctx.DefaultQuery("name", "World"),
 	)
