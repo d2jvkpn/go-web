@@ -1,5 +1,5 @@
 # goapp
-golang application
+a golang application
 
 
 #### 1. Up and Running
@@ -8,7 +8,7 @@ golang application
 
 go get
 
-bash build.sh
+# bash build.sh && target/goapp version
 
-target/goapp version
+make serve
 ```
