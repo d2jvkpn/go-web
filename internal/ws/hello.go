@@ -16,13 +16,18 @@ var (
 )
 
 func hello(ctx *gin.Context) {
-	name := ctx.DefaultQuery("name", "World")
-	clientId := atomic.AddUint64(&_ClientId, 1)
+	var (
+		// client information
+		clientId    uint64    = atomic.AddUint64(&_ClientId, 1)
+		name        string    = ctx.DefaultQuery("name", "World")
+		ip          string    = ctx.ClientIP()
+		connectTime time.Time = time.Now()
+		pongTime    time.Time
+	)
+	_, _ = connectTime, pongTime
 
-	id := fmt.Sprintf("name=%s, ip=%s, clientId=%d", name, ctx.ClientIP(), clientId)
-	once := new(sync.Once)
-
-	mel := New()
+	id := fmt.Sprintf("name=%s, ip=%s, clientId=%d", name, ip, clientId)
+	mel, once := New(), new(sync.Once)
 	// log.Printf("%+v\n", mel.Config)
 	mel.Config.PingPeriod = 10 * time.Second
 
@@ -39,6 +44,7 @@ func hello(ctx *gin.Context) {
 	})
 
 	mel.HandlePong(func(sess *Session) {
+		pongTime = time.Now()
 		log.Printf("<~~ %q recv pong\n", id)
 	})
 
