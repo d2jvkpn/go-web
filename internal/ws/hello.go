@@ -14,7 +14,7 @@ import (
 
 var (
 	_ClientId uint64
-	_Mel      *Melody = New()
+	_MelHello *Melody = New()
 )
 
 type Client struct {
@@ -46,27 +46,27 @@ func hello(ctx *gin.Context) {
 	)
 
 	once := new(sync.Once)
-	// log.Printf("%+v\n", _Mel.Config)
-	_Mel.Config.PingPeriod = 10 * time.Second
+	// log.Printf("%+v\n", _MelHello.Config)
+	_MelHello.Config.PingPeriod = 10 * time.Second
 
-	_Mel.HandleConnect(func(sess *Session) {
+	_MelHello.HandleConnect(func(sess *Session) {
 		log.Printf(">>> hello new ws connection: %q, ip=%s\n", client, client.Ip)
 	})
 
-	_Mel.HandleDisconnect(func(sess *Session) {
+	_MelHello.HandleDisconnect(func(sess *Session) {
 		log.Printf("<<< hello ws disconnected: %q\n", client)
 	})
 
-	_Mel.HandleError(func(sess *Session, err error) {
+	_MelHello.HandleError(func(sess *Session, err error) {
 		log.Printf("!!! hello ws error: %q, error=%q\n", client, err)
 	})
 
-	_Mel.HandlePong(func(sess *Session) {
+	_MelHello.HandlePong(func(sess *Session) {
 		client.PongTime = time.Now()
 		log.Printf("<~~ %q recv pong\n", client)
 	})
 
-	_Mel.HandleMessage(func(sess *Session, msg []byte) {
+	_MelHello.HandleMessage(func(sess *Session, msg []byte) {
 		log.Printf("<-- %q recv: %q\n", client, msg)
 
 		once.Do(func() {
@@ -84,8 +84,8 @@ func hello(ctx *gin.Context) {
 		// m.Broadcast(msg)
 	})
 
-	// _ = _Mel.HandleRequest(ctx.Writer, ctx.Request)
-	_ = _Mel.HandleRequestWithKeys(
+	// _ = _MelHello.HandleRequest(ctx.Writer, ctx.Request)
+	_ = _MelHello.HandleRequestWithKeys(
 		ctx.Writer, ctx.Request,
 		map[string]interface{}{"client": client},
 	)
