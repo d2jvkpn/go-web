@@ -72,7 +72,7 @@ func hello(ctx *gin.Context) {
 
 		// m.Broadcast(msg)
 		send := fmt.Sprintf("%s, nice to meet you!", client.Name)
-		log.Printf("<-- %q recv: %q, send: %q\n", client, msg, send)
+		log.Printf("<-> %q recv: %q, send: %q\n", client, msg, send)
 		_ = sess.Write([]byte(send))
 	})
 
