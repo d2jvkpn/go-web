@@ -44,9 +44,10 @@ func hello(ctx *gin.Context) {
 
 	mel.HandleMessage(func(sess *Session, msg []byte) {
 		once.Do(func() {
-			data := fmt.Sprintf(`{"type": "clientId", "clientId": %d}`, clientId)
+			data := fmt.Sprintf(`{"type":"clientId","clientId":%d}`, clientId)
 			sess.Write([]byte(data))
 		})
+
 		// m.Broadcast(msg)
 		log.Printf("<-- %q recv: %q\n", id, msg)
 		send := fmt.Sprintf("%s, nice to meet you!", name)
