@@ -70,6 +70,8 @@ func hello(ctx *gin.Context) {
 		log.Printf("<-- %q recv: %q\n", client, msg)
 
 		once.Do(func() {
+			sess.Keys["client"] = client
+
 			data := map[string]interface{}{
 				"code":    0,
 				"type":    "client",
@@ -84,9 +86,6 @@ func hello(ctx *gin.Context) {
 		// m.Broadcast(msg)
 	})
 
-	// _ = _MelHello.HandleRequest(ctx.Writer, ctx.Request)
-	_ = _MelHello.HandleRequestWithKeys(
-		ctx.Writer, ctx.Request,
-		map[string]interface{}{"client": client},
-	)
+	_ = _MelHello.HandleRequest(ctx.Writer, ctx.Request)
+	// _ = _MelHello.HandleRequestWithKeys(Writer, Request,map[string]interface{}{})
 }
