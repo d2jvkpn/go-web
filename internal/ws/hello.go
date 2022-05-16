@@ -71,14 +71,14 @@ func hello(ctx *gin.Context) {
 		})
 
 		// m.Broadcast(msg)
-		log.Printf("<-- %q recv: %q\n", client, msg)
 		send := fmt.Sprintf("%s, nice to meet you!", client.Name)
-		log.Printf("--> %q send: %q\n", client, send)
+		log.Printf("<-- %q recv: %q, send: %q\n", client, msg, send)
 		_ = sess.Write([]byte(send))
 	})
 
 	// _ = mel.HandleRequest(ctx.Writer, ctx.Request)
-	_ = mel.HandleRequestWithKeys(ctx.Writer, ctx.Request, map[string]interface{}{
-		"client": client,
-	})
+	_ = mel.HandleRequestWithKeys(
+		ctx.Writer, ctx.Request,
+		map[string]interface{}{"client": client},
+	)
 }
