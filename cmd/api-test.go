@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	_ "embed"
 	"fmt"
 	"log"
 	"os"
@@ -13,7 +12,6 @@ import (
 )
 
 var (
-	//go:embed api-test.yaml
 	apiTestConfig string
 )
 
@@ -21,6 +19,7 @@ func NewApiTest() (command *cobra.Command) {
 	var (
 		fp   string
 		fSet *pflag.FlagSet
+		tmp  *misc.RequestTmpls
 	)
 
 	command = &cobra.Command{
@@ -28,7 +27,7 @@ func NewApiTest() (command *cobra.Command) {
 		Short: "api test",
 		Long: fmt.Sprintf(
 			"http request test by provide api name and a yaml config:\n```yaml\n%s```",
-			apiTestConfig,
+			tmp.Yaml(),
 		),
 
 		Run: func(cmd *cobra.Command, args []string) {
