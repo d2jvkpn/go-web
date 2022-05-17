@@ -37,6 +37,10 @@ type RequestTmpl struct {
 }
 
 func (output *Output) Get(bts []byte) (value string, err error) {
+	var js json.RawMessage
+	if err = json.Unmarshal(bts, &js); err != nil {
+		return "", err
+	}
 
 	value = gjson.GetBytes(bts, output.Key).Str
 	if output.Tmpl != "" {

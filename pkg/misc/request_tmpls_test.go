@@ -1,6 +1,7 @@
 package misc
 
 import (
+	"encoding/json"
 	"fmt"
 	"testing"
 )
@@ -29,5 +30,22 @@ func TestDoRequest(t *testing.T) {
 		t.Fatal(err)
 	} else {
 		fmt.Printf("statusCode: %d\nbody: %s\n", statusCode, body)
+	}
+}
+
+func TestIsJSON(t *testing.T) {
+	{
+		var js json.RawMessage
+		fmt.Println(json.Unmarshal([]byte(`aaa`), &js))
+	}
+
+	{
+		var js json.RawMessage
+		fmt.Println(json.Unmarshal([]byte(`{"a": 1}`), &js))
+	}
+
+	{
+		var js json.RawMessage
+		fmt.Println(json.Unmarshal([]byte(`{a: 1}`), &js))
 	}
 }
