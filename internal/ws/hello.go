@@ -39,13 +39,19 @@ func (client Client) String() string {
 }
 
 func hello(ctx *gin.Context) {
-	client := NewClient(
+	var (
+		once   *sync.Once
+		client *Client
+	)
+
+	once = new(sync.Once)
+
+	client = NewClient(
 		fmt.Sprintf("%04d", atomic.AddUint64(&_ClientId, 1)),
 		ctx.ClientIP(),
 		ctx.DefaultQuery("name", "World"),
 	)
 
-	once := new(sync.Once)
 	// log.Printf("%+v\n", _MelHello.Config)
 	_MelHello.Config.PingPeriod = 10 * time.Second
 
@@ -70,7 +76,11 @@ func hello(ctx *gin.Context) {
 		log.Printf("<-- %q recv: %q\n", client, msg)
 
 		once.Do(func() {
-			sess.Keys["client"] = client
+			var client *Client
+			if sess.Keys != nil {
+				client, _ = sess.Keys["client"].(*Client)
+			}
+			log.Printf("~~~ client: %+v\n", client)
 
 			data := map[string]interface{}{
 				"code":    0,
@@ -78,6 +88,7 @@ func hello(ctx *gin.Context) {
 				"message": fmt.Sprintf("%s, nice to meet you!", client.Name),
 				"data":    gin.H{"clientId": client.Id},
 			}
+
 			log.Printf("--> %q send client information\n", client)
 			bts, _ := json.Marshal(data)
 			_ = sess.Write(bts)
@@ -86,6 +97,8 @@ func hello(ctx *gin.Context) {
 		// m.Broadcast(msg)
 	})
 
-	_ = _MelHello.HandleRequest(ctx.Writer, ctx.Request)
-	// _ = _MelHello.HandleRequestWithKeys(Writer, Request,map[string]interface{}{})
+	// _ = _MelHello.HandleRequest(ctx.Writer, ctx.Request)
+	_ = _MelHello.HandleRequestWithKeys(
+		ctx.Writer, ctx.Request, map[string]interface{}{"client": client},
+	)
 }
