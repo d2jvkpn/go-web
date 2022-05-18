@@ -36,9 +36,13 @@ type RequestTmpl struct {
 	Outputs         []Output          `mapstructure:"outputs"`
 }
 
-func (output *Output) Get(bts []byte) (value string, err error) {
+func CheckJson(bts []byte) (err error) {
 	var js json.RawMessage
-	if err = json.Unmarshal(bts, &js); err != nil {
+	return json.Unmarshal(bts, &js)
+}
+
+func (output *Output) Get(bts []byte) (value string, err error) {
+	if err = CheckJson(bts); err != nil {
 		return "", err
 	}
 

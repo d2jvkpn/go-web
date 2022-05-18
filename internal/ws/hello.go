@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -54,6 +55,7 @@ func hello(ctx *gin.Context) {
 
 	// log.Printf("%+v\n", _MelHello.Config)
 	_MelHello.Config.PingPeriod = 10 * time.Second
+	_MelHello.Upgrader.CheckOrigin = func(req *http.Request) bool { return true }
 
 	_MelHello.HandleConnect(func(sess *Session) {
 		log.Printf(">>> hello new ws connection: %q, ip=%s\n", client, client.Ip)
