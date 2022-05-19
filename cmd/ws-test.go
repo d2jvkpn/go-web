@@ -120,35 +120,29 @@ func HandleMessage(conn *websocket.Conn, mutex *sync.Mutex, done chan struct{}) 
 
 	go func() {
 		fmt.Println("Enter message and send to the server...")
-	loop1:
 		for {
-			select {
-			case <-done:
-				break loop1
-			default:
-			}
 			var msg string
 			fmt.Scanf("%s", &msg)
-			if msg == "" {
+			msg = strings.TrimSpace(msg)
+			log.Printf("<<< %q\n", msg)
+			if msg == "\\q" {
+				log.Println("!!! Exit")
 				close(done)
-				break loop1
+				conn.Close()
+				break
+			} else if msg == "" {
+				continue
 			}
 
 			mutex.Lock()
-			conn.WriteMessage(websocket.TextMessage, bytes.TrimSpace([]byte(msg)))
+			conn.WriteMessage(websocket.TextMessage, []byte(msg))
 			mutex.Unlock()
 		}
 	}()
 
-loop2:
 	for {
-		select {
-		case <-done:
-			break loop2
-		default:
-		}
 		if typ, bts, err = conn.ReadMessage(); err != nil {
-			log.Printf("<-- !!! ReadMessage error: %[1]T, %[1]v\n", err)
+			log.Printf("!!! ReadMessage error: %[1]T, %[1]v\n", err)
 			break
 		}
 		log.Printf("<-- ReadMessage: type=%d\n\t%s\n", typ, bytes.TrimSpace(bts))
