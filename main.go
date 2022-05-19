@@ -45,6 +45,7 @@ func main() {
 	root.AddCommand(cmd.NewConfig("config"))
 	root.AddCommand(cmd.NewServe())
 	root.AddCommand(cmd.NewApiTest())
+	root.AddCommand(cmd.NewWsTest())
 
 	root.Execute()
 }

@@ -11,10 +11,6 @@ import (
 	"github.com/spf13/pflag"
 )
 
-var (
-	apiTestConfig string
-)
-
 func NewApiTest() (command *cobra.Command) {
 	var (
 		fp   string
