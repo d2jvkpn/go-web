@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"sync"
 	"sync/atomic"
 	"time"
 
@@ -78,18 +79,32 @@ func init() {
 
 		log.Printf("<-- %q recv: %q\n", client, msg)
 
-		// handle(msg)
+		var (
+			data []byte
+			err  error
+		)
+
+		if data, err = client.HandleMsg(msg); err != nil {
+			log.Printf("%s HandleMessage error and close connection: %v\n", client, err)
+			_ = sess.CloseWithMsg([]byte(err.Error()))
+			return
+		}
+
+		if len(data) > 0 {
+			_ = sess.Write(data) // TODO: verify concurrent writing safe
+		}
 		// _MelHello.Broadcast(msg)
 	})
 }
 
 type Client struct {
-	Id          string    `json:"id"`
-	Address     string    `json:"address"`
-	Name        string    `json:"name"`
-	ConnectTime time.Time `json:"connectTime"`
-	PongTime    time.Time `json:"pongTime"`
-	melo        *melody.Melody
+	Id            string    `json:"id"`
+	Address       string    `json:"address"`
+	Name          string    `json:"name"`
+	ConnectTime   time.Time `json:"connectTime"`
+	PongTime      time.Time `json:"pongTime"`
+	melo          *melody.Melody
+	*sync.RWMutex `json:"-"`
 }
 
 func NewClient(addr, name string, melo *melody.Melody) *Client {
@@ -99,11 +114,17 @@ func NewClient(addr, name string, melo *melody.Melody) *Client {
 		Name:        name,
 		ConnectTime: time.Now(),
 		melo:        melo,
+		RWMutex:     new(sync.RWMutex),
 	}
 }
 
 func (client Client) String() string {
 	return fmt.Sprintf("name=%s, id=%s", client.Name, client.Id)
+}
+
+func (client *Client) HandleMsg(msg []byte) (data []byte, err error) {
+	// more processes...
+	return msg, nil
 }
 
 func getSessionClient(sess *melody.Session) (client *Client) {
