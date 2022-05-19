@@ -77,13 +77,16 @@ func init() {
 			return
 		}
 
-		log.Printf("<-- %q recv: %q\n", client, msg)
+		if len(msg) == 0 {
+			return
+		}
 
 		var (
 			data []byte
 			err  error
 		)
 
+		log.Printf("<-- %q recv: %q\n", client, msg)
 		if data, err = client.HandleMsg(msg); err != nil {
 			log.Printf("%s HandleMsg error and close connection: %v\n", client, err)
 			_ = sess.CloseWithMsg([]byte(err.Error()))

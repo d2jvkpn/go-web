@@ -157,7 +157,8 @@ func (client WsClient) HandleMessage() {
 
 	if len(_OneJsonMsg) > 0 {
 		client.mutex.Lock()
-		client.conn.WriteMessage(websocket.TextMessage, bts)
+		log.Printf("--> send _OneJsonMsg: %q\n", _OneJsonMsg)
+		client.conn.WriteMessage(websocket.TextMessage, _OneJsonMsg)
 		client.mutex.Unlock()
 	}
 
