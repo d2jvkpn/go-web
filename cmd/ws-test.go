@@ -10,10 +10,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/spf13/cobra"
-	"github.com/spf13/pflag"
+	"github.com/d2jvkpn/goapp/pkg/misc"
 
 	"github.com/gorilla/websocket"
+	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 )
 
 func NewWsTest() (command *cobra.Command) {
@@ -47,9 +48,10 @@ func NewWsTest() (command *cobra.Command) {
 			if conn, _, err = websocket.DefaultDialer.Dial(link.String(), nil); err != nil {
 				log.Fatal("dial:", err)
 			}
-			defer conn.Close()
+			// defer conn.Close()
 
-			runWs(conn)
+			client := NewWsClient(conn, 20*time.Second, true)
+			client.HandleMessage()
 		},
 	}
 
@@ -63,41 +65,30 @@ func NewWsTest() (command *cobra.Command) {
 	return command
 }
 
-func runWs(conn *websocket.Conn) {
-	var (
-		pingId int
-		mutex  *sync.Mutex
-		ticker *time.Ticker
-		done   chan struct{}
-	)
+type WsClient struct {
+	conn    *websocket.Conn
+	mutex   *sync.Mutex
+	done    chan struct{}
+	pingDur time.Duration
+	ticker  *time.Ticker
+	jsonMsg bool
+}
 
-	ticker = time.NewTicker(20 * time.Second)
-	mutex = new(sync.Mutex) // avoid panic: concurrent write to websocket connection
-	done = make(chan struct{})
-	// send ping to server may be not necessary
-	go func() {
-	loop:
-		for {
-			select {
-			case <-done:
-				break loop
-			case <-ticker.C:
-				pingId++
-				data := []byte(strconv.Itoa(pingId))
-				log.Printf("~~> send ping: %q\n", data)
-				mutex.Lock()
-				_ = conn.WriteMessage(websocket.PingMessage, []byte(data))
-				mutex.Unlock()
-			}
-		}
-	}()
+func NewWsClient(conn *websocket.Conn, pingDur time.Duration, jsonMsg bool) (client WsClient) {
+	client = WsClient{
+		conn:    conn,
+		mutex:   new(sync.Mutex),
+		done:    make(chan struct{}),
+		pingDur: pingDur,
+		jsonMsg: jsonMsg,
+	}
 
 	// overwrite default handler(when receive a ping)
 	conn.SetPingHandler(func(data string) (err error) {
 		log.Printf("<~~ recv ping: %q, response pong\n", data)
-		mutex.Lock()
+		client.mutex.Lock()
 		_ = conn.WriteMessage(websocket.PongMessage, []byte(data))
-		mutex.Unlock()
+		client.mutex.Unlock()
 		return nil
 	})
 
@@ -107,11 +98,39 @@ func runWs(conn *websocket.Conn) {
 		return nil
 	})
 
-	HandleMessage(conn, mutex, done)
-	ticker.Stop()
+	if pingDur <= 0 {
+		return client
+	}
+	client.ticker = time.NewTicker(pingDur)
+
+	go func() {
+		var pingId int
+	loop:
+		for {
+			select {
+			case <-client.done:
+				break loop
+			case <-client.ticker.C:
+				pingId++
+				data := []byte(strconv.Itoa(pingId))
+				log.Printf("~~> send ping: %q\n", data)
+				client.mutex.Lock()
+				_ = client.conn.WriteMessage(websocket.PingMessage, []byte(data))
+				client.mutex.Unlock()
+			}
+		}
+	}()
+
+	return client
 }
 
-func HandleMessage(conn *websocket.Conn, mutex *sync.Mutex, done chan struct{}) {
+func (client WsClient) Close() {
+	client.ticker.Stop()
+	close(client.done)
+	client.conn.Close()
+}
+
+func (client WsClient) HandleMessage() {
 	var (
 		typ int
 		bts []byte
@@ -121,27 +140,35 @@ func HandleMessage(conn *websocket.Conn, mutex *sync.Mutex, done chan struct{}) 
 	go func() {
 		fmt.Println("Enter message and send to the server...")
 		for {
-			var msg string
+			var (
+				bts []byte
+				msg string
+			)
 			fmt.Scanf("%s", &msg)
 			msg = strings.TrimSpace(msg)
-			log.Printf("<<< %q\n", msg)
 			if msg == "\\q" {
 				log.Println("!!! Exit Client")
-				close(done)
-				conn.Close()
+				client.Close()
 				break
-			} else if msg == "" {
+			}
+			if bts = []byte(msg); len(bts) == 0 {
 				continue
 			}
 
-			mutex.Lock()
-			conn.WriteMessage(websocket.TextMessage, []byte(msg))
-			mutex.Unlock()
+			if client.jsonMsg && misc.CheckJson(bts) != nil {
+				log.Printf("!!! invalid json: %q\n", msg)
+				continue
+			}
+			log.Printf("<<< %q\n", msg)
+
+			client.mutex.Lock()
+			client.conn.WriteMessage(websocket.TextMessage, bts)
+			client.mutex.Unlock()
 		}
 	}()
 
 	for {
-		if typ, bts, err = conn.ReadMessage(); err != nil {
+		if typ, bts, err = client.conn.ReadMessage(); err != nil {
 			log.Printf("!!! ReadMessage error: %[1]T, %[1]v\n", err)
 			break
 		}
