@@ -25,7 +25,7 @@ func init() {
 
 	_MelHello.HandleConnect(func(sess *melody.Session) {
 		var client *Client
-		if client = getClient(sess); client == nil {
+		if client = getSessionClient(sess); client == nil {
 			return
 		}
 
@@ -44,7 +44,7 @@ func init() {
 
 	_MelHello.HandleDisconnect(func(sess *melody.Session) {
 		var client *Client
-		if client = getClient(sess); client == nil {
+		if client = getSessionClient(sess); client == nil {
 			return
 		}
 
@@ -53,7 +53,7 @@ func init() {
 
 	_MelHello.HandleError(func(sess *melody.Session, err error) {
 		var client *Client
-		if client = getClient(sess); client == nil {
+		if client = getSessionClient(sess); client == nil {
 			return
 		}
 
@@ -62,7 +62,7 @@ func init() {
 
 	_MelHello.HandlePong(func(sess *melody.Session) {
 		var client *Client
-		if client = getClient(sess); client == nil {
+		if client = getSessionClient(sess); client == nil {
 			return
 		}
 
@@ -72,7 +72,7 @@ func init() {
 
 	_MelHello.HandleMessage(func(sess *melody.Session, msg []byte) {
 		var client *Client
-		if client = getClient(sess); client == nil {
+		if client = getSessionClient(sess); client == nil {
 			return
 		}
 
@@ -106,7 +106,7 @@ func (client Client) String() string {
 	return fmt.Sprintf("name=%s, id=%s", client.Name, client.Id)
 }
 
-func getClient(sess *melody.Session) (client *Client) {
+func getSessionClient(sess *melody.Session) (client *Client) {
 	var exists bool
 
 	if sess.IsClosed() {
