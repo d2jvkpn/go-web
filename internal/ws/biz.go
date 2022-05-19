@@ -24,12 +24,8 @@ func init() {
 	_MelHello.Upgrader.CheckOrigin = func(req *http.Request) bool { return true }
 
 	_MelHello.HandleConnect(func(sess *melody.Session) {
-		var (
-			exists bool
-			client *Client
-		)
-
-		if client, exists = sess.Keys["client"].(*Client); !exists {
+		var client *Client
+		if client = getClient(sess); client == nil {
 			return
 		}
 
@@ -47,12 +43,8 @@ func init() {
 	})
 
 	_MelHello.HandleDisconnect(func(sess *melody.Session) {
-		var (
-			exists bool
-			client *Client
-		)
-
-		if client, exists = sess.Keys["client"].(*Client); !exists {
+		var client *Client
+		if client = getClient(sess); client == nil {
 			return
 		}
 
@@ -60,12 +52,8 @@ func init() {
 	})
 
 	_MelHello.HandleError(func(sess *melody.Session, err error) {
-		var (
-			exists bool
-			client *Client
-		)
-
-		if client, exists = sess.Keys["client"].(*Client); !exists {
+		var client *Client
+		if client = getClient(sess); client == nil {
 			return
 		}
 
@@ -73,12 +61,8 @@ func init() {
 	})
 
 	_MelHello.HandlePong(func(sess *melody.Session) {
-		var (
-			exists bool
-			client *Client
-		)
-
-		if client, exists = sess.Keys["client"].(*Client); !exists {
+		var client *Client
+		if client = getClient(sess); client == nil {
 			return
 		}
 
@@ -87,12 +71,8 @@ func init() {
 	})
 
 	_MelHello.HandleMessage(func(sess *melody.Session, msg []byte) {
-		var (
-			exists bool
-			client *Client
-		)
-
-		if client, exists = sess.Keys["client"].(*Client); !exists {
+		var client *Client
+		if client = getClient(sess); client == nil {
 			return
 		}
 
@@ -122,4 +102,18 @@ func NewClient(addr, name string) *Client {
 
 func (client Client) String() string {
 	return fmt.Sprintf("name=%s, id=%s", client.Name, client.Id)
+}
+
+func getClient(sess *melody.Session) (client *Client) {
+	var exists bool
+
+	if sess.IsClosed() {
+		return nil
+	}
+
+	if client, exists = sess.Keys["client"].(*Client); !exists {
+		return nil
+	}
+
+	return client
 }
