@@ -10,12 +10,12 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	. "gopkg.in/olahol/melody.v1"
+	"gopkg.in/olahol/melody.v1"
 )
 
 var (
 	_ClientId uint64
-	_MelHello *Melody = New()
+	_MelHello *melody.Melody = melody.New()
 )
 
 type Client struct {
@@ -57,24 +57,24 @@ func hello(ctx *gin.Context) {
 	_MelHello.Config.PingPeriod = 10 * time.Second
 	_MelHello.Upgrader.CheckOrigin = func(req *http.Request) bool { return true }
 
-	_MelHello.HandleConnect(func(sess *Session) {
+	_MelHello.HandleConnect(func(sess *melody.Session) {
 		log.Printf(">>> hello new ws connection: %q, ip=%s\n", client, client.Ip)
 	})
 
-	_MelHello.HandleDisconnect(func(sess *Session) {
+	_MelHello.HandleDisconnect(func(sess *melody.Session) {
 		log.Printf("<<< hello ws disconnected: %q\n", client)
 	})
 
-	_MelHello.HandleError(func(sess *Session, err error) {
+	_MelHello.HandleError(func(sess *melody.Session, err error) {
 		log.Printf("!!! hello ws error: %q, error=%q\n", client, err)
 	})
 
-	_MelHello.HandlePong(func(sess *Session) {
+	_MelHello.HandlePong(func(sess *melody.Session) {
 		client.PongTime = time.Now()
 		log.Printf("<~~ %q recv pong\n", client)
 	})
 
-	_MelHello.HandleMessage(func(sess *Session, msg []byte) {
+	_MelHello.HandleMessage(func(sess *melody.Session, msg []byte) {
 		log.Printf("<-- %q recv: %q\n", client, msg)
 
 		once.Do(func() {
