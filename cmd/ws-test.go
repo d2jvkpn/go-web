@@ -3,6 +3,7 @@ package cmd
 import (
 	"bytes"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/url"
 	"strconv"
@@ -17,9 +18,14 @@ import (
 	"github.com/spf13/pflag"
 )
 
+var (
+	_OneJsonMsg []byte
+)
+
 func NewWsTest() (command *cobra.Command) {
 	var (
 		addr string
+		jf   string
 		fSet *pflag.FlagSet
 	)
 
@@ -34,6 +40,16 @@ func NewWsTest() (command *cobra.Command) {
 				link *url.URL
 				conn *websocket.Conn
 			)
+
+			if jf != "" {
+				if _OneJsonMsg, err = ioutil.ReadFile(jf); err != nil {
+					log.Fatalln(err)
+				}
+
+				if err = misc.CheckJson(_OneJsonMsg); err != nil {
+					log.Fatalln(err)
+				}
+			}
 
 			if !strings.HasPrefix(addr, "ws") {
 				addr = "ws://" + addr
@@ -61,6 +77,8 @@ func NewWsTest() (command *cobra.Command) {
 		"ws://localhost:8080/ws/v1/hello?name=Rover",
 		"websocket service address",
 	)
+
+	fSet.StringVar(&jf, "jf", "", "a json file which stores one message")
 
 	return command
 }
@@ -136,6 +154,12 @@ func (client WsClient) HandleMessage() {
 		bts []byte
 		err error
 	)
+
+	if len(_OneJsonMsg) > 0 {
+		client.mutex.Lock()
+		client.conn.WriteMessage(websocket.TextMessage, bts)
+		client.mutex.Unlock()
+	}
 
 	go func() {
 		fmt.Println(">>> Enter message and send to the server...")
