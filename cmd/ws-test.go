@@ -50,7 +50,7 @@ func NewWsTest() (command *cobra.Command) {
 			}
 			// defer conn.Close()
 
-			client := NewWsClient(conn, 20*time.Second, true)
+			client := NewWsClient(conn, 30*time.Second, true)
 			client.HandleMessage()
 		},
 	}
