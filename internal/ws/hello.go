@@ -10,6 +10,7 @@ func hello(ctx *gin.Context) {
 	client := NewClient(
 		ctx.Request.RemoteAddr, // ctx.ClientIP(),
 		ctx.DefaultQuery("name", "World"),
+		_MelHello,
 	)
 
 	log.Printf("================ %s\n", client)

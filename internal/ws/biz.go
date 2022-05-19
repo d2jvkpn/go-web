@@ -84,19 +84,21 @@ func init() {
 }
 
 type Client struct {
-	Id          string
-	Address     string
-	Name        string
-	ConnectTime time.Time
-	PongTime    time.Time
+	Id          string    `json:"id"`
+	Address     string    `json:"address"`
+	Name        string    `json:"name"`
+	ConnectTime time.Time `json:"connectTime"`
+	PongTime    time.Time `json:"pongTime"`
+	melo        *melody.Melody
 }
 
-func NewClient(addr, name string) *Client {
+func NewClient(addr, name string, melo *melody.Melody) *Client {
 	return &Client{
 		Id:          fmt.Sprintf("%04d", atomic.AddUint64(&_ClientId, 1)),
 		Address:     addr,
 		Name:        name,
 		ConnectTime: time.Now(),
+		melo:        melo,
 	}
 }
 
