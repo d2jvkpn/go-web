@@ -71,7 +71,7 @@ func runWs(conn *websocket.Conn) {
 		done   chan struct{}
 	)
 
-	ticker = time.NewTicker(30 * time.Second)
+	ticker = time.NewTicker(20 * time.Second)
 	mutex = new(sync.Mutex) // avoid panic: concurrent write to websocket connection
 	done = make(chan struct{})
 	// send ping to server may be not necessary
@@ -126,7 +126,7 @@ func HandleMessage(conn *websocket.Conn, mutex *sync.Mutex, done chan struct{}) 
 			msg = strings.TrimSpace(msg)
 			log.Printf("<<< %q\n", msg)
 			if msg == "\\q" {
-				log.Println("!!! Exit")
+				log.Println("!!! Exit Client")
 				close(done)
 				conn.Close()
 				break
