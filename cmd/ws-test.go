@@ -138,7 +138,7 @@ func (client WsClient) HandleMessage() {
 	)
 
 	go func() {
-		fmt.Println("Enter message and send to the server...")
+		fmt.Println(">>> Enter message and send to the server...")
 		for {
 			var (
 				bts []byte
