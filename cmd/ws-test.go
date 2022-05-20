@@ -131,8 +131,8 @@ func NewWsClient(conn *websocket.Conn, pingDur time.Duration, jsonMsg bool) (cli
 			case <-client.ticker.C:
 				pingId++
 				data := []byte(strconv.Itoa(pingId))
-				log.Printf("~~> send ping: %q\n", data)
 				client.mutex.Lock()
+				log.Printf("~~> send ping: %q\n", data)
 				_ = client.conn.WriteMessage(websocket.PingMessage, []byte(data))
 				client.mutex.Unlock()
 			}
