@@ -1,8 +1,6 @@
 package ws
 
 import (
-	"log"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -12,8 +10,6 @@ func hello(ctx *gin.Context) {
 		ctx.DefaultQuery("name", "World"),
 		_MelHello,
 	)
-
-	log.Printf("================ %s\n", client)
 
 	// _ = _MelHello.HandleRequest(ctx.Writer, ctx.Request)
 	_ = _MelHello.HandleRequestWithKeys(
