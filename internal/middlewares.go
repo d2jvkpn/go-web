@@ -30,3 +30,13 @@ func Cors(ctx *gin.Context) {
 
 	ctx.Next()
 }
+
+func WsUpgrade(ctx *gin.Context) {
+	if ctx.GetHeader("Upgrade") != "websocket" || ctx.GetHeader("Connection") != "Upgrade" {
+		ctx.String(http.StatusUpgradeRequired, "Upgrade Required")
+		ctx.Abort()
+		return
+	}
+
+	ctx.Next()
+}
