@@ -5,8 +5,8 @@ import (
 )
 
 func Load(rg *gin.RouterGroup, handlers ...gin.HandlerFunc) {
-	ws := rg.Use(handlers...)
+	rg.GET(`/:a/`, append(handlers, hello)...) // router ws://localhost:8080//
 
-	ws.GET(`/:a/`, hello) // router ws://localhost:8080//
-	ws.GET("/ws/v1/hello", hello)
+	ws := rg.Group("/ws", handlers...)
+	ws.GET("/v1/hello", hello)
 }
