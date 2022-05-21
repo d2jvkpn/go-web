@@ -15,7 +15,7 @@ import (
 //go:generate bash go_build.sh
 
 var (
-	//go:embed Project.yaml
+	//go:embed project.yaml
 	projectStr string
 )
 
