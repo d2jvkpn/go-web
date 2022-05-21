@@ -9,6 +9,7 @@ import (
 	"github.com/d2jvkpn/goapp/internal/api"
 	"github.com/d2jvkpn/goapp/internal/site"
 	"github.com/d2jvkpn/goapp/internal/ws"
+	"github.com/d2jvkpn/goapp/pkg/misc"
 
 	"github.com/gin-gonic/gin"
 )
@@ -34,13 +35,14 @@ func NewEngine(release bool) (engi *gin.Engine, err error) {
 	} else {
 		engi = gin.Default()
 	}
+	engi.RedirectTrailingSlash = false
 
 	// engi.LoadHTMLGlob("templates/*.tmpl")
 	if tmpl, err = template.ParseFS(_Templates, "templates/*.tmpl"); err != nil {
 		return nil, err
 	}
 	engi.SetHTMLTemplate(tmpl)
-	engi.Use(Cors)
+	engi.Use(misc.Cors)
 
 	engi.NoRoute(func(ctx *gin.Context) {
 		// ctx.AbortWithStatus(http.StatusNotFound)
@@ -57,7 +59,7 @@ func NewEngine(release bool) (engi *gin.Engine, err error) {
 	//
 	rg := &engi.RouterGroup
 	api.Load(rg)
-	ws.Load(rg, WsUpgrade)
+	ws.Load(rg, misc.WsUpgrade)
 	site.Load(rg)
 
 	return

@@ -1,6 +1,7 @@
-package internal
+package misc
 
 import (
+	// "fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -32,7 +33,8 @@ func Cors(ctx *gin.Context) {
 }
 
 func WsUpgrade(ctx *gin.Context) {
-	if ctx.GetHeader("Upgrade") != "websocket" || ctx.GetHeader("Connection") != "Upgrade" {
+	if ctx.GetHeader("Upgrade") != "websocket" && ctx.GetHeader("Connection") != "Upgrade" {
+		// fmt.Printf("~~~~ Headers: %v\n", ctx.Request.Header)
 		ctx.String(http.StatusUpgradeRequired, "Upgrade Required")
 		ctx.Abort()
 		return

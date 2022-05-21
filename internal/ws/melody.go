@@ -18,11 +18,23 @@ var (
 	_MelHello *melody.Melody
 )
 
+func NewMelody(pingPeriod time.Duration) (melo *melody.Melody) {
+	melo = melody.New()
+
+	melo.Config.PingPeriod = pingPeriod
+	if pingPeriod > 60*time.Second {
+		melo.Config.PongWait = melo.Config.PingPeriod * 10 / 9
+	}
+
+	melo.Upgrader.CheckOrigin = func(req *http.Request) bool { return true }
+	// melo.Config.MaxMessageSize = 2 << 20
+	// melo.Config.MessageBufferSize = 1 << 20
+	return melo
+}
+
 func init() {
-	_MelHello = melody.New()
+	_MelHello = NewMelody(2 * time.Minute)
 	// log.Printf("%+v\n", _MelHello.Config)
-	_MelHello.Config.PingPeriod = 10 * time.Second
-	_MelHello.Upgrader.CheckOrigin = func(req *http.Request) bool { return true }
 
 	_MelHello.HandleConnect(func(sess *melody.Session) {
 		var client *Client
