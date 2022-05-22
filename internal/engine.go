@@ -38,7 +38,7 @@ func NewEngine(release bool) (engi *gin.Engine, err error) {
 	engi.RedirectTrailingSlash = false
 
 	// engi.LoadHTMLGlob("templates/*.tmpl")
-	if tmpl, err = template.ParseFS(_Templates, "templates/*.tmpl"); err != nil {
+	if tmpl, err = template.ParseFS(_Templates, "templates/*.html"); err != nil {
 		return nil, err
 	}
 	engi.SetHTMLTemplate(tmpl)
