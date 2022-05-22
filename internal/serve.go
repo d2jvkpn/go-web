@@ -64,8 +64,10 @@ func Serve(addr string) (err error) {
 	return
 }
 
-func Shutdown() {
+func Down() {
 	var err error
+
+	// close other goroutines or services
 
 	if _Server != nil {
 		log.Println("<<< Shutdown HTTP Server")

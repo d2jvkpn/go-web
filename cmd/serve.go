@@ -31,7 +31,7 @@ func NewServe() (command *cobra.Command) {
 			}
 
 			err = internal.Serve(addr)
-			internal.Shutdown()
+			internal.Down()
 			if err != nil {
 				log.Println(err)
 				os.Exit(1)
