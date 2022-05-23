@@ -2,7 +2,9 @@ package misc
 
 import (
 	// "fmt"
+	"bytes"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -41,4 +43,20 @@ func WsUpgrade(ctx *gin.Context) {
 	}
 
 	ctx.Next()
+}
+
+// https://github.com/thinkerou/favicon/blob/master/favicon.go
+func ServeFile(bts []byte, typ, name string, ts ...time.Time) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		var t time.Time
+
+		if len(ts) > 0 {
+			t = ts[0]
+		}
+
+		reader := bytes.NewReader(bts)
+
+		ctx.Header("Content-Type", typ)
+		http.ServeContent(ctx.Writer, ctx.Request, name, t, reader)
+	}
 }

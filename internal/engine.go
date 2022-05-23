@@ -55,6 +55,8 @@ func NewEngine(release bool) (engi *gin.Engine, err error) {
 		return nil, err
 	}
 	engi.RouterGroup.StaticFS("/site/static", http.FS(fsys))
+	// bts, _ := _Static.ReadFile("static/favicon.png")
+	// engi.RouterGroup.GET("/favicon.ico", "image/x-icon", "favicon.ico", misc.ServeFile(bts))
 
 	//
 	rg := &engi.RouterGroup
