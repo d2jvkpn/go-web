@@ -18,16 +18,7 @@ func hello0(ctx *gin.Context) {
 		return
 	}
 
-	client := NewClient(
-		ctx.Request.RemoteAddr, // ctx.ClientIP(),
-		ctx.DefaultQuery("name", "World"),
-		_MelHello,
-	)
-
-	// _ = _MelHello.HandleRequest(ctx.Writer, ctx.Request)
-	_ = _MelHello.HandleRequestWithKeys(
-		ctx.Writer, ctx.Request, map[string]interface{}{"client": client},
-	)
+	hello(ctx)
 }
 
 func hello(ctx *gin.Context) {
