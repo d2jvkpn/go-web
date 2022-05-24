@@ -6,9 +6,9 @@ import (
 	"io/fs"
 	"net/http"
 
-	"github.com/d2jvkpn/goapp/internal/api"
-	"github.com/d2jvkpn/goapp/internal/site"
-	"github.com/d2jvkpn/goapp/internal/ws"
+	"github.com/d2jvkpn/goapp/internal/services/api"
+	"github.com/d2jvkpn/goapp/internal/services/site"
+	"github.com/d2jvkpn/goapp/internal/services/ws"
 	"github.com/d2jvkpn/goapp/pkg/misc"
 
 	"github.com/gin-gonic/gin"
