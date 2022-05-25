@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/d2jvkpn/goapp/pkg/misc"
@@ -35,6 +36,12 @@ func StaticDir(dir, local string, listDir bool) ServeOption {
 func Load(fp string, release bool) (err error) {
 	if _Config, err = misc.ReadConfigFile("config", fp); err != nil {
 		return
+	}
+
+	if !release {
+		_ = os.Setenv("APP_DebugMode", "true")
+	} else {
+		_ = os.Setenv("APP_DebugMode", "false")
 	}
 	_Release = release
 
