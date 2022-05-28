@@ -4,8 +4,8 @@ _wd=$(pwd)
 _path=$(dirname $0 | xargs -i readlink -f {})
 
 
-APP_ENV="$1"
-gitBranch="$2"
+gitBranch="$1"
+APP_ENV="$2"
 PORT=$3
 
 export APP_ENV=${APP_ENV} gitBranch=${gitBranch} PORT=${PORT}
