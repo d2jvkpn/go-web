@@ -2,10 +2,11 @@
 FROM golang:1.18-alpine AS builder
 LABEL stage=goapp_builder
 
-ARG BuildTime
-ARG BuildBranch
-ARG CommitHash
-ARG CommitTime
+ARG buildTime
+ARG gitBranch
+ARG gitCommit
+ARG gitTime
+ARG gitTreeState
 
 ENV buildTime=$buildTime
 ENV gitBranch=$gitBranch
