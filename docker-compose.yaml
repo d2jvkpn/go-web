@@ -2,19 +2,19 @@ version: '3'
 
 services:
   goapp:
-    image: registry.cn-shanghai.aliyuncs.com/d2jvkpn/goapp:${gitBranch}
-    container_name: goapp_${APP_ENV}
+    image: registry.cn-shanghai.aliyuncs.com/d2jvkpn/goapp:dev
+    container_name: goapp_dev
     restart: always
     # network_mode: bridge
     networks: ["goapp"]
-    ports: ["${PORT}:${PORT}"]
+    ports: ["8080:8080"]
     environment: ["TZ=Asia/Shanghai"]
     volumes:
     - ./configs/:/opt/goapp/configs/
-    command: ./main serve --addr ":${PORT}"
+    command: ./main serve --addr ":8080"
 
 networks:
   goapp:
-    name: goapp_${APP_ENV}
+    name: goapp_dev
     driver: bridge
     external: false
