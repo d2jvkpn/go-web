@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  goapp:
+    image: registry.cn-shanghai.aliyuncs.com/d2jvkpn/goapp:${gitBranch}
+    container_name: goapp_${APP_ENV}
+    restart: always
+    # network_mode: bridge
+    networks: ["goapp"]
+    ports: ["${PORT}:${PORT}"]
+    environment: ["TZ=Asia/Shanghai"]
+    command: ./main serve --addr ":${PORT}"
+
+networks:
+  goapp:
+    name: goapp_${APP_ENV}
+    driver: bridge
+    external: false
