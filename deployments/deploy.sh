@@ -8,7 +8,7 @@ APP_ENV="$1"
 gitBranch="$2"
 PORT=$3
 
-export APP_ENV=${APP_ENV} BuildBranch=${BuildBranch} PORT=${PORT}
+export APP_ENV=${APP_ENV} gitBranch=${gitBranch} PORT=${PORT}
 envsubst < ${_path}/deploy.yaml > docker-compose.yaml
 
 docker-compose pull

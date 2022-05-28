@@ -14,7 +14,9 @@ ENV gitTime=$gitTime
 ENV gitTreeState=$gitTreeState
 ENV TZ="Asia/Shanghai"
 
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 RUN { apk --no-cache update && apk --no-cache upgrade && apk --no-cache add tzdata; } &> /dev/null
+RUN go env -w GOPROXY="https://goproxy.cn,direct"
 
 WORKDIR /opt/goapp
 COPY ./main.go ./go.mod ./go.sum ./project.yaml  /opt/goapp/
@@ -39,6 +41,7 @@ ENV TZ="Asia/Shanghai"
 WORKDIR /opt/goapp
 COPY --from=builder /opt/goapp/main /opt/goapp/main
 
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 RUN { apk --no-cache update && apk --no-cache upgrade && apk --no-cache add tzdata; } &> /dev/null
 
 EXPOSE 8080 1030
