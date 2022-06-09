@@ -1,0 +1,116 @@
+# hosts.ini <= localhost ansible_host=127.0.0.1 connection=local
+- hosts: "localhost"
+  gather_facts: false
+  any_errors_fatal: true # stop execute any more tasks when docker build failed
+  vars_files: ["configs.yaml"]
+  vars:
+    _wd: "{{lookup('env', 'PWD')}}"
+    _hd: "{{lookup('env', 'HOME')}}"
+    conf: "{{configs[app_env]}}"
+    image: "{{configs[image]}}"
+
+  tasks:
+  - name: create-local-tmp
+    file: {path: "{{_wd}}/.tmp", state: "directory"}
+# mkdir -p .tmp
+
+
+- hosts: "build_host"
+  gather_facts: false
+  any_errors_fatal: true # stop execute any more tasks when docker build failed
+  vars_files: ["configs.yaml"]
+  vars:
+    _wd: "{{lookup('env', 'PWD')}}"
+    _hd: "{{lookup('env', 'HOME')}}"
+    conf: "{{configs[app_env]}}"
+    image: "{{configs[image]}}"
+
+  tasks:
+  - name: create-build-dir
+    # tags: ["build"]
+    # shell: {cmd: 'mkdir -p "{{conf.work_path}}/"'}
+    file: {path: "{{conf.work_path}}", state: "directory"}
+
+  - name: git-pull
+    git: repo=https://{{registry}} dest={{conf.work_path}} version={{conf.branch}} force=yes
+    # repo: ssh://git@{{registry}}.git
+    # key_file: /home/ubuntu/.ssh/id_rsa
+    # accept_hostkey: yes
+    # force: yes
+
+  - name: build-image
+    args: {chdir: "{{conf.work_path}}"}
+    # when: inventory_hostname == 'build_host' ## limit host, or by passing --limit machine_01
+    # run_once: true # the first host of group for docker build
+    # register: result
+    # failed_when: {"result.rc == 0"}
+    shell:
+      cmd: |
+        set -eu -o pipefail
+        export PATH=/opt/bin:$PATH
+        bash deployments/build.sh {{conf.branch}}
+
+  - name: fetch-deploy
+    fetch:
+      src: "{{conf.work_path}}/deployments/deploy.yaml"
+      dest: "{{_wd}}/.tmp/deploy.{{app_env}}.yaml"
+      flat: yes
+
+
+- hosts: "run_host"
+  gather_facts: false
+  any_errors_fatal: true # stop execute any more tasks when docker build failed
+  vars_files: ["configs.yaml"]
+  vars:
+    _wd: "{{lookup('env', 'PWD')}}"
+    _hd: "{{lookup('env', 'HOME')}}"
+    conf: "{{configs[app_env]}}"
+    image: "{{configs[image]}}"
+
+  tasks:
+  - name: create-run-dir
+    file: {path: "{{conf.work_path}}", state: "directory"}
+
+  - name: sync_deploy
+    synchronize: src={{_wd}}/.tmp/deploy.{{app_env}}.yaml dest={{conf.work_path}}/deploy.yaml
+
+  - name: run-container
+    args: {chdir: "{{conf.work_path}}"}
+    shell:
+      cmd: |
+        set -eu -o pipefail
+        export PATH=/opt/bin:$PATH
+        export BuildBranch={{conf.branch}} APP_ENV={{app_env}} PORT={{conf.http_port}}
+
+        image={{image}}
+        xx=$(docker ps --all --quiet --filter name=hello_$APP_ENV)
+        [[ -z "$xx" ]] || docker rm -f $xx # "docker-compose down" can only stop running containers
+
+        envsubst < deploy.yaml > docker-compose.yaml
+        docker-compose pull
+        docker-compose up -d
+
+        images=$(docker images --filter "dangling=true" --quiet $image || true)
+        for img in $images; do docker rmi $img || true; done &> /dev/null
+
+  - name: ping
+    uri:
+      url: "http://localhost:{{conf.http_port}}/ping"
+      status_code: 200
+
+
+#- hosts: localhost
+#  gather_facts: false
+#  any_errors_fatal: true # stop execute any more tasks when docker build failed
+#  vars_files: ["configs.yaml"]
+#  vars:
+#    _wd: "{{lookup('env', 'PWD')}}"
+#    _hd: "{{lookup('env', 'HOME')}}"
+#    conf: "{{configs[app_env]}}"
+
+#  tasks:
+#  - name: ping_test
+#    when: conf.api_url != ""
+#    uri:
+#      url: "{{conf.api_url}}/ping"
+#      status_code: 200

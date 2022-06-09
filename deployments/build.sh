@@ -11,12 +11,6 @@ function onExit {
 mkfifo build.lock
 trap onExit EXIT
 
-tag=$1
-start_s=$(date +%s)
-start_t=$(date +%FT%T%:z)
-log_file=logs/devops.log
-[[ -f "$log_file" ]] || { mkdir -p logs; echo -e "time\taction\ttag\telapsed" > $log_file; }
-
 gitBranch=$1
 image="registry.cn-shanghai.aliyuncs.com/d2jvkpn/goapp"
 tag=$gitBranch
@@ -76,12 +70,10 @@ docker image prune --force --filter label=stage=goapp_builder &> /dev/null
 
 #### push image
 echo ">>> push image: $image:$tag..."
-# docker tag $image:$tag $image:${tag}-xx
-# docker push $image:$tag
-# docker push $image:${tag}-xx
+docker tag $image:$tag $image:${tag}-xx
+docker push $image:$tag
+docker push $image:${tag}-xx
 
-end_s=$(date +%s)
-echo -e "$start_t\tbuild\t$tag\t$((end_s - start_s))" >> $log_file
 
 images=$(docker images --filter "dangling=true" --quiet $image)
 for img in $images; do docker rmi $img || true; done &> /dev/null
