@@ -1,9 +1,10 @@
 package misc
 
 import (
-	// "fmt"
 	"bytes"
+	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -46,7 +47,7 @@ func WsUpgrade(ctx *gin.Context) {
 }
 
 // https://github.com/thinkerou/favicon/blob/master/favicon.go
-func ServeFile(bts []byte, typ, name string, ts ...time.Time) gin.HandlerFunc {
+func ServeFavicon(bts []byte, ts ...time.Time) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var t time.Time
 
@@ -56,7 +57,22 @@ func ServeFile(bts []byte, typ, name string, ts ...time.Time) gin.HandlerFunc {
 
 		reader := bytes.NewReader(bts)
 
-		ctx.Header("Content-Type", typ)
-		http.ServeContent(ctx.Writer, ctx.Request, name, t, reader)
+		ctx.Header("Content-Type", "image/x-icon")
+		http.ServeContent(ctx.Writer, ctx.Request, "favicon.ico", t, reader)
+	}
+}
+
+func CacheControl(p string, seconds int) gin.HandlerFunc {
+	cc := fmt.Sprintf("public, max-age=%d", seconds)
+
+	return func(ctx *gin.Context) {
+		if ctx.Request.Method != "GET" || !strings.HasPrefix(ctx.Request.URL.Path, p) {
+			ctx.Next()
+			return
+		}
+
+		ctx.Header("Cache-Control", cc)
+		// ctx.Header("ETag", etag)
+		ctx.Next()
 	}
 }
