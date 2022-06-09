@@ -1,0 +1,2 @@
+2022-06-08T10:26:19.7389307+08:00	warn	zap/main_01.go:38	main.main	hello	rover	null
+2022-06-08T10:26:19.739088682+08:00	warn	zap/main_01.go:40	main.main	hello	rover	{"hello":2022,"world":203}

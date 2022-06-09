@@ -8,8 +8,8 @@ import (
 )
 
 var (
-	//go:embed serve.yaml
-	serveConfig string
+	//go:embed config_demo.yaml
+	configDemo string
 )
 
 func NewConfig(name string) (command *cobra.Command) {
@@ -19,7 +19,7 @@ func NewConfig(name string) (command *cobra.Command) {
 		Long:  "print serve config file (yaml format)",
 
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println(serveConfig)
+			fmt.Println(configDemo)
 		},
 	}
 }

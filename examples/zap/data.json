@@ -1,0 +1,2 @@
+{"level":"warn","ts":"2022-06-08T10:26:19.7389307+08:00","caller":"zap/main_01.go:38","func":"main.main","msg":"hello","code":100,"entity":"rover"}
+{"level":"warn","ts":"2022-06-08T10:26:19.739088682+08:00","caller":"zap/main_01.go:40","func":"main.main","msg":"hello","code":101,"entity":"rover","data":{"hello":2022,"world":203}}
