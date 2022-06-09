@@ -1,5 +1,5 @@
 # goapp
-a golang application
+a golang prototype application
 
 
 #### 1. Up and Running
