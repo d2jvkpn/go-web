@@ -4,8 +4,8 @@ import (
 	_ "embed"
 	"log"
 
-	"github.com/d2jvkpn/goapp/cmd"
 	"github.com/d2jvkpn/goapp/internal"
+	"github.com/d2jvkpn/goapp/internal/cmd"
 	"github.com/d2jvkpn/goapp/pkg/misc"
 
 	"github.com/spf13/cobra"

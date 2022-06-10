@@ -23,7 +23,6 @@ WORKDIR /opt/goapp
 COPY ./main.go ./go.mod ./go.sum ./project.yaml  /opt/goapp/
 COPY ./internal /opt/goapp/internal
 COPY ./pkg      /opt/goapp/pkg
-COPY ./cmd      /opt/goapp/cmd
 
 # in alpine, date doesn't parse %:z
 RUN go build  -ldflags="          \
