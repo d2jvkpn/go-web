@@ -38,11 +38,19 @@ func Ok(ctx *gin.Context) {
 	JSON(ctx, nil, nil)
 }
 
-func ErrBadRequest(ctx *gin.Context, cause error, msgs ...string) {
-	err := NewHttpError(cause, http.StatusBadRequest, -1, Skip(2))
+func BadRequest(ctx *gin.Context, cause error, msgs ...string) {
+	var opts []Option
+
+	opts = make([]Option, 0, 2)
+	opts = append(opts, Skip(2))
 
 	if len(msgs) > 0 {
-		err.Msg = msgs[0]
+		opts = append(opts, Msg(msgs[0]))
 	}
-	JSON(ctx, nil, err)
+
+	JSON(ctx, nil, ErrBadRequest(cause, opts...))
+}
+
+func ErrBadRequest(cause error, opts ...Option) (err *HttpError) {
+	return NewHttpError(cause, http.StatusBadRequest, -1, opts...)
 }
