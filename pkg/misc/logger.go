@@ -75,10 +75,10 @@ func (logger *Logger) Down() {
 	}
 
 	if err = logger.Sync(); err != nil {
-		log.Printf("Logger.Sync: %v\n", err)
+		log.Printf("misc.Logger.Sync: %v\n", err)
 	}
 
 	if err = logger.Writer.Close(); err != nil {
-		log.Printf("Logger.Close: %v\n", err)
+		log.Printf("misc.Logger.Writer.Close: %v\n", err)
 	}
 }
