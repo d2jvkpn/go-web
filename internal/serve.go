@@ -2,22 +2,17 @@ package internal
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"time"
 
 	"github.com/d2jvkpn/goapp/pkg/misc"
+	"github.com/d2jvkpn/goapp/pkg/resp"
 
 	"github.com/gin-gonic/gin"
-	"github.com/spf13/viper"
-)
-
-var (
-	_Release  bool
-	_Config   *viper.Viper
-	_Server   *http.Server
-	BuildInfo [][2]string
+	"go.uber.org/zap"
 )
 
 type ServeOption func(*gin.RouterGroup) error
@@ -44,6 +39,8 @@ func Load(fp string, release bool) (err error) {
 		_ = os.Setenv("APP_DebugMode", "false")
 	}
 	_Release = release
+
+	_ApiLogger = resp.NewLogger(fmt.Sprintf("logs/%s.api.log", _InstanceId), zap.InfoLevel, 100)
 
 	return
 }
@@ -75,6 +72,7 @@ func Down() {
 	var err error
 
 	// close other goroutines or services
+	_ApiLogger.Down()
 
 	if _Server != nil {
 		log.Println("<<< Shutdown HTTP Server")

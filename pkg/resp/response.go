@@ -9,6 +9,7 @@ import (
 const (
 	KeyError     = "error"
 	KeyRequestId = "requestId"
+	KeyUserId    = "userId"
 )
 
 func JSON(ctx *gin.Context, data any, err *HttpError) {
@@ -28,7 +29,7 @@ func JSON(ctx *gin.Context, data any, err *HttpError) {
 	}
 
 	ctx.Set(KeyError, err)
-	d2["data"], d2["code"], d2["msg"] = nil, err.Code, err.Msg
+	d2["data"], d2["code"], d2["msg"] = gin.H{}, err.Code, err.Msg
 	ctx.JSON(err.HttpCode, d2)
 
 	return
@@ -42,11 +43,12 @@ func BadRequest(ctx *gin.Context, cause error, msgs ...string) {
 	var opts []Option
 
 	opts = make([]Option, 0, 2)
-	opts = append(opts, Skip(2))
-
 	if len(msgs) > 0 {
 		opts = append(opts, Msg(msgs[0]))
+	} else {
+		opts = append(opts, Msg("bad request"))
 	}
+	opts = append(opts, Skip(2))
 
-	JSON(ctx, nil, ErrBadRequest(cause, opts...))
+	JSON(ctx, nil, NewHttpError(cause, http.StatusBadRequest, -1, opts...))
 }

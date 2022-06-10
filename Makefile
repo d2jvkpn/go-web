@@ -1,12 +1,8 @@
-# APP_GitForce=true
-version:
-	bash scripts/build.sh
-	./target/goapp version
-
-serve:
-	bash scripts/build.sh
-	./target/goapp serve
+build:
+	bash scripts/go_build.sh
+	ls -l target/
 
 run:
-	go build -o main main.go
-	./main serve
+	# go build -o main main.go
+	bash scripts/go_build.sh
+	./target/goapp serve

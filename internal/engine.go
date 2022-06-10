@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"embed"
 	"html/template"
 	"io/fs"
 	"net/http"
@@ -12,13 +11,6 @@ import (
 	"github.com/d2jvkpn/goapp/pkg/misc"
 
 	"github.com/gin-gonic/gin"
-)
-
-var (
-	//go:embed static
-	_Static embed.FS
-	//go:embed templates
-	_Templates embed.FS
 )
 
 func NewEngine(release bool) (engi *gin.Engine, err error) {
@@ -54,14 +46,15 @@ func NewEngine(release bool) (engi *gin.Engine, err error) {
 	if fsys, err = fs.Sub(_Static, "static"); err != nil {
 		return nil, err
 	}
-	engi.RouterGroup.StaticFS("/static", http.FS(fsys))
+	static := engi.RouterGroup.Group("/static", misc.CacheControl("/static/", 3600))
+	static.StaticFS("/", http.FS(fsys))
 	// ?? w.Header().Set("Cache-Control", "public, max-age=3600")
 	// bts, _ := _Static.ReadFile("static/favicon.png")
 	// engi.RouterGroup.GET("/favicon.ico", "image/x-icon", "favicon.ico", misc.ServeFile(bts))
 
 	//
 	rg := &engi.RouterGroup
-	api.Load(rg)
+	api.Load(rg, _ApiLogger.HandlerFunc())
 	ws.Load(rg, misc.WsUpgrade)
 	site.Load(rg)
 

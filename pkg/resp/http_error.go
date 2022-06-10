@@ -1,14 +1,15 @@
 package resp
 
 import (
+	"errors"
 	"fmt"
-	"net/http"
 	"path/filepath"
 	"runtime"
 )
 
 type HttpError struct {
-	Cause    error  `json:"cause"`
+	Cause    string `json:"cause"`
+	cause    error
 	HttpCode int    `json:"httpCode"`
 	Code     int    `json:"code"`
 	Msg      string `json:"msg"`
@@ -42,10 +43,15 @@ func NewHttpError(cause error, httpCode, code int, opts ...Option) (err *HttpErr
 
 	fn, file, line, _ := runtime.Caller(err.skip)
 
-	err.Cause = fmt.Errorf(
+	err.cause = fmt.Errorf(
 		"%s(%s:%d): %w", runtime.FuncForPC(fn).Name(),
 		filepath.Base(file), line, cause,
 	)
+	err.Cause = err.cause.Error()
 
 	return err
+}
+
+func (err *HttpError) Unwrap() error {
+	return errors.Unwrap(err.cause)
 }
