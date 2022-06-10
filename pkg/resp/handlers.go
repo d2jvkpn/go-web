@@ -10,11 +10,13 @@ import (
 	"go.uber.org/zap"
 )
 
-func (logger *Logger) HandlerFunc() gin.HandlerFunc {
+func HandlerLog(logger *Logger) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var (
+			ok     bool
 			code   int
 			err    *HttpError
+			intf   interface{}
 			fields []zap.Field
 		)
 
@@ -41,14 +43,13 @@ func (logger *Logger) HandlerFunc() gin.HandlerFunc {
 		fields = append(fields, zap.Int("status", ctx.Writer.Status()))
 		fields = append(fields, zap.Int64("latency", latency))
 
-		if intf, ok := ctx.Get(KeyError); ok {
+		if intf, ok = ctx.Get(KeyError); ok {
 			if err, ok = intf.(*HttpError); ok && err != nil {
 				code = err.Code
-				// bts, _ := json.Marshal(err)
-				// fields[7] = zap.String("error", string(bts))
-				fields = append(fields, zap.Any("error", err))
 			}
 		}
+		fields = append(fields, zap.Any("error", err))
+		// ?? add event field
 
 		switch {
 		case code == 0:
