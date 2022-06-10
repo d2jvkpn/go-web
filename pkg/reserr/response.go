@@ -50,7 +50,3 @@ func BadRequest(ctx *gin.Context, cause error, msgs ...string) {
 
 	JSON(ctx, nil, ErrBadRequest(cause, opts...))
 }
-
-func ErrBadRequest(cause error, opts ...Option) (err *HttpError) {
-	return NewHttpError(cause, http.StatusBadRequest, -1, opts...)
-}
