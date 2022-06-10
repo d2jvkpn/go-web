@@ -29,14 +29,9 @@ func Skip(skip int) Option {
 	}
 }
 
-func ErrIsNil() (out *HttpError) {
-	err := fmt.Errorf("not a HttpError")
-	return NewHttpError(err, http.StatusInternalServerError, 100, Msg("not a HttpError"))
-}
-
 func NewHttpError(cause error, httpCode, code int, opts ...Option) (err *HttpError) {
 	if cause == nil { // avoid panic
-		return ErrIsNil()
+		return nil
 	}
 
 	// httpCode != http.StatusOK, code != 0
