@@ -1,4 +1,4 @@
-package resp
+package misc
 
 import (
 	// "fmt"
@@ -19,8 +19,8 @@ type Logger struct {
 
 func NewLogger(filename string, level zapcore.LevelEnabler, mbs int, w io.Writer,
 	skips ...int) (logger *Logger) {
-	logger = new(Logger)
 
+	logger = new(Logger)
 	if mbs <= 0 {
 		mbs = 100
 	}
@@ -48,7 +48,8 @@ func NewLogger(filename string, level zapcore.LevelEnabler, mbs int, w io.Writer
 	// zap.InfoLevel
 	logger.core = zapcore.NewCore(
 		zapcore.NewJSONEncoder(logger.config),
-		zapcore.AddSync(logger.Writer), level,
+		zapcore.AddSync(logger.Writer),
+		level,
 	)
 
 	if w != nil {

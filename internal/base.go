@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/d2jvkpn/goapp/pkg/misc"
-	"github.com/d2jvkpn/goapp/pkg/resp"
 
 	"github.com/spf13/viper"
 )
@@ -21,7 +20,7 @@ var (
 	_InstanceId string
 	_Config     *viper.Viper
 	_Server     *http.Server
-	_ApiLogger  *resp.Logger
+	_ApiLogger  *misc.Logger
 	BuildInfo   [][2]string
 )
 

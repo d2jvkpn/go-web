@@ -5,12 +5,14 @@ import (
 	// "encoding/json"
 	"time"
 
+	"github.com/d2jvkpn/goapp/pkg/misc"
+
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
 
-func HandlerLog(logger *Logger) gin.HandlerFunc {
+func HandlerLog(logger *misc.Logger) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var (
 			ok     bool
