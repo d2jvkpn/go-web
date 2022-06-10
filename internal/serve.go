@@ -40,7 +40,10 @@ func Load(fp string, release bool) (err error) {
 	}
 	_Release = release
 
-	_ApiLogger = resp.NewLogger(fmt.Sprintf("logs/%s.api.log", _InstanceId), zap.InfoLevel, 100)
+	_ApiLogger = resp.NewLogger(
+		fmt.Sprintf("logs/%s.api.log", _InstanceId),
+		zap.InfoLevel, 100, nil,
+	)
 
 	return
 }

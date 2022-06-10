@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -62,11 +61,11 @@ func ServeFavicon(bts []byte, ts ...time.Time) gin.HandlerFunc {
 	}
 }
 
-func CacheControl(p string, seconds int) gin.HandlerFunc {
+func CacheControl(seconds int) gin.HandlerFunc {
 	cc := fmt.Sprintf("public, max-age=%d", seconds)
 
 	return func(ctx *gin.Context) {
-		if ctx.Request.Method != "GET" || !strings.HasPrefix(ctx.Request.URL.Path, p) {
+		if ctx.Request.Method != "GET" {
 			ctx.Next()
 			return
 		}

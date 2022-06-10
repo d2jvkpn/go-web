@@ -2,6 +2,7 @@ package resp
 
 import (
 	// "fmt"
+	"io"
 	"log"
 
 	"go.uber.org/zap"
@@ -16,7 +17,8 @@ type Logger struct {
 	*zap.Logger
 }
 
-func NewLogger(filename string, level zapcore.LevelEnabler, mbs int, skips ...int) (logger *Logger) {
+func NewLogger(filename string, level zapcore.LevelEnabler, mbs int, w io.Writer,
+	skips ...int) (logger *Logger) {
 	logger = new(Logger)
 
 	logger.Writer = &lumberjack.Logger{
@@ -39,11 +41,17 @@ func NewLogger(filename string, level zapcore.LevelEnabler, mbs int, skips ...in
 		EncodeCaller: zapcore.ShortCallerEncoder,
 	}
 
+	// zap.InfoLevel
 	logger.core = zapcore.NewCore(
 		zapcore.NewJSONEncoder(logger.config),
 		zapcore.AddSync(logger.Writer), level,
 	)
-	// zap.InfoLevel
+
+	if w != nil {
+		consoleEncoder := zapcore.NewConsoleEncoder(logger.config)
+		core := zapcore.NewCore(consoleEncoder, zapcore.AddSync(w), level)
+		logger.core = zapcore.NewTee(logger.core, core)
+	}
 
 	if len(skips) > 0 {
 		logger.Logger = zap.New(logger.core, zap.AddCaller(), zap.AddCallerSkip(skips[0]))

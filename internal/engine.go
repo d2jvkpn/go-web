@@ -46,7 +46,7 @@ func NewEngine(release bool) (engi *gin.Engine, err error) {
 	if fsys, err = fs.Sub(_Static, "static"); err != nil {
 		return nil, err
 	}
-	static := engi.RouterGroup.Group("/static", misc.CacheControl("/static/", 3600))
+	static := engi.RouterGroup.Group("/static", misc.CacheControl(3600))
 	static.StaticFS("/", http.FS(fsys))
 	// ?? w.Header().Set("Cache-Control", "public, max-age=3600")
 	// bts, _ := _Static.ReadFile("static/favicon.png")
