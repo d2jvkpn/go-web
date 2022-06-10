@@ -3,6 +3,7 @@ package main
 import (
 	// "fmt"
 	"log"
+	"testing"
 
 	"github.com/google/uuid"
 	"go.uber.org/zap"
@@ -10,7 +11,7 @@ import (
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
-func main() {
+func TestZap02(t *testing.T) {
 	var (
 		// err    error
 		logger *zap.Logger

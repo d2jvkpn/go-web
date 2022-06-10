@@ -5,7 +5,7 @@ _path=$(dirname $0 | xargs -i readlink -f {})
 
 
 rm -r logs
-go run main_02.go
+go test -run TestZap02
 
 cat logs/zap_example.log
 

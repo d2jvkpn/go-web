@@ -3,12 +3,13 @@ package main
 import (
 	// "fmt"
 	"log"
+	"testing"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
 
-func main() {
+func TestZap01(t *testing.T) {
 	var (
 		err    error
 		logger *zap.Logger
