@@ -38,15 +38,15 @@ func NewEngine(release bool) (engi *gin.Engine, err error) {
 	engi.SetHTMLTemplate(tmpl)
 	engi.Use(misc.Cors)
 
-	engi.GET("/healthy", func(ctx *gin.Context) {
-		ctx.AbortWithStatus(http.StatusOK)
-	})
-
 	engi.NoRoute(func(ctx *gin.Context) {
 		// ctx.AbortWithStatus(http.StatusNotFound)
 		ctx.JSON(http.StatusNotFound, gin.H{
 			"code": -1, "msg": "router not found", "data": gin.H{},
 		})
+	})
+
+	engi.GET("/healthy", func(ctx *gin.Context) {
+		ctx.AbortWithStatus(http.StatusOK)
 	})
 
 	if fsys, err = fs.Sub(_Static, "static"); err != nil {
