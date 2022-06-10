@@ -39,7 +39,7 @@ func Ok(ctx *gin.Context) {
 }
 
 func ErrBadRequest(ctx *gin.Context, cause error, msgs ...string) {
-	err := NewHttpError(cause, http.StatusBadRequest, -1)
+	err := NewHttpError(cause, http.StatusBadRequest, -1, Skip(2))
 
 	if len(msgs) > 0 {
 		err.Msg = msgs[0]
