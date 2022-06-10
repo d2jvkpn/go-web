@@ -1,4 +1,4 @@
-package reserr
+package resp
 
 import (
 	"fmt"
