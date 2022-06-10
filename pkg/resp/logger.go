@@ -21,6 +21,10 @@ func NewLogger(filename string, level zapcore.LevelEnabler, mbs int, w io.Writer
 	skips ...int) (logger *Logger) {
 	logger = new(Logger)
 
+	if mbs <= 0 {
+		mbs = 100
+	}
+
 	logger.Writer = &lumberjack.Logger{
 		Filename:  filename,
 		LocalTime: true,
