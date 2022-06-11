@@ -44,6 +44,10 @@ func Load(fp string, release bool) (err error) {
 		zap.InfoLevel, 100, nil,
 	)
 
+	if err = _SetupCrons(); err != nil {
+		return err
+	}
+
 	return
 }
 
@@ -73,6 +77,10 @@ func Serve(addr string) (err error) {
 func Down() {
 	var err error
 
+	log.Println("<<< Stop Cron Job")
+	_Cron.Stop()
+
+	log.Println("<<< Close Loggers")
 	// close other goroutines or services
 	_ApiLogger.Down()
 

@@ -31,3 +31,4 @@ mkdir -p target
 go build -ldflags="$ldflags" -o target/$Program main.go
 echo "saved target/$Program"
 # GOOS=windows GOARCH=amd64 go build -ldflags="$ldflags" -o target/$Program.exe main.go
+ls -al target/

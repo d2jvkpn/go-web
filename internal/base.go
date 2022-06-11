@@ -7,6 +7,7 @@ import (
 
 	"github.com/d2jvkpn/goapp/pkg/misc"
 
+	"github.com/robfig/cron/v3"
 	"github.com/spf13/viper"
 )
 
@@ -22,8 +23,13 @@ var (
 	_Server     *http.Server
 	_ApiLogger  *misc.Logger
 	BuildInfo   [][2]string
+
+	Cron_At   = "0 0 1 * * *" // everyday at 1 o'clock
+	Cron_Name = "Cron Test"
+	_Cron     *cron.Cron
 )
 
 func init() {
 	_InstanceId = misc.RandString(16)
+	_Cron = cron.New(cron.WithSeconds())
 }
