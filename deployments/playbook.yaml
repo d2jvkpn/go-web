@@ -11,8 +11,8 @@
 
   tasks:
   - name: create-local-tmp
-    file: {path: "{{_wd}}/.tmp", state: "directory"}
-# mkdir -p .tmp
+    file: {path: "{{_wd}}/tmp", state: "directory"}
+# mkdir -p tmp
 
 
 - hosts: "build_host"
@@ -83,7 +83,7 @@
         export BuildBranch={{conf.branch}} APP_ENV={{app_env}} PORT={{conf.http_port}}
 
         image={{image}}
-        xx=$(docker ps --all --quiet --filter name=hello_$APP_ENV)
+        xx=$(docker ps --all --quiet --filter name=goapp_$APP_ENV)
         [[ -z "$xx" ]] || docker rm -f $xx # "docker-compose down" can only stop running containers
 
         envsubst < deploy.yaml > docker-compose.yaml

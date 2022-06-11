@@ -40,7 +40,7 @@ func Load(fp string, release bool) (err error) {
 	_Release = release
 
 	_ApiLogger = misc.NewLogger(
-		fmt.Sprintf("logs/%s.api.log", _InstanceId),
+		fmt.Sprintf("logs/goapp-api.%s.log", _InstanceId),
 		zap.InfoLevel, 100, nil,
 	)
 

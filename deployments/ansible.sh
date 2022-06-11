@@ -8,7 +8,7 @@ app_env=$1
 
 # ~/.ansible.cfg
 # [defaults]
-# inventory = /home/hello/.ansible/hosts.ini
+# inventory = ~/.ansible/hosts.ini
 # log_path = $PWD/ansible.log
 
 # --become: root user
