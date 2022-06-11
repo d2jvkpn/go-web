@@ -8,7 +8,7 @@ a golang prototype application
 
 go get
 
-# bash build.sh && target/goapp version
+# bash scripts/go_build.sh
 
-make serve
+make run
 ```
