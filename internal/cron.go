@@ -18,7 +18,5 @@ func _SetupCrons() (err error) {
 	}
 
 	//... more cron jobs
-
-	_Cron.Start()
 	return nil
 }

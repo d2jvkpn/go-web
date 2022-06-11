@@ -48,6 +48,8 @@ func Load(fp string, release bool) (err error) {
 		return err
 	}
 
+	_Cron.Start()
+
 	return
 }
 
