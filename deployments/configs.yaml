@@ -1,3 +1,4 @@
+app: goapp
 image: registry.cn-shanghai.aliyuncs.com/d2jvkpn/goapp
 registry: github.com/d2jvkpn/goapp
 

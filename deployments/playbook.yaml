@@ -83,7 +83,7 @@
         export gitBranch={{conf.gitbranch}} app_env={{app_env}} port={{conf.port}}
 
         image={{image}}
-        xx=$(docker ps --all --quiet --filter name=goapp_$APP_ENV)
+        xx=$(docker ps --all --quiet --filter name={{configs.app}}_$app_env)
         [[ -z "$xx" ]] || docker rm -f $xx # "docker-compose down" can only stop running containers
 
         envsubst < deploy.yaml > docker-compose.yaml
