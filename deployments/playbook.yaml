@@ -53,7 +53,7 @@
   - name: fetch-deploy
     fetch:
       src: "{{conf.work_path}}/deployments/deploy.yaml"
-      dest: "{{_wd}}/.tmp/deploy.{{app_env}}.yaml"
+      dest: "{{_wd}}/tmp/deploy.{{app_env}}.yaml"
       flat: yes
 
 
@@ -72,7 +72,7 @@
     file: {path: "{{conf.work_path}}", state: "directory"}
 
   - name: sync_deploy
-    synchronize: src={{_wd}}/.tmp/deploy.{{app_env}}.yaml dest={{conf.work_path}}/deploy.yaml
+    synchronize: src={{_wd}}/tmp/deploy.{{app_env}}.yaml dest={{conf.work_path}}/deploy.yaml
 
   - name: run-container
     args: {chdir: "{{conf.work_path}}"}
@@ -80,7 +80,7 @@
       cmd: |
         set -eu -o pipefail
         export PATH=/opt/bin:$PATH
-        export BuildBranch={{conf.branch}} APP_ENV={{app_env}} PORT={{conf.http_port}}
+        export gitBranch={{conf.gitbranch}} app_env={{app_env}} port={{conf.port}}
 
         image={{image}}
         xx=$(docker ps --all --quiet --filter name=goapp_$APP_ENV)
@@ -95,7 +95,7 @@
 
   - name: ping
     uri:
-      url: "http://localhost:{{conf.http_port}}/ping"
+      url: "http://localhost:{{conf.port}}/ping"
       status_code: 200
 
 

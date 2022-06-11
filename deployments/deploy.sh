@@ -5,15 +5,15 @@ _path=$(dirname $0 | xargs -i readlink -f {})
 
 
 gitBranch="$1"
-APP_ENV="$2"
-PORT=$3
+app_env="$2"
+port=$3
 
-export APP_ENV=${APP_ENV} gitBranch=${gitBranch} PORT=${PORT}
+export app_env=${app_env} gitBranch=${gitBranch} port=${port}
 envsubst < ${_path}/deploy.yaml > docker-compose.yaml
 
 # docker-compose pull
-[[ ! -z "$(docker ps --all --quiet --filter name=goapp_$APP_ENV)" ]] &&
-  docker rm -f goapp_$APP_ENV
+[[ ! -z "$(docker ps --all --quiet --filter name=goapp_$app_env)" ]] &&
+  docker rm -f goapp_$app_env
 # docker-compose down for running containers only, not stopped containers
 
 docker-compose up -d
