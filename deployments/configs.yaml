@@ -6,18 +6,18 @@ configs:
   # 3011(port) is for local environment
   dev:
     work_path: /root/docker_dev/goapp_dev
-    gitBranch: dev
+    git_branch: dev
     port: 3012
     api_url: "http://192.168.122.172:3012"
 
   test:
     work_path: /root/docker_test/goapp_test
-    gitBranch: test
+    git_branch: test
     port: 3013
     api_url: ""
 
   prod:
     work_path: /root/docker_prod/goapp_prod
-    gitBranch: master
+    git_branch: master
     port: 3010
     api_url: ""

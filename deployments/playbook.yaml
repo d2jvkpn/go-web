@@ -32,7 +32,7 @@
     file: {path: "{{conf.work_path}}", state: "directory"}
 
   - name: git-pull
-    git: repo=https://{{registry}} dest={{conf.work_path}} version={{conf.branch}} force=yes
+    git: repo=https://{{registry}} dest={{conf.work_path}} version={{conf.git_branch}} force=yes
     # repo: ssh://git@{{registry}}.git
     # key_file: /home/ubuntu/.ssh/id_rsa
     # accept_hostkey: yes
@@ -48,7 +48,7 @@
       cmd: |
         set -eu -o pipefail
         export PATH=/opt/bin:$PATH
-        bash deployments/build.sh {{conf.branch}}
+        bash deployments/build.sh {{conf.git_branch}}
 
   - name: fetch-deploy
     fetch:
@@ -80,7 +80,7 @@
       cmd: |
         set -eu -o pipefail
         export PATH=/opt/bin:$PATH
-        export gitBranch={{conf.gitbranch}} app_env={{app_env}} port={{conf.port}}
+        export gitBranch={{conf.git_branch}} app_env={{app_env}} port={{conf.port}}
 
         image={{image}}
         xx=$(docker ps --all --quiet --filter name={{configs.app}}_$app_env)
