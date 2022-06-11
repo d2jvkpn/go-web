@@ -8,7 +8,7 @@ configs:
     work_path: /root/docker_dev/goapp_dev
     git_branch: dev
     port: 3012
-    api_url: "http://192.168.122.172:3012"
+    # api_url: "http://192.168.122.172:3012"
 
   test:
     work_path: /root/docker_test/goapp_test
