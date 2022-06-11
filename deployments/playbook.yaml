@@ -22,6 +22,7 @@
   vars:
     _wd: "{{lookup('env', 'PWD')}}"
     _hd: "{{lookup('env', 'HOME')}}"
+    app: "{{configs[app]}}"
     conf: "{{configs[app_env]}}"
     image: "{{configs[image]}}"
 
@@ -83,7 +84,8 @@
         export gitBranch={{conf.git_branch}} app_env={{app_env}} port={{conf.port}}
 
         image={{image}}
-        xx=$(docker ps --all --quiet --filter name={{configs[app]}}_$app_env)
+        app={{app}}
+        xx=$(docker ps --all --quiet --filter name=${app}_$app_env)
         [[ -z "$xx" ]] || docker rm -f $xx # "docker-compose down" can only stop running containers
 
         envsubst < deploy.yaml > docker-compose.yaml
