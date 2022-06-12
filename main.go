@@ -20,6 +20,7 @@ var (
 )
 
 func init() {
+	misc.RegisterDefaultLogFmt()
 }
 
 func main() {
