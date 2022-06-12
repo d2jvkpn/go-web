@@ -33,6 +33,20 @@ func Ok(ctx *gin.Context) {
 	JSON(ctx, nil, nil)
 }
 
+func Error(ctx *gin.Context, err *HttpError) {
+	var (
+		requestId string
+		d2        map[string]interface{}
+	)
+
+	requestId = ctx.GetString(KeyRequestId)
+	ctx.Set(KeyError, err)
+	d2 = gin.H{"code": err.Code, "msg": err.Msg, "data": gin.H{}, "requestId": requestId}
+	ctx.JSON(err.HttpCode, d2)
+
+	return
+}
+
 func BadRequest(ctx *gin.Context, cause error, msgs ...string) {
 	var opts []Option
 
