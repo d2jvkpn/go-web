@@ -3,6 +3,7 @@ package misc
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"path/filepath"
@@ -17,11 +18,11 @@ const (
 
 // a simple log writer
 type LogWriter struct {
-	fp          string
-	send2stdout bool
-	buf         *bytes.Buffer
-	file        *os.File
-	mutex       *sync.Mutex
+	fp    string
+	w     io.Writer
+	buf   *bytes.Buffer
+	file  *os.File
+	mutex *sync.Mutex
 }
 
 type logWriter struct{}
@@ -36,13 +37,13 @@ func RegisterDefaultLogFmt() {
 	log.SetOutput(w)
 }
 
-func NewLogWriter(prefix string, send2stdout bool) (lw *LogWriter, err error) {
+func NewLogWriter(prefix string, w io.Writer) (lw *LogWriter, err error) {
 	tag, bts := time.Now().Format("2006-01-02_15-04-05.000"), make([]byte, 0, 1024)
 
 	lw = &LogWriter{
-		fp:          prefix + "." + strings.Replace(tag, ".", "_", 1) + ".log",
-		send2stdout: send2stdout,
-		buf:         bytes.NewBuffer(bts),
+		fp:  prefix + "." + strings.Replace(tag, ".", "_", 1) + ".log",
+		w:   w,
+		buf: bytes.NewBuffer(bts),
 	}
 
 	if err = os.MkdirAll(filepath.Dir(prefix), 0755); err != nil {
@@ -69,8 +70,8 @@ func (lw *LogWriter) Write(bts []byte) (int, error) {
 	lw.buf.WriteByte('\n')
 	// bts = []byte(fmt.Sprintf("%s %s", , bts))
 	n, err := lw.file.Write(lw.buf.Bytes())
-	if lw.send2stdout {
-		os.Stdout.Write(lw.buf.Bytes())
+	if lw.w != nil {
+		lw.w.Write(lw.buf.Bytes())
 	}
 	lw.buf.Reset()
 
@@ -79,7 +80,7 @@ func (lw *LogWriter) Write(bts []byte) (int, error) {
 
 // set as output of log pkg
 func (lw *LogWriter) Register() {
-	log.SetFlags(0)
+	log.SetFlags(log.Lshortfile | log.Lmsgprefix)
 	log.SetOutput(lw)
 }
 
