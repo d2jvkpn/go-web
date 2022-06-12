@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/d2jvkpn/goapp/internal"
+	"github.com/d2jvkpn/go-web/internal"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"

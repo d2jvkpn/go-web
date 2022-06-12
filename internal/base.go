@@ -5,7 +5,7 @@ import (
 	"embed"
 	"net/http"
 
-	"github.com/d2jvkpn/goapp/pkg/misc"
+	"github.com/d2jvkpn/go-web/pkg/misc"
 
 	"github.com/robfig/cron/v3"
 	"github.com/spf13/viper"

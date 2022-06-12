@@ -18,7 +18,7 @@
 target/
 wk_*/
 /main*
-/goapp*
+/go-web*
 logs
 *.log
 tmp/

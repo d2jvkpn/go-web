@@ -12,8 +12,8 @@ export app_env=${app_env} gitBranch=${gitBranch} port=${port}
 envsubst < ${_path}/deploy.yaml > docker-compose.yaml
 
 # docker-compose pull
-[[ ! -z "$(docker ps --all --quiet --filter name=goapp_$app_env)" ]] &&
-  docker rm -f goapp_$app_env
+[[ ! -z "$(docker ps --all --quiet --filter name=go-web_$app_env)" ]] &&
+  docker rm -f go-web_$app_env
 # docker-compose down for running containers only, not stopped containers
 
 docker-compose up -d

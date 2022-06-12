@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	. "github.com/d2jvkpn/goapp/pkg/resp"
+	. "github.com/d2jvkpn/go-web/pkg/resp"
 
 	"github.com/gin-gonic/gin"
 )
@@ -18,7 +18,14 @@ func hello(ctx *gin.Context) {
 	// key := "Authorization"
 	// log.Printf("~~~ Header %s: %s\n", key, ctx.GetHeader(key))
 	// ctx.JSON(http.StatusOK, gin.H{"code": 0, "msg": "ok", "data": gin.H{}})
-	Ok(ctx)
+	// Ok(ctx)
+	name := "Jane Doe"
+
+	if v := ctx.Param("name"); v != "" {
+		name = v
+	}
+
+	JSON(ctx, gin.H{"name": name}, nil)
 }
 
 func login(ctx *gin.Context) {

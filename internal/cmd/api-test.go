@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/d2jvkpn/goapp/pkg/misc"
+	"github.com/d2jvkpn/go-web/pkg/misc"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"

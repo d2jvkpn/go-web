@@ -5,11 +5,11 @@ import (
 	"io/fs"
 	"net/http"
 
-	"github.com/d2jvkpn/goapp/internal/services/api"
-	"github.com/d2jvkpn/goapp/internal/services/site"
-	"github.com/d2jvkpn/goapp/internal/services/ws"
-	"github.com/d2jvkpn/goapp/pkg/misc"
-	"github.com/d2jvkpn/goapp/pkg/resp"
+	"github.com/d2jvkpn/go-web/internal/services/api"
+	"github.com/d2jvkpn/go-web/internal/services/site"
+	"github.com/d2jvkpn/go-web/internal/services/ws"
+	"github.com/d2jvkpn/go-web/pkg/misc"
+	"github.com/d2jvkpn/go-web/pkg/resp"
 
 	"github.com/gin-gonic/gin"
 )
@@ -28,7 +28,6 @@ func NewEngine(release bool) (engi *gin.Engine, err error) {
 	} else {
 		engi = gin.Default()
 	}
-
 	engi.RedirectTrailingSlash = false
 
 	// engi.LoadHTMLGlob("templates/*.tmpl")

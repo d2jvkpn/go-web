@@ -3,7 +3,7 @@ set -eu -o pipefail
 _wd=$(pwd)
 _path=$(dirname $0 | xargs -i readlink -f {})
 
-Program="goapp"
+Program="go-web"
 
 buildTime=$(date +'%FT%T%:z')
 gitBranch="$(git rev-parse --abbrev-ref HEAD)" # current branch

@@ -12,7 +12,7 @@ mkfifo build.lock
 trap onExit EXIT
 
 gitBranch=$1
-image="registry.cn-shanghai.aliyuncs.com/d2jvkpn/goapp"
+image="registry.cn-shanghai.aliyuncs.com/d2jvkpn/go-web"
 tag=$gitBranch
 
 ####
@@ -66,7 +66,7 @@ docker build --no-cache --file ${_path}/Dockerfile --tag $image:$tag \
   --build-arg=gitTreeState="$gitTreeState" \
   ./
 
-docker image prune --force --filter label=stage=goapp_builder &> /dev/null
+docker image prune --force --filter label=stage=go-web_builder &> /dev/null
 
 #### push image
 echo ">>> push image: $image:$tag..."

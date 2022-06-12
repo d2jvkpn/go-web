@@ -4,9 +4,9 @@ import (
 	_ "embed"
 	"log"
 
-	"github.com/d2jvkpn/goapp/internal"
-	"github.com/d2jvkpn/goapp/internal/cmd"
-	"github.com/d2jvkpn/goapp/pkg/misc"
+	"github.com/d2jvkpn/go-web/internal"
+	"github.com/d2jvkpn/go-web/internal/cmd"
+	"github.com/d2jvkpn/go-web/pkg/misc"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"

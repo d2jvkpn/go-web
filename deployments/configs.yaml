@@ -1,23 +1,23 @@
-app: goapp
-image: registry.cn-shanghai.aliyuncs.com/d2jvkpn/goapp
-registry: github.com/d2jvkpn/goapp
+app: go-web
+image: registry.cn-shanghai.aliyuncs.com/d2jvkpn/go-web
+registry: github.com/d2jvkpn/go-web
 
 configs:
   # 3011(port) is for local environment
   dev:
-    work_path: /root/docker_dev/goapp_dev
+    work_path: /root/docker_dev/go-web_dev
     git_branch: dev
     port: 3012
     # api_url: "http://192.168.122.172:3012"
 
   test:
-    work_path: /root/docker_test/goapp_test
+    work_path: /root/docker_test/go-web_test
     git_branch: test
     port: 3013
     api_url: ""
 
   prod:
-    work_path: /root/docker_prod/goapp_prod
+    work_path: /root/docker_prod/go-web_prod
     git_branch: master
     port: 3010
     api_url: ""

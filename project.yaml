@@ -1,5 +1,5 @@
-project: https://github.com/d2jvkpn/goapp
+project: https://github.com/d2jvkpn/go-web
 version: 0.1.0
 
 usage: |
-  goapp usage
+  go-web usage

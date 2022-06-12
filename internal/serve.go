@@ -8,7 +8,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/d2jvkpn/goapp/pkg/misc"
+	"github.com/d2jvkpn/go-web/pkg/misc"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -40,7 +40,7 @@ func Load(fp string, release bool) (err error) {
 	_Release = release
 
 	_ApiLogger = misc.NewLogger(
-		fmt.Sprintf("logs/goapp-api.%s.log", _InstanceId),
+		fmt.Sprintf("logs/go-web_api.%s.log", _InstanceId),
 		zap.InfoLevel, 100, nil,
 	)
 

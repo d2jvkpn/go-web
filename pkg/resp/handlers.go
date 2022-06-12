@@ -5,7 +5,7 @@ import (
 	// "encoding/json"
 	"time"
 
-	"github.com/d2jvkpn/goapp/pkg/misc"
+	"github.com/d2jvkpn/go-web/pkg/misc"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"

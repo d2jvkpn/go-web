@@ -19,7 +19,7 @@ func JSON(ctx *gin.Context, data any, err *HttpError) {
 	)
 
 	requestId = ctx.GetString(KeyRequestId)
-	d2 = gin.H{"code": 0, "msg": "ok", "requestId": requestId}
+	d2 = gin.H{"code": 0, "msg": "ok", "data": data, "requestId": requestId}
 	if err == nil {
 		if data == nil {
 			d2["data"] = gin.H{}

@@ -1,4 +1,4 @@
-# goapp
+# go-web
 a golang prototype application
 
 

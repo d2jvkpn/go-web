@@ -11,7 +11,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/d2jvkpn/goapp/pkg/misc"
+	"github.com/d2jvkpn/go-web/pkg/misc"
 
 	"github.com/gorilla/websocket"
 	"github.com/spf13/cobra"

@@ -1,4 +1,4 @@
-module github.com/d2jvkpn/goapp
+module github.com/d2jvkpn/go-web
 
 go 1.18
 

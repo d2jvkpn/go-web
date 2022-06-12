@@ -1,6 +1,6 @@
 ####
 FROM golang:1.18-alpine AS builder
-LABEL stage=goapp_builder
+LABEL stage=go-web_builder
 
 ARG buildTime
 ARG gitBranch
@@ -19,10 +19,10 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 RUN { apk --no-cache update && apk --no-cache upgrade && apk --no-cache add tzdata; } &> /dev/null
 RUN go env -w GOPROXY="https://goproxy.cn,direct"
 
-WORKDIR /opt/goapp
-COPY ./main.go ./go.mod ./go.sum ./project.yaml  /opt/goapp/
-COPY ./internal /opt/goapp/internal
-COPY ./pkg      /opt/goapp/pkg
+WORKDIR /opt/go-web
+COPY ./main.go ./go.mod ./go.sum ./project.yaml  /opt/go-web/
+COPY ./internal /opt/go-web/internal
+COPY ./pkg      /opt/go-web/pkg
 
 # in alpine, date doesn't parse %:z
 RUN go build  -ldflags="          \
@@ -38,8 +38,8 @@ FROM alpine
 
 ENV TZ="Asia/Shanghai"
 
-WORKDIR /opt/goapp
-COPY --from=builder /opt/goapp/main /opt/goapp/main
+WORKDIR /opt/go-web
+COPY --from=builder /opt/go-web/main /opt/go-web/main
 
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 RUN { apk --no-cache update && apk --no-cache upgrade && apk --no-cache add tzdata; } &> /dev/null
