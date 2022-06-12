@@ -25,15 +25,15 @@ type LogWriter struct {
 	mutex *sync.Mutex
 }
 
-type logWriter struct{}
+type LogPrinter struct{}
 
-func (w *logWriter) Write(bts []byte) (int, error) {
+func (w *LogPrinter) Write(bts []byte) (int, error) {
 	return fmt.Printf("%s %s\n", time.Now().Format(RFC3339ms), bytes.TrimSpace(bts))
 }
 
-func RegisterDefaultLogFmt() {
-	w := new(logWriter)
-	log.SetFlags(0)
+func RegisterLogPrinter() {
+	w := new(LogPrinter)
+	log.SetFlags(log.Lshortfile | log.Lmsgprefix)
 	log.SetOutput(w)
 }
 
@@ -85,8 +85,5 @@ func (lw *LogWriter) Register() {
 }
 
 func (lw *LogWriter) Close() (err error) {
-	err = lw.file.Close()
-	w := new(logWriter)
-	log.SetOutput(w)
-	return err
+	return lw.file.Close()
 }

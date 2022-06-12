@@ -20,7 +20,7 @@ var (
 )
 
 func init() {
-	misc.RegisterDefaultLogFmt()
+	misc.RegisterLogPrinter()
 }
 
 func main() {
