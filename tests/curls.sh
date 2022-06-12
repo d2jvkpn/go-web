@@ -7,4 +7,6 @@ curl -i -X POST localhost:8080/api/v1/open/login
 
 curl -i -X POST localhost:8080/api/v1/open/login -H "X-Token: aa"
 
+curl -i -X POST localhost:8080/api/v1/open/login -H "X-Token: xxxxxxxx"
+
 curl -i -X POST localhost:8080/api/v1/open/login -H "X-Token: aaaaaaaa"

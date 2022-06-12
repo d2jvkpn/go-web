@@ -43,8 +43,17 @@ func login(ctx *gin.Context) {
 		BadRequest(ctx, fmt.Errorf("missing header: %s", key))
 	case len(val) != 8:
 		Error(ctx, ErrBadRequest(fmt.Errorf("invalid X-Token"), Msg("invalid X-Token")))
-	default:
+	case val == "xxxxxxxx":
 		ctx.Set(KeyEvent, "user logined success")
 		JSON(ctx, gin.H{key: val}, nil)
+	default:
+		err := NewHttpError( // biz error
+			fmt.Errorf("failed to parse token"),
+			http.StatusInternalServerError,
+			1,
+			Msg("sorry"),
+		)
+
+		Error(ctx, err)
 	}
 }

@@ -45,21 +45,18 @@ func HandlerLog(logger *misc.Logger) gin.HandlerFunc {
 		fields = append(fields, zap.Int("status", ctx.Writer.Status()))
 		fields = append(fields, zap.Int64("latency", latency))
 
-		//		if intf, ok = ctx.Get(KeyError); ok {
-		//			if err, ok = intf.(*HttpError); ok && err != nil {
-		//				code = err.Code
-		//			}
-		//		}
 		if err, ok = misc.GetCtxValue[*HttpError](ctx, KeyError); ok {
 			fields = append(fields, zap.Any(KeyError, err))
+			code = err.Code
 		}
 
 		if event, ok = misc.GetCtxValue[any](ctx, KeyEvent); ok {
 			fields = append(fields, zap.Any(KeyEvent, event))
 		}
 
+		// ?? err.HttpCode
 		switch {
-		case code == 0:
+		case code <= 0:
 			logger.Info(requestId, fields...) // array fields[0:]...
 		case code < 100:
 			logger.Warn(requestId, fields...)
