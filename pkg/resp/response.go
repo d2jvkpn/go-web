@@ -6,12 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-const (
-	KeyError     = "error"
-	KeyRequestId = "requestId"
-	KeyUserId    = "userId"
-)
-
 func JSON(ctx *gin.Context, data any, err *HttpError) {
 	var (
 		requestId string

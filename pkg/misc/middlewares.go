@@ -75,3 +75,13 @@ func CacheControl(seconds int) gin.HandlerFunc {
 		ctx.Next()
 	}
 }
+
+func GetCtxValue[T any](ctx *gin.Context, key string) (v T, ok bool) {
+	var intf interface{}
+
+	if intf, ok = ctx.Get(key); !ok {
+		return
+	}
+	v, ok = intf.(T)
+	return
+}

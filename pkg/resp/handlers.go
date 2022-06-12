@@ -18,11 +18,11 @@ func HandlerLog(logger *misc.Logger) gin.HandlerFunc {
 			ok     bool
 			code   int
 			err    *HttpError
-			intf   interface{}
+			event  any
 			fields []zap.Field
 		)
 
-		fields = make([]zap.Field, 0, 8)
+		fields = make([]zap.Field, 0, 9)
 		appendString := func(key, val string) {
 			fields = append(fields, zap.String(key, val))
 		}
@@ -45,13 +45,18 @@ func HandlerLog(logger *misc.Logger) gin.HandlerFunc {
 		fields = append(fields, zap.Int("status", ctx.Writer.Status()))
 		fields = append(fields, zap.Int64("latency", latency))
 
-		if intf, ok = ctx.Get(KeyError); ok {
-			if err, ok = intf.(*HttpError); ok && err != nil {
-				code = err.Code
-			}
+		//		if intf, ok = ctx.Get(KeyError); ok {
+		//			if err, ok = intf.(*HttpError); ok && err != nil {
+		//				code = err.Code
+		//			}
+		//		}
+		if err, ok = misc.GetCtxValue[*HttpError](ctx, KeyError); ok {
+			fields = append(fields, zap.Any(KeyError, err))
 		}
-		fields = append(fields, zap.Any("error", err))
-		// ?? add event field
+
+		if event, ok = misc.GetCtxValue[any](ctx, KeyEvent); ok {
+			fields = append(fields, zap.Any(KeyEvent, event))
+		}
 
 		switch {
 		case code == 0:
