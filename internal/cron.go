@@ -10,7 +10,7 @@ func _SetupCrons() (err error) {
 	log.Printf(">>> Setup Cron %q: %s\n", Cron_Name, Cron_At)
 
 	_, err = _Cron.AddFunc(Cron_At, func() {
-		log.Printf(">>> Start Cron %q\n", Cron_Name)
+		log.Printf(">>> run cron job: %q\n", Cron_Name)
 	})
 
 	if err != nil {
