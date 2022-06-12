@@ -60,11 +60,11 @@ func HandlerLog(logger *misc.Logger) gin.HandlerFunc {
 
 		switch {
 		case code == 0:
-			logger.Info(requestId, fields[0:]...)
+			logger.Info(requestId, fields...) // array fields[0:]...
 		case code < 100:
-			logger.Warn(requestId, fields[0:]...)
+			logger.Warn(requestId, fields...)
 		default:
-			logger.Error(requestId, fields[0:]...)
+			logger.Error(requestId, fields...)
 		}
 	}
 }
