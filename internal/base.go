@@ -32,4 +32,6 @@ var (
 func init() {
 	_InstanceId = misc.RandString(16)
 	_Cron = cron.New(cron.WithSeconds())
+
+	misc.RegisterDefaultLogFmt()
 }

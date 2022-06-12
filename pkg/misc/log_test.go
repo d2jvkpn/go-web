@@ -19,3 +19,9 @@ func TestLogWriter(t *testing.T) {
 	lw.Close()
 	log.Println("XXXX")
 }
+
+func TestRegisterDefaultLogFmt(t *testing.T) {
+	RegisterDefaultLogFmt()
+	log.Printf("Hello, %s", "Rover")
+	log.Printf("Hello, %s\n", "d2jvkpn")
+}

@@ -27,7 +27,13 @@ type LogWriter struct {
 type logWriter struct{}
 
 func (w *logWriter) Write(bts []byte) (int, error) {
-	return fmt.Print(time.Now().Format(RFC3339ms) + " " + string(bts))
+	return fmt.Printf("%s %s\n", time.Now().Format(RFC3339ms), bytes.TrimSpace(bts))
+}
+
+func RegisterDefaultLogFmt() {
+	w := new(logWriter)
+	log.SetFlags(0)
+	log.SetOutput(w)
 }
 
 func NewLogWriter(prefix string, send2stdout bool) (lw *LogWriter, err error) {
@@ -59,7 +65,8 @@ func (lw *LogWriter) Write(bts []byte) (int, error) {
 	// ?? check buffer size
 	lw.buf.WriteString(time.Now().Format(RFC3339ms))
 	lw.buf.WriteByte(' ')
-	lw.buf.Write(bts)
+	lw.buf.Write(bytes.TrimSpace(bts))
+	lw.buf.WriteByte('\n')
 	// bts = []byte(fmt.Sprintf("%s %s", , bts))
 	n, err := lw.file.Write(lw.buf.Bytes())
 	if lw.send2stdout {
