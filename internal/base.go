@@ -20,7 +20,7 @@ var (
 
 	_Release bool
 	// _InstanceId string
-	BuildInfo [][2]string
+	_BuildInfo [][2]string
 
 	Cron_At   = "0 0 1 * * *" // everyday at 1 o'clock
 	Cron_Name = "Cron Test"
@@ -36,9 +36,13 @@ func init() {
 	_Cron = cron.New(cron.WithSeconds())
 }
 
+func LoadBuildInfo(info [][2]string) {
+	_BuildInfo = info
+}
+
 func logBuildInfo(logger *zap.Logger) {
-	fields := make([]zap.Field, 0, len(BuildInfo))
-	for _, v := range BuildInfo {
+	fields := make([]zap.Field, 0, len(_BuildInfo))
+	for _, v := range _BuildInfo {
 		fields = append(fields, zap.String(v[0], v[1]))
 	}
 

@@ -38,7 +38,7 @@ func main() {
 		return [2]string{key, project.GetString(key)}
 	}
 	buildInfo = misc.BuildInfo(extract("project"), extract("version"))
-	internal.BuildInfo = buildInfo
+	internal.LoadBuildInfo(buildInfo)
 
 	root := &cobra.Command{Use: project.GetString("usage")}
 
