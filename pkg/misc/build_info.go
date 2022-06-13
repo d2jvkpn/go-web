@@ -3,7 +3,7 @@ package misc
 import (
 	"runtime/debug"
 	"strings"
-	"time"
+	// "time"
 )
 
 func BuildInfo(vars ...[2]string) (info [][2]string) {
@@ -14,7 +14,7 @@ func BuildInfo(vars ...[2]string) (info [][2]string) {
 		info = append(info, [2]string{vars[i][0], vars[i][1]})
 	}
 
-	info = append(info, [2]string{"startTime", time.Now().Format(time.RFC3339)})
+	// info = append(info, [2]string{"startTime", time.Now().Format(time.RFC3339)})
 	info = append(info, [2]string{"goVersion", buildInfo.GoVersion})
 
 	parseFlags := func(str string) {

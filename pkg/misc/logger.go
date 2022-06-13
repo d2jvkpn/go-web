@@ -1,10 +1,11 @@
 package misc
 
 import (
-	// "fmt"
+	"fmt"
 	"io"
-	"log"
 
+	// "github.com/uber-go/multierr"
+	"go.uber.org/multierr"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
@@ -67,18 +68,21 @@ func NewLogger(filename string, level zapcore.LevelEnabler, mbs int, w io.Writer
 	return
 }
 
-func (logger *Logger) Down() {
-	var err error
+func (logger *Logger) Down() (err error) {
+	var errors []error
 
 	if logger == nil {
 		return
 	}
 
+	errors = make([]error, 0, 2)
 	if err = logger.Sync(); err != nil {
-		log.Printf("misc.Logger.Sync: %v\n", err)
+		errors = append(errors, fmt.Errorf("Logger.Sync: %w", err))
 	}
 
 	if err = logger.Writer.Close(); err != nil {
-		log.Printf("misc.Logger.Writer.Close: %v\n", err)
+		errors = append(errors, fmt.Errorf("Logger.Writer.Close: %w", err))
 	}
+
+	return multierr.Combine(errors...)
 }
