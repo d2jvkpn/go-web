@@ -15,11 +15,11 @@ make run
 
 #### 2. Tips
 - test: unit test, integrity test
-- golang generic, generate, benchmark
+- golang generic, generate, benchmark, build information
 - logging, telemetry, data collection(BI)
 - monitoring
 - databases: relational database, cache system, NoSQL, migration
-- toolchains: api test, ws test, subcommand
+- toolchains: api test, ws test, subcommands, configurations
 
 - sevices:
   - http: register, login, logoff, basic auth, jwt-token, file upload and download, etc.
