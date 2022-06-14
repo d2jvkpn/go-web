@@ -12,3 +12,23 @@ go get
 
 make run
 ```
+
+#### 2. Tips
+- test: unit test, integrity test
+- golang generic, generate, benchmark
+- logging
+- monitoring
+- databases: relational database, cache system, NoSQL, migration
+- toolchains: api test, ws test, subcommand
+
+- sevices:
+  - http: register, login, logoff, basic auth, jwt-token, file upload and download, etc.
+  - websocket
+  - grpc
+  - messaging queue: kafka
+
+- deployments:
+  - docker (build image, docker-compose)
+  - clould provode mirror service, self-host registry
+  - ansible
+  - kubernetes
