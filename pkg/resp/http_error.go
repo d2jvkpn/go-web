@@ -16,17 +16,22 @@ type HttpError struct {
 	skip     int
 }
 
-type Option func(*HttpError)
+type Option func(*HttpError) bool
 
 func Msg(msg string) Option {
-	return func(e *HttpError) {
+	return func(e *HttpError) bool {
 		e.Msg = msg
+		return true
 	}
 }
 
 func Skip(skip int) Option {
-	return func(e *HttpError) {
-		e.skip = skip
+	return func(e *HttpError) bool {
+		if skip > 1 {
+			e.skip = skip
+			return true
+		}
+		return false
 	}
 }
 
@@ -38,7 +43,7 @@ func NewHttpError(cause error, httpCode, code int, opts ...Option) (err *HttpErr
 	// httpCode != http.StatusOK, code != 0
 	err = &HttpError{HttpCode: httpCode, Code: code, Msg: "", skip: 1}
 	for _, v := range opts {
-		v(err)
+		_ = v(err)
 	}
 
 	fn, file, line, _ := runtime.Caller(err.skip)
