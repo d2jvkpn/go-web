@@ -6,6 +6,7 @@ headers:
 prelude:
 - name: login
   method: POST
+  headers: {"X-Token": "xxxxxxxx"}
   path: /api/v1/open/login
   params: {}
   body: |

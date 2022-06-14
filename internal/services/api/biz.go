@@ -36,7 +36,7 @@ func login(ctx *gin.Context) {
 	key := "X-Token" // "Authorization"
 	val := ctx.GetHeader(key)
 	// log.Printf("~~~ Header %s: %s\n", key, ctx.GetHeader(key))
-	ctx.Set(KeyUserId, "xxxxxxxx")
+	ctx.Set(KeyUserId, "yyyyyyyy")
 
 	switch {
 	case val == "":

@@ -34,6 +34,7 @@ type RequestTmpl struct {
 	NoPublicHeaders bool              `mapstructure:"no_public_headers"`
 	Headers         map[string]string `mapstructure:"headers"`
 	Outputs         []Output          `mapstructure:"outputs"`
+	// Expected // TODO
 }
 
 func CheckJson(bts []byte) (err error) {

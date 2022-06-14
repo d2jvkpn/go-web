@@ -50,8 +50,8 @@ func NewApiTest() (command *cobra.Command) {
 				}
 
 				fmt.Printf(
-					">>> API: %s, Path: %s, StatusCode: %d, Error: %q\n%s\n\n",
-					v.Name, v.Path, statusCode, errStr, body,
+					">>> API: %s, Method: %s, Path: %s, StatusCode: %d, Error: %v\n%s\n\n",
+					v.Name, v.Method, v.Path, statusCode, errStr, body,
 				)
 
 				if err != nil {
