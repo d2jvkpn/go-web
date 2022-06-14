@@ -1,7 +1,7 @@
 package resp
 
 import (
-	"errors"
+	// "errors"
 	"fmt"
 	"path/filepath"
 	"runtime"
@@ -48,15 +48,15 @@ func NewHttpError(cause error, httpCode, code int, opts ...Option) (err *HttpErr
 
 	fn, file, line, _ := runtime.Caller(err.skip)
 
-	err.cause = fmt.Errorf(
-		"%s(%s:%d): %w", runtime.FuncForPC(fn).Name(),
-		filepath.Base(file), line, cause,
+	err.cause = cause
+	err.Cause = fmt.Sprintf(
+		"%s(%s:%d): %v", runtime.FuncForPC(fn).Name(), filepath.Base(file), line, cause,
 	)
-	err.Cause = err.cause.Error()
 
 	return err
 }
 
-func (err *HttpError) Unwrap() error {
-	return errors.Unwrap(err.cause)
+func (err *HttpError) GetCause() error {
+	// return errors.Unwrap(err.cause)
+	return err.cause
 }
