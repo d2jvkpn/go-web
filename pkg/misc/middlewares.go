@@ -4,34 +4,44 @@ import (
 	"bytes"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
-func Cors(ctx *gin.Context) {
-	ctx.Header("Access-Control-Allow-Origin", "*")
+func Cors(allowHeaders ...string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		ctx.Header("Access-Control-Allow-Origin", "*")
 
-	ctx.Header(
-		"Access-Control-Allow-Headers", "Content-Type, Authorization",
-	)
-	// X-CSRF-Token
+		if len(allowHeaders) == 0 {
+			allowHeaders = []string{"Content-Type", "Authorization", "If-None-Match"}
+		}
 
-	ctx.Header(
-		"Access-Control-Expose-Headers",
-		"Access-Control-Allow-Origin, Access-Control-Allow-Headers, "+
-			"Content-Type, Content-Length",
-	)
+		ctx.Header(
+			"Access-Control-Allow-Headers", strings.Join(allowHeaders, ", "),
+		)
+		// Content-Type, Authorization, X-CSRF-Token
 
-	ctx.Header("Access-Control-Allow-Credentials", "true")
-	ctx.Header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+		exposeHeaders := []string{
+			"Access-Control-Allow-Origin",
+			"Access-Control-Allow-Headers",
+			"Content-Type",
+			"Content-Length",
+		}
 
-	if ctx.Request.Method == "OPTIONS" {
-		ctx.AbortWithStatus(http.StatusNoContent)
-		return
+		ctx.Header("Access-Control-Expose-Headers", strings.Join(exposeHeaders, ", "))
+
+		ctx.Header("Access-Control-Allow-Credentials", "true")
+		ctx.Header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+
+		if ctx.Request.Method == "OPTIONS" {
+			ctx.AbortWithStatus(http.StatusNoContent)
+			return
+		}
+
+		ctx.Next()
 	}
-
-	ctx.Next()
 }
 
 func WsUpgrade(ctx *gin.Context) {
@@ -63,6 +73,8 @@ func ServeFavicon(bts []byte, ts ...time.Time) gin.HandlerFunc {
 
 func CacheControl(seconds int) gin.HandlerFunc {
 	cc := fmt.Sprintf("public, max-age=%d", seconds)
+	// strconv.FormatInt(time.Now().UnixMilli(), 10)
+	etag := fmt.Sprintf(`"%d"`, time.Now().UnixMilli()) // must be a quoted string
 
 	return func(ctx *gin.Context) {
 		if ctx.Request.Method != "GET" {
@@ -71,7 +83,9 @@ func CacheControl(seconds int) gin.HandlerFunc {
 		}
 
 		ctx.Header("Cache-Control", cc)
-		// ctx.Header("ETag", etag)
+		// browser send If-None-Match: etag, if unchanged, response 304
+		// If-None-Match must exists in Access-Control-Allow-Headers
+		ctx.Header("ETag", etag)
 		ctx.Next()
 	}
 }
