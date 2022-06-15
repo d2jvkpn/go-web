@@ -10,4 +10,5 @@ func Load(rg *gin.RouterGroup, handlers ...gin.HandlerFunc) {
 	open.POST("/login", login)
 	open.GET("/hello", hello)
 	open.GET("/hello/:name", hello)
+	open.GET("/panic01", panic01)
 }

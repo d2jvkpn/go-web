@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io"
 
-	// "github.com/uber-go/multierr"
 	"go.uber.org/multierr"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"

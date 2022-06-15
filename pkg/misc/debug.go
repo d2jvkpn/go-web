@@ -3,6 +3,7 @@ package misc
 import (
 	"bytes"
 	"fmt"
+	"path/filepath"
 	"regexp"
 	"runtime/debug"
 	"strings"
@@ -16,7 +17,7 @@ func _fn2() {
 			return
 		}
 		fmt.Println("!!!", intf)
-		fmt.Println(">>>", Stack())
+		fmt.Println(">>>", Stack(2))
 	}()
 
 	_fn1()
@@ -29,20 +30,24 @@ func _fn1() {
 	fmt.Printf("Hello, playground %d", j)
 }
 
-func Stack() (slice [][2]string) {
+func Stack(skip int) (slice [][2]string) {
 	bts := bytes.TrimSpace(debug.Stack())
 	// fmt.Printf(">>>\n%s\n<<<\n", bts)
 	re := regexp.MustCompile("\n.*\n\t.*")
 	out := re.FindAllStringSubmatch(string(bts), -1)
-	if len(out) < 2 {
+	if skip < 2 {
+		skip = 2
+	}
+	if len(out) < skip {
 		return make([][2]string, 0)
 	}
-	slice = make([][2]string, 0, len(out)-2)
+	slice = make([][2]string, 0, len(out)-skip)
 
-	for i := 2; i < len(out); i++ {
+	for i := skip; i < len(out); i++ {
 		v := strings.TrimSpace(out[i][0])
 		if t := strings.Split(v, "\n\t"); len(t) > 1 {
-			slice = append(slice, [2]string{t[0], strings.Fields(t[1])[0]})
+			x := filepath.Base(strings.Fields(t[1])[0])
+			slice = append(slice, [2]string{t[0], x})
 		}
 	}
 

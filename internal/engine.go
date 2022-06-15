@@ -59,7 +59,7 @@ func NewEngine(release bool) (engi *gin.Engine, err error) {
 
 	//
 	rg := &engi.RouterGroup
-	api.Load(rg, resp.HandlerLog(_ApiLogger))
+	api.Load(rg, resp.NewLogHandler(_ApiLogger))
 	ws.Load(rg, misc.WsUpgrade)
 	site.Load(rg)
 

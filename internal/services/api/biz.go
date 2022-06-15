@@ -57,3 +57,9 @@ func login(ctx *gin.Context) {
 		Error(ctx, err)
 	}
 }
+
+func panic01(ctx *gin.Context) {
+	a, b := 1, 0
+	result := a / b
+	JSON(ctx, gin.H{"result": result}, nil)
+}
