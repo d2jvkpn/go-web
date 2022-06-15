@@ -17,8 +17,7 @@ func _fn2() {
 		}
 		fmt.Println("!!!", intf)
 
-		slice := ParseStack(debug.Stack())
-		fmt.Println(">>>", slice)
+		fmt.Println(">>>", Stack())
 	}()
 
 	_fn1()
@@ -31,14 +30,17 @@ func _fn1() {
 	fmt.Printf("Hello, playground %d", j)
 }
 
-func ParseStack(bts []byte) (slice [][2]string) {
-	bts = bytes.TrimSpace(bts)
+func Stack() (slice [][2]string) {
+	bts := bytes.TrimSpace(debug.Stack())
 	// fmt.Printf(">>>\n%s\n<<<\n", bts)
 	re := regexp.MustCompile("\n.*\n\t.*")
 	out := re.FindAllStringSubmatch(string(bts), -1)
-	slice = make([][2]string, 0, len(out))
+	if len(out) < 2 {
+		return make([][2]string, 0)
+	}
+	slice = make([][2]string, 0, len(out)-2)
 
-	for i := range out {
+	for i := 2; i < len(out); i++ {
 		v := strings.TrimSpace(out[i][0])
 		if t := strings.Split(v, "\n\t"); len(t) > 1 {
 			slice = append(slice, [2]string{t[0], strings.Fields(t[1])[0]})
