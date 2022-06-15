@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"net/http"
-	"strings"
+	// "strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -14,32 +14,31 @@ func Cors(origin string, allowHeaders ...string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		ctx.Header("Access-Control-Allow-Origin", origin)
 
-		if len(allowHeaders) == 0 {
-			allowHeaders = []string{"Content-Type", "Authorization"}
-		}
+		//		if len(allowHeaders) == 0 {
+		//			allowHeaders = []string{"Content-Type", "Authorization"}
+		//		}
 
-		ctx.Header(
-			"Access-Control-Allow-Headers", strings.Join(allowHeaders, ", "),
-		)
-		// Content-Type, Authorization, X-CSRF-Token
+		//		ctx.Header(
+		//			"Access-Control-Allow-Headers", strings.Join(allowHeaders, ", "),
+		//		)
+		//		// Content-Type, Authorization, X-CSRF-Token
 
-		exposeHeaders := []string{
-			"Access-Control-Allow-Origin",
-			"Access-Control-Allow-Headers",
-			"Content-Type",
-			"Content-Length",
-		}
+		//		exposeHeaders := []string{
+		//			"Access-Control-Allow-Origin",
+		//			"Access-Control-Allow-Headers",
+		//			"Content-Type",
+		//			"Content-Length",
+		//		}
 
-		ctx.Header("Access-Control-Expose-Headers", strings.Join(exposeHeaders, ", "))
+		//		ctx.Header("Access-Control-Expose-Headers", strings.Join(exposeHeaders, ", "))
 
-		ctx.Header("Access-Control-Allow-Credentials", "true")
-		ctx.Header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+		//		ctx.Header("Access-Control-Allow-Credentials", "true")
+		//		ctx.Header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
 
 		if ctx.Request.Method == "OPTIONS" {
 			ctx.AbortWithStatus(http.StatusNoContent)
 			return
 		}
-
 		ctx.Next()
 	}
 }
@@ -84,7 +83,6 @@ func CacheControl(seconds int) gin.HandlerFunc {
 
 		ctx.Header("Cache-Control", cc)
 		// browser send If-None-Match: etag, if unchanged, response 304
-		// If-None-Match must exists in Access-Control-Allow-Headers
 		ctx.Header("ETag", etag)
 		ctx.Next()
 	}
