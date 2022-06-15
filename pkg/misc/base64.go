@@ -7,15 +7,15 @@ import (
 )
 
 const (
-	_Encoder = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_"
+	_FilenameEncoder = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_"
 )
 
 var (
-	_base64Encoding *base64.Encoding
+	_base64FilenameEncoding *base64.Encoding
 )
 
 func init() {
-	_base64Encoding = base64.NewEncoding(_Encoder)
+	_base64FilenameEncoding = base64.NewEncoding(_FilenameEncoder)
 }
 
 func Base64EncodeMap(data map[string]interface{}) string {
@@ -43,10 +43,10 @@ func Base64DecodeMap(str string) (data map[string]interface{}, err error) {
 
 // replace +/ with -_
 func Base64EncodeFilename(src string) string {
-	return _base64Encoding.EncodeToString([]byte(src))
+	return _base64FilenameEncoding.EncodeToString([]byte(src))
 }
 
 // replace +/ with -_
 func Base64DecodeFilename(src string) ([]byte, error) {
-	return _base64Encoding.DecodeString(src)
+	return _base64FilenameEncoding.DecodeString(src)
 }
