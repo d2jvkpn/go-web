@@ -16,7 +16,6 @@ func _fn2() {
 			return
 		}
 		fmt.Println("!!!", intf)
-
 		fmt.Println(">>>", Stack())
 	}()
 
