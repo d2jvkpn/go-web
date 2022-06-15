@@ -10,14 +10,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Cors(origin string, allowHeaders ...string) gin.HandlerFunc {
+func Cors(origin string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		ctx.Header("Access-Control-Allow-Origin", origin)
 
-		//		if len(allowHeaders) == 0 {
-		//			allowHeaders = []string{"Content-Type", "Authorization"}
-		//		}
-
+		//		allowHeaders = []string{"Content-Type", "Authorization"}
 		//		ctx.Header(
 		//			"Access-Control-Allow-Headers", strings.Join(allowHeaders, ", "),
 		//		)
@@ -29,7 +26,6 @@ func Cors(origin string, allowHeaders ...string) gin.HandlerFunc {
 		//			"Content-Type",
 		//			"Content-Length",
 		//		}
-
 		//		ctx.Header("Access-Control-Expose-Headers", strings.Join(exposeHeaders, ", "))
 
 		//		ctx.Header("Access-Control-Allow-Credentials", "true")
