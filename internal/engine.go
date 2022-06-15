@@ -35,7 +35,7 @@ func NewEngine(release bool) (engi *gin.Engine, err error) {
 		return nil, err
 	}
 	engi.SetHTMLTemplate(tmpl)
-	engi.Use(misc.Cors())
+	engi.Use(misc.Cors("*"))
 
 	engi.NoRoute(func(ctx *gin.Context) {
 		// ctx.AbortWithStatus(http.StatusNotFound)
