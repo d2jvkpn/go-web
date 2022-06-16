@@ -30,7 +30,7 @@ func _fn1() {
 	fmt.Printf("Hello, playground %d", j)
 }
 
-func Stack(skip int, prefix string) (slice [][2]string) {
+func Stack(skip int, prefix string) (slice []string) {
 	bts := bytes.TrimSpace(debug.Stack())
 	// fmt.Printf(">>>\n%s\n<<<\n", bts)
 	re := regexp.MustCompile("\n.*\n\t.*")
@@ -39,9 +39,9 @@ func Stack(skip int, prefix string) (slice [][2]string) {
 		skip = 2
 	}
 	if len(out) < skip {
-		return make([][2]string, 0)
+		return make([]string, 0)
 	}
-	slice = make([][2]string, 0, len(out)-skip)
+	slice = make([]string, 0, len(out)-skip)
 
 	for i := skip; i < len(out); i++ {
 		t := strings.Split(strings.TrimSpace(out[i][0]), "\n\t")
@@ -52,8 +52,9 @@ func Stack(skip int, prefix string) (slice [][2]string) {
 			continue
 		}
 
-		x := filepath.Base(strings.Fields(t[1])[0])
-		slice = append(slice, [2]string{t[0], x})
+		f1 := strings.Split(t[0], "(")[0]
+		f2 := filepath.Base(strings.Fields(t[1])[0])
+		slice = append(slice, fmt.Sprintf("%s(%s)", f1, f2))
 	}
 
 	return
