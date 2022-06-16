@@ -72,7 +72,7 @@ func NewLogHandler(logger *misc.Logger) gin.HandlerFunc {
 			}
 
 			stacks := misc.Stack(4, gomod)
-			err = ErrServerError(fmt.Errorf("%v", intf))
+			err = ErrServerError(fmt.Errorf("%v", intf), Skip(5))
 			ctx.Set(KeyError, err)
 			ctx.Set(KeyEvent, gin.H{"kind": "panic", "stacks": stacks})
 			// TODO: alerting the developers

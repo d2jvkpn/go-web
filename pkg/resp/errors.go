@@ -38,12 +38,7 @@ func ErrNotFound(err error) (out *HttpError) {
 }
 
 ////
-func ErrServerError(cause error) (err *HttpError) {
-	return NewHttpError(
-		cause,
-		http.StatusInternalServerError,
-		100,
-		Skip(2),
-		Msg("internal server error"),
-	)
+func ErrServerError(cause error, opts ...Option) (err *HttpError) {
+	opts = append(opts, Msg("internal server error"))
+	return NewHttpError(cause, http.StatusInternalServerError, 100, opts...)
 }
