@@ -3,6 +3,7 @@ package resp
 import (
 	"fmt"
 	// "encoding/json"
+	"os"
 	"time"
 
 	"github.com/d2jvkpn/go-web/pkg/misc"
@@ -13,6 +14,8 @@ import (
 )
 
 func NewLogHandler(logger *misc.Logger) gin.HandlerFunc {
+	gomod := os.Getenv("APP_Gomod")
+
 	return func(ctx *gin.Context) {
 		var (
 			ok     bool
@@ -68,7 +71,7 @@ func NewLogHandler(logger *misc.Logger) gin.HandlerFunc {
 				return
 			}
 
-			stacks := misc.Stack(4)
+			stacks := misc.Stack(4, gomod)
 			err = ErrServerError(fmt.Errorf("%v", intf))
 			ctx.Set(KeyError, err)
 			ctx.Set(KeyEvent, gin.H{"kind": "panic", "stacks": stacks})

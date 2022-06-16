@@ -17,7 +17,7 @@ func _fn2() {
 			return
 		}
 		fmt.Println("!!!", intf)
-		fmt.Println(">>>", Stack(2))
+		fmt.Println(">>>", Stack(2, ""))
 	}()
 
 	_fn1()
@@ -30,7 +30,7 @@ func _fn1() {
 	fmt.Printf("Hello, playground %d", j)
 }
 
-func Stack(skip int) (slice [][2]string) {
+func Stack(skip int, prefix string) (slice [][2]string) {
 	bts := bytes.TrimSpace(debug.Stack())
 	// fmt.Printf(">>>\n%s\n<<<\n", bts)
 	re := regexp.MustCompile("\n.*\n\t.*")
@@ -44,11 +44,16 @@ func Stack(skip int) (slice [][2]string) {
 	slice = make([][2]string, 0, len(out)-skip)
 
 	for i := skip; i < len(out); i++ {
-		v := strings.TrimSpace(out[i][0])
-		if t := strings.Split(v, "\n\t"); len(t) > 1 {
-			x := filepath.Base(strings.Fields(t[1])[0])
-			slice = append(slice, [2]string{t[0], x})
+		t := strings.Split(strings.TrimSpace(out[i][0]), "\n\t")
+		if len(t) <= 1 {
+			continue
 		}
+		if prefix != "" && !strings.HasPrefix(t[0], prefix) {
+			continue
+		}
+
+		x := filepath.Base(strings.Fields(t[1])[0])
+		slice = append(slice, [2]string{t[0], x})
 	}
 
 	return
