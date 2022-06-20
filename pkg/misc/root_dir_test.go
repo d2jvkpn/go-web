@@ -22,3 +22,12 @@ func TestRootFile(t *testing.T) {
 
 	fmt.Println(p)
 }
+
+func TestModule(t *testing.T) {
+	p, err := RootModule()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	fmt.Println(p)
+}

@@ -1,9 +1,11 @@
 package misc
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 // get root path of project by recursively match go.mod in parent directory
@@ -44,4 +46,31 @@ func RootFile(p2f ...string) (fp string, err error) {
 	arr = append(arr, p2f...)
 
 	return filepath.Join(arr...), nil
+}
+
+func RootModule() (mod string, err error) {
+	var (
+		modf    string
+		strs    []string
+		file    *os.File
+		scanner *bufio.Scanner
+	)
+
+	if modf, err = RootFile("go.mod"); err != nil {
+		return "", err
+	}
+
+	if file, err = os.Open(modf); err != nil {
+		return "", err
+	}
+	defer file.Close()
+
+	scanner = bufio.NewScanner(file)
+	//    for scanner.Scan() {
+	//        fmt.Println(scanner.Text())
+	//    }
+	_ = scanner.Scan()
+	strs = strings.Fields(scanner.Text())
+
+	return strs[len(strs)-1], nil
 }
