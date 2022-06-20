@@ -69,7 +69,7 @@ func RootModule() (mod string, err error) {
 	//    for scanner.Scan() {
 	//        fmt.Println(scanner.Text())
 	//    }
-	_ = scanner.Scan()
+	_ = scanner.Scan() // first line
 	strs = strings.Fields(scanner.Text())
 
 	return strs[len(strs)-1], nil
