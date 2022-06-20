@@ -12,7 +12,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-//go:generate bash scripts/build.sh
+//go:generate bash scripts/go_build.sh
 
 var (
 	//go:embed project.yaml
