@@ -3,7 +3,6 @@ package resp
 import (
 	"fmt"
 	// "encoding/json"
-	"os"
 	"time"
 
 	"github.com/d2jvkpn/go-web/pkg/misc"
@@ -14,7 +13,7 @@ import (
 )
 
 func NewLogHandler(logger *misc.Logger) gin.HandlerFunc {
-	gomod := os.Getenv("APP_Gomod")
+	gomod, _ := misc.RootModule()
 
 	return func(ctx *gin.Context) {
 		var (

@@ -3,8 +3,6 @@ package main
 import (
 	_ "embed"
 	"log"
-	"os"
-	"strings"
 
 	"github.com/d2jvkpn/go-web/internal"
 	"github.com/d2jvkpn/go-web/internal/cmd"
@@ -19,14 +17,10 @@ import (
 var (
 	//go:embed project.yaml
 	projectStr string
-	//go:embed go.mod
-	gomod string
 )
 
 func init() {
 	misc.RegisterLogPrinter()
-	strs := strings.Fields(strings.Split(gomod, "\n")[0])
-	_ = os.Setenv("APP_Gomod", strs[len(strs)-1])
 }
 
 func main() {
