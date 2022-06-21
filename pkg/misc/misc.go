@@ -7,11 +7,12 @@ import (
 )
 
 var (
-	_Rand        = rand.New(rand.NewSource(time.Now().UnixNano()))
-	_LetterRunes = []rune("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+	_Rand *rand.Rand = rand.New(rand.NewSource(time.Now().UnixNano()))
+
+	_LetterRunes []rune = []rune("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 )
 
-func Basename(cf string) (base string) {
+func BasenameWithoutExt(cf string) (base string) {
 	base = filepath.Base(cf)
 	ext := filepath.Ext(base)
 	base = base[:len(base)-len(ext)]
