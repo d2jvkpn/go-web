@@ -95,8 +95,8 @@ func Log2Tsv(fp string, w io.Writer) (err error) {
 	type Record struct {
 		Time    string `json:"time"`
 		Level   string `json:"level"`
-		Msg     string `json:"msg"`
 		Ip      string `json:"ip"`
+		Msg     string `json:"msg"`
 		Method  string `json:"method"`
 		Path    string `json:"path"`
 		Query   string `json:"query"`
@@ -109,7 +109,7 @@ func Log2Tsv(fp string, w io.Writer) (err error) {
 
 	record2Str := func(r *Record) string {
 		strs := []string{
-			r.Time, r.Level, r.Msg, r.Ip,
+			r.Time, r.Level, r.Ip, r.Msg,
 			r.Method, r.Path, r.Query, r.UserId,
 			strconv.FormatInt(r.Status, 10), strconv.FormatInt(r.Latency, 10),
 		}
