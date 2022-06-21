@@ -46,5 +46,8 @@ func logBuildInfo(logger *zap.Logger) {
 		fields = append(fields, zap.String(v[0], v[1]))
 	}
 
-	logger.Info("BuildInfo", fields...)
+	logger.Info("BuildInfo", zap.Any(
+		"event",
+		map[string]interface{}{"kind": "info", "fields": fields},
+	))
 }

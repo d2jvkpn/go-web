@@ -47,7 +47,7 @@ func (output *Output) Get(bts []byte) (value string, err error) {
 		return "", err
 	}
 
-	value = gjson.GetBytes(bts, output.Key).Str
+	value = gjson.GetBytes(bts, output.Key).String()
 	if output.Tmpl != "" {
 		value = strings.Replace(output.Tmpl, "{}", value, -1)
 	}

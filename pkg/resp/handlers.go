@@ -1,14 +1,21 @@
 package resp
 
 import (
+	"bufio"
+	"bytes"
+	"encoding/json"
 	"fmt"
-	// "encoding/json"
+	"io"
+	"os"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/d2jvkpn/go-web/pkg/misc"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/tidwall/gjson"
 	"go.uber.org/zap"
 )
 
@@ -82,4 +89,85 @@ func NewLogHandler(logger *misc.Logger) gin.HandlerFunc {
 		ctx.Next()
 		saveLog()
 	}
+}
+
+func Log2Tsv(fp string, w io.Writer) (err error) {
+	type Record struct {
+		Level   string `json:"level"`
+		Time    string `json:"time"`
+		Msg     string `json:"msg"`
+		Ip      string `json:"ip"`
+		Method  string `json:"method"`
+		Path    string `json:"path"`
+		Query   string `json:"query"`
+		UserId  string `json:"userId"`
+		Status  int64  `json:"status"`
+		Latency int64  `json:"latency"`
+		// error any
+		// event any
+	}
+
+	record2Str := func(r *Record) string {
+		strs := []string{
+			r.Level, r.Time, r.Msg, r.Ip, r.Method, r.Path, r.Query, r.UserId,
+			strconv.FormatInt(r.Status, 10), strconv.FormatInt(r.Latency, 10),
+		}
+
+		return strings.Join(strs, "\t")
+	}
+
+	var (
+		line    int64
+		bts     []byte
+		file    *os.File
+		scanner *bufio.Scanner
+		buf     *bytes.Buffer
+		record  Record
+	)
+
+	if file, err = os.Open(fp); err != nil {
+		return err
+	}
+	defer file.Close()
+
+	scanner = bufio.NewScanner(file)
+	buf = bytes.NewBuffer(nil)
+
+	for scanner.Scan() {
+		line++
+		bts = scanner.Bytes()
+		record = Record{}
+		if err = json.Unmarshal(bts, &record); err != nil {
+			return fmt.Errorf("readline %d: %w", line, err)
+		}
+
+		errorText := gjson.GetBytes(bts, KeyError).String()
+		eventText := gjson.GetBytes(bts, KeyEvent).String()
+
+		if _, err = buf.WriteString(record2Str(&record)); err != nil {
+			return err
+		}
+		if err = buf.WriteByte('\t'); err != nil {
+			return err
+		}
+		if _, err = buf.WriteString(errorText); err != nil {
+			return err
+		}
+		if err = buf.WriteByte('\t'); err != nil {
+			return err
+		}
+		if _, err = buf.WriteString(eventText); err != nil {
+			return err
+		}
+		if err = buf.WriteByte('\n'); err != nil {
+			return err
+		}
+
+		if _, err = w.Write(buf.Bytes()); err != nil {
+			return err
+		}
+		buf.Reset()
+	}
+
+	return
 }
