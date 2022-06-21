@@ -19,7 +19,7 @@ func NewPrint(name string) (command *cobra.Command) {
 	return &cobra.Command{
 		Use:   name,
 		Short: "print serve config files",
-		Long:  "print serve config files: config.yaml, docker-compose.yaml, etc.",
+		Long:  "print serve config files: (config)config.yaml, (deploy)docker-compose.yaml, etc.",
 
 		Run: func(cmd *cobra.Command, args []string) {
 			if len(args) == 0 {
