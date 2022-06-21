@@ -36,6 +36,7 @@ make run
 
 #### 3. Subsystems
 - logging: api, cron job, bussiness data;
+- cron job;
 - telemetry, monitoring and alerting;
 - messaging queue;
 - memory cache;

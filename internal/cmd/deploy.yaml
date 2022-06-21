@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  go-web:
+    image: registry.cn-shanghai.aliyuncs.com/d2jvkpn/go-web:${gitBranch}
+    container_name: go-web_${app_env}
+    restart: always
+    # network_mode: bridge
+    networks: ["go-web"]
+    ports: ["${port}:${port}"]
+    environment: ["TZ=Asia/Shanghai"]
+    volumes:
+    - ./configs/:/opt/go-web/configs/
+    - ./logs/:/opt/go-web/logs/
+    command: ["./main", "serve", "--addr=:${port}", "--config=configs/${app_env}.yaml"]
+
+networks:
+  go-web:
+    name: go-web_${app_env}
+    driver: bridge
+    external: false

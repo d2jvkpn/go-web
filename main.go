@@ -16,7 +16,7 @@ import (
 
 var (
 	//go:embed project.yaml
-	projectStr string
+	_Project string
 )
 
 func init() {
@@ -30,7 +30,7 @@ func main() {
 		project   *viper.Viper
 	)
 
-	if project, err = misc.ReadConfigString("project", projectStr, "yaml"); err != nil {
+	if project, err = misc.ReadConfigString("project", _Project, "yaml"); err != nil {
 		log.Fatalln(err)
 	}
 
@@ -43,7 +43,7 @@ func main() {
 	root := &cobra.Command{Use: project.GetString("usage")}
 
 	root.AddCommand(cmd.NewVersion(buildInfo))
-	root.AddCommand(cmd.NewConfig("config"))
+	root.AddCommand(cmd.NewPrint("print"))
 	root.AddCommand(cmd.NewServe())
 	root.AddCommand(cmd.NewApiTest())
 	root.AddCommand(cmd.NewWsTest())
