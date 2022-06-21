@@ -91,7 +91,7 @@ func NewLogHandler(logger *misc.Logger) gin.HandlerFunc {
 	}
 }
 
-func Log2Tsv(fp string, w io.Writer) (err error) {
+func Log2Tsv(fp string, w io.Writer, times ...time.Time) (err error) {
 	type Record struct {
 		Time    string `json:"time"`
 		Level   string `json:"level"`
@@ -107,6 +107,18 @@ func Log2Tsv(fp string, w io.Writer) (err error) {
 		// event any
 	}
 
+	var (
+		line    int64
+		bts     []byte
+		tm      time.Time
+		start   time.Time
+		end     time.Time
+		file    *os.File
+		scanner *bufio.Scanner
+		buf     *bytes.Buffer
+		record  Record
+	)
+
 	record2Str := func(r *Record) string {
 		strs := []string{
 			r.Time, r.Level, r.Ip, r.Msg,
@@ -117,14 +129,24 @@ func Log2Tsv(fp string, w io.Writer) (err error) {
 		return strings.Join(strs, "\t")
 	}
 
-	var (
-		line    int64
-		bts     []byte
-		file    *os.File
-		scanner *bufio.Scanner
-		buf     *bytes.Buffer
-		record  Record
-	)
+	if len(times) > 1 {
+		start, end = times[0], times[1]
+	} else if len(times) == 1 {
+		start = times[0]
+	}
+
+	filter := func(t time.Time) bool {
+		switch {
+		case start.IsZero() && end.IsZero():
+			return true
+		case !start.IsZero() && end.IsZero():
+			return t.Sub(start) >= 0
+		case start.IsZero() && !end.IsZero():
+			return t.Sub(end) <= 0
+		default:
+			return t.Sub(start) >= 0 && t.Sub(end) <= 0
+		}
+	}
 
 	if file, err = os.Open(fp); err != nil {
 		return err
@@ -140,6 +162,13 @@ func Log2Tsv(fp string, w io.Writer) (err error) {
 		record = Record{}
 		if err = json.Unmarshal(bts, &record); err != nil {
 			return fmt.Errorf("readline %d: %w", line, err)
+		}
+
+		if tm, err = time.Parse(time.RFC3339, record.Time); err != nil {
+			return err
+		}
+		if !filter(tm) {
+			continue
 		}
 
 		errorText := gjson.GetBytes(bts, KeyError).String()
