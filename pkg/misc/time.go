@@ -8,8 +8,9 @@ import (
 )
 
 var (
-	_DateRE  = regexp.MustCompile(`^\d+-\d{2}-\d{2}$`)
-	_ClockRE = regexp.MustCompile(`^\d{2}:\d{2}:\d{2}$`)
+	_DateRE     = regexp.MustCompile(`^\d+-\d{2}-\d{2}$`)
+	_ClockRE    = regexp.MustCompile(`^\d{2}:\d{2}:\d{2}$`)
+	_DatetimeRE = regexp.MustCompile(`^\d+-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$`)
 )
 
 func NowMs() string {
@@ -19,6 +20,7 @@ func NowMs() string {
 // datetime format: "2021-06-24", "09:00:01", "2021-06-24 09:10:11" or "2021-06-24T09:10:11"
 func ParseDatetime(value string) (at time.Time, err error) {
 	value = strings.TrimSpace(value)
+	value = strings.Replace(value, " ", "T", 1)
 
 	switch {
 	case _DateRE.Match([]byte(value)):
@@ -30,10 +32,10 @@ func ParseDatetime(value string) (at time.Time, err error) {
 			now.Format("2006-01-02")+" "+value,
 			time.Local,
 		)
-	case strings.Contains(value, "T"):
+	case _DatetimeRE.Match([]byte(value)):
 		return time.ParseInLocation("2006-01-02T15:04:05", value, time.Local)
 	default:
-		return time.ParseInLocation("2006-01-02 15:04:05", value, time.Local)
+		return time.Parse(time.RFC3339, value)
 	}
 }
 
