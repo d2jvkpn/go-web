@@ -33,7 +33,8 @@ func NewEngine(release bool) (engi *gin.Engine, err error) {
 	rg = &engi.RouterGroup
 
 	// engi.LoadHTMLGlob("templates/*.tmpl")
-	if tmpl, err = template.ParseFS(_Templates, "templates/*.html"); err != nil {
+	tmpl, err = template.ParseFS(_Templates, "templates/*.html", "templates/*/*.html")
+	if err != nil {
 		return nil, err
 	}
 	engi.SetHTMLTemplate(tmpl)
