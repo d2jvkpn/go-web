@@ -7,7 +7,6 @@ import (
 	"net/http"
 	// "strings"
 	"net/http/pprof"
-	"runtime"
 	"runtime/debug"
 	"strconv"
 	"time"
@@ -118,50 +117,33 @@ func WriteJSON(ctx *gin.Context, bts []byte) (int, error) {
 	return ctx.Writer.Write(bts)
 }
 
-func GinPprof(rg *gin.RouterGroup) {
-	rg.GET("/debug/healthy", func(ctx *gin.Context) {
+func GinPprof(rg *gin.RouterGroup, handlers ...gin.HandlerFunc) {
+	dbg := rg.Group("/debug", handlers...)
+
+	///
+	dbg.GET("/healthy", func(ctx *gin.Context) {
 		ctx.AbortWithStatus(http.StatusOK)
 	})
 
-	rg.GET("/debug/pprof/", gin.WrapF(pprof.Index))
-	for _, v := range []string{
-		"allocs", "block", "goroutine", "heap", "mutex", "threadcreate",
-	} {
-		rg.GET("/debug/pprof/"+v, gin.WrapH(pprof.Handler(v)))
-	}
-
-	rg.GET("/debug/pprof/profile", gin.WrapF(pprof.Profile))
-
-	rg.GET("/debug/pprof/trace", gin.WrapF(pprof.Trace))
-
-	rg.GET("/debug/pprof/cmdline", gin.WrapF(pprof.Cmdline))
-	rg.GET("/debug/pprof/symbol", gin.WrapF(pprof.Symbol))
-
-	//	rg.GET("/debug/runtime/status", func(ctx *gin.Context) {
-	//		memStats := new(runtime.MemStats)
-	//		runtime.ReadMemStats(memStats)
-	//		num := runtime.NumGoroutine()
-
-	//		ctx.JSON(http.StatusOK, gin.H{"numGoroutine": num, "memStats": memStats})
-	//	})
-
 	buildInfo, _ := debug.ReadBuildInfo()
-	rg.GET("/debug/build_info", func(ctx *gin.Context) {
+	dbg.GET("/build_info", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, gin.H{"buildInfo": buildInfo})
 	})
 
-	expvar.Publish("goroutines", expvar.Func(func() any {
-		return runtime.NumGoroutine()
-	}))
+	dbg.GET("/status", gin.WrapH(expvar.Handler()))
 
-	// export memstats and cmdline by default
-	//	expvar.Publish("memStats", expvar.Func(func() any {
-	//		memStats := new(runtime.MemStats)
-	//		runtime.ReadMemStats(memStats)
-	//		return memStats
-	//	}))
+	///
+	dbg.GET("/pprof/", gin.WrapF(pprof.Index))
+	for _, v := range []string{
+		"allocs", "block", "goroutine", "heap", "mutex", "threadcreate",
+	} {
+		dbg.GET("/pprof/"+v, gin.WrapH(pprof.Handler(v)))
+	}
 
-	rg.GET("/debug/runtime/status", gin.WrapH(expvar.Handler()))
+	dbg.GET("/pprof/profile", gin.WrapF(pprof.Profile))
+	dbg.GET("/pprof/trace", gin.WrapF(pprof.Trace))
+	dbg.GET("/pprof/cmdline", gin.WrapF(pprof.Cmdline))
+	dbg.GET("/pprof/symbol", gin.WrapF(pprof.Symbol))
 
 	return
 }

@@ -49,6 +49,8 @@ func Load(fp string, release bool) (err error) {
 		return err
 	}
 
+	setExpvars()
+
 	if engi, err = NewEngine(_Release); err != nil {
 		return err
 	}

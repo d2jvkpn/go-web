@@ -3,7 +3,9 @@ package internal
 import (
 	// "fmt"
 	"embed"
+	"expvar"
 	"net/http"
+	"runtime"
 
 	"github.com/d2jvkpn/go-web/pkg/misc"
 
@@ -50,4 +52,17 @@ func logBuildInfo(logger *zap.Logger) {
 		"event",
 		map[string]interface{}{"kind": "info", "fields": fields},
 	))
+}
+
+func setExpvars() {
+	expvar.Publish("goroutines", expvar.Func(func() any {
+		return runtime.NumGoroutine()
+	}))
+
+	// export memstats and cmdline by default
+	//	expvar.Publish("memStats", expvar.Func(func() any {
+	//		memStats := new(runtime.MemStats)
+	//		runtime.ReadMemStats(memStats)
+	//		return memStats
+	//	}))
 }
