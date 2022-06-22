@@ -2,9 +2,13 @@ package misc
 
 import (
 	"bytes"
+	"expvar"
 	"fmt"
 	"net/http"
 	// "strings"
+	"net/http/pprof"
+	"runtime"
+	"runtime/debug"
 	"strconv"
 	"time"
 
@@ -112,4 +116,46 @@ func WriteJSON(ctx *gin.Context, bts []byte) (int, error) {
 	ctx.Header("Status", http.StatusText(http.StatusOK))
 	ctx.Header("Content-Type", "application/json") // ; charset=utf-8
 	return ctx.Writer.Write(bts)
+}
+
+func GinPprof(rg *gin.RouterGroup) {
+	rg.GET("/debug/healthy", func(ctx *gin.Context) {
+		ctx.AbortWithStatus(http.StatusOK)
+	})
+
+	rg.GET("/debug/pprof/", WrapF(pprof.Index))
+	rg.GET("/debug/pprof/profile", WrapF(pprof.Profile))
+
+	rg.GET("/debug/pprof/trace", WrapF(pprof.Trace))
+
+	rg.GET("/debug/pprof/cmdline", WrapF(pprof.Cmdline))
+	rg.GET("/debug/pprof/symbol", WrapF(pprof.Symbol))
+
+	//	rg.GET("/debug/runtime/status", func(ctx *gin.Context) {
+	//		memStats := new(runtime.MemStats)
+	//		runtime.ReadMemStats(memStats)
+	//		num := runtime.NumGoroutine()
+
+	//		ctx.JSON(http.StatusOK, gin.H{"numGoroutine": num, "memStats": memStats})
+	//	})
+
+	buildInfo, _ := debug.ReadBuildInfo()
+	rg.GET("/debug/build_info", func(ctx *gin.Context) {
+		ctx.JSON(http.StatusOK, gin.H{"buildInfo": buildInfo})
+	})
+
+	expvar.Publish("goroutines", expvar.Func(func() any {
+		return runtime.NumGoroutine()
+	}))
+
+	// export memstats and cmdline by default
+	//	expvar.Publish("memStats", expvar.Func(func() any {
+	//		memStats := new(runtime.MemStats)
+	//		runtime.ReadMemStats(memStats)
+	//		return memStats
+	//	}))
+
+	rg.GET("/debug/runtime/status", WrapH(expvar.Handler()))
+
+	return
 }

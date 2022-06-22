@@ -62,6 +62,7 @@ func NewEngine(release bool) (engi *gin.Engine, err error) {
 	api.Load(rg, resp.NewLogHandler(_ApiLogger))
 	ws.Load(rg, misc.WsUpgrade)
 	site.Load(rg)
+	misc.GinPprof(rg)
 
 	return
 }

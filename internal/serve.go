@@ -68,6 +68,7 @@ func Serve(addr string) (err error) {
 	_Cron.Start()
 	logBuildInfo(_ApiLogger.Logger)
 
+	log.Printf(">>> HTTP server listening on %s", addr)
 	_Server.Addr = addr
 	if err = _Server.ListenAndServe(); err == http.ErrServerClosed {
 		err = nil
