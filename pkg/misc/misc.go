@@ -3,6 +3,7 @@ package misc
 import (
 	"errors"
 	"fmt"
+	"log"
 	"math/rand"
 	"os"
 	"os/signal"
@@ -33,7 +34,7 @@ func RandString(n int) string {
 	return string(b)
 }
 
-func ListenOSSignal(do func(), errch chan<- error, sgs ...os.Signal) {
+func ListenOSSignal(ch chan int, sgs ...os.Signal) {
 	// linux support syscall.SIGUSR2
 	quit := make(chan os.Signal, 1)
 
@@ -42,13 +43,14 @@ func ListenOSSignal(do func(), errch chan<- error, sgs ...os.Signal) {
 	} else {
 		signal.Notify(quit, sgs...)
 	}
-	sig := <-quit
 
-	if do != nil {
-		do()
-	}
-	if errch != nil { //! errch == nil means doesn't need send an nil to channel
-		errch <- fmt.Errorf("received os signal: %v", sig)
+	select {
+	case sig := <-quit:
+		log.Printf("received os signal: %v\n", sig)
+		ch <- 0
+	case value := <-ch:
+		log.Printf("received value: %v\n", value)
+		ch <- -1
 	}
 
 	return

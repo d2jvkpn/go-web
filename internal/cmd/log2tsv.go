@@ -33,11 +33,15 @@ func NewLog2Tsv() (command *cobra.Command) {
 			if len(args) == 0 {
 				log.Fatalln("provide a log file path")
 			}
-			if startTime, err = misc.ParseDatetime(start); err != nil {
-				log.Fatalln(err)
+			if start != "" {
+				if startTime, err = misc.ParseDatetime(start); err != nil {
+					log.Fatalln(err)
+				}
 			}
-			if endTime, err = misc.ParseDatetime(end); err != nil {
-				log.Fatalln(err)
+			if end != "" {
+				if endTime, err = misc.ParseDatetime(end); err != nil {
+					log.Fatalln(err)
+				}
 			}
 
 			err = resp.Log2Tsv(args[0], os.Stdout, startTime, endTime)
