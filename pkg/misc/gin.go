@@ -99,17 +99,17 @@ func GetCtxValue[T any](ctx *gin.Context, key string) (v T, ok bool) {
 	return
 }
 
-func WrapF(f http.HandlerFunc) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		f(ctx.Writer, ctx.Request)
-	}
-}
+//func WrapF(f http.HandlerFunc) gin.HandlerFunc {
+//	return func(ctx *gin.Context) {
+//		f(ctx.Writer, ctx.Request)
+//	}
+//}
 
-func WrapH(h http.Handler) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		h.ServeHTTP(ctx.Writer, ctx.Request)
-	}
-}
+//func WrapH(h http.Handler) gin.HandlerFunc {
+//	return func(ctx *gin.Context) {
+//		h.ServeHTTP(ctx.Writer, ctx.Request)
+//	}
+//}
 
 func WriteJSON(ctx *gin.Context, bts []byte) (int, error) {
 	ctx.Header("StatusCode", strconv.Itoa(http.StatusOK))
@@ -123,13 +123,19 @@ func GinPprof(rg *gin.RouterGroup) {
 		ctx.AbortWithStatus(http.StatusOK)
 	})
 
-	rg.GET("/debug/pprof/", WrapF(pprof.Index))
-	rg.GET("/debug/pprof/profile", WrapF(pprof.Profile))
+	rg.GET("/debug/pprof/", gin.WrapF(pprof.Index))
+	for _, v := range []string{
+		"allocs", "block", "goroutine", "heap", "mutex", "threadcreate",
+	} {
+		rg.GET("/debug/pprof/"+v, gin.WrapH(pprof.Handler(v)))
+	}
 
-	rg.GET("/debug/pprof/trace", WrapF(pprof.Trace))
+	rg.GET("/debug/pprof/profile", gin.WrapF(pprof.Profile))
 
-	rg.GET("/debug/pprof/cmdline", WrapF(pprof.Cmdline))
-	rg.GET("/debug/pprof/symbol", WrapF(pprof.Symbol))
+	rg.GET("/debug/pprof/trace", gin.WrapF(pprof.Trace))
+
+	rg.GET("/debug/pprof/cmdline", gin.WrapF(pprof.Cmdline))
+	rg.GET("/debug/pprof/symbol", gin.WrapF(pprof.Symbol))
 
 	//	rg.GET("/debug/runtime/status", func(ctx *gin.Context) {
 	//		memStats := new(runtime.MemStats)
@@ -155,7 +161,7 @@ func GinPprof(rg *gin.RouterGroup) {
 	//		return memStats
 	//	}))
 
-	rg.GET("/debug/runtime/status", WrapH(expvar.Handler()))
+	rg.GET("/debug/runtime/status", gin.WrapH(expvar.Handler()))
 
 	return
 }

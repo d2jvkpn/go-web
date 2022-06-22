@@ -72,7 +72,7 @@ func DelayFunc(delay int64) http.HandlerFunc {
 		time.Sleep(time.Duration(d) * time.Millisecond)
 		data["t3"] = time.Now().UnixMilli()
 
-		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(
 			map[string]interface{}{"code": 0, "msg": "ok", "data": data},
 		)
