@@ -134,7 +134,7 @@ func Pprof(rg *gin.RouterGroup, handlers ...gin.HandlerFunc) {
 	dbg.GET("/status", gin.WrapH(expvar.Handler()))
 
 	///
-	dbg.GET("/pprof", gin.WrapF(pprof.Index))
+	dbg.GET("/pprof/", gin.WrapF(pprof.Index))
 	for _, v := range []string{
 		"allocs", "block", "goroutine", "heap", "mutex", "threadcreate",
 	} {
