@@ -68,7 +68,8 @@ func NewEngine(release bool) (engi *gin.Engine, err error) {
 	ws.Load(rg, misc.WsUpgrade)
 
 	rg.GET("/api/nts", gin.WrapF(misc.NTSFunc(3)))
-	api.Load(rg, resp.NewLogHandler(_ApiLogger))
+	rg.GET("/api/metrics", misc.PrometheusFunc)
+	api.Load(rg, resp.NewLogHandler(_ApiLogger), misc.NewPrometheusMonitor())
 
 	return
 }
