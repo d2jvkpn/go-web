@@ -32,7 +32,7 @@ func NewNetworkTimeServer(addr string, delay int64) (ser *NetworkTimeServer, err
 
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/", DelayFunc(delay))
+	mux.HandleFunc("/", NTSFunc(delay))
 
 	ser.Server = &http.Server{
 		Addr:              addr,
@@ -46,7 +46,7 @@ func NewNetworkTimeServer(addr string, delay int64) (ser *NetworkTimeServer, err
 	return ser, nil
 }
 
-func DelayFunc(delay int64) http.HandlerFunc {
+func NTSFunc(delay int64) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var (
 			d   int64

@@ -63,6 +63,8 @@ func NewEngine(release bool) (engi *gin.Engine, err error) {
 	ws.Load(rg, misc.WsUpgrade)
 	site.Load(rg)
 
+	rg.GET("/api/nts", gin.WrapF(misc.NTSFunc(3)))
+
 	misc.Pprof(rg, func(ctx *gin.Context) {
 		if ip := ctx.ClientIP(); ip != "127.0.0.1" && ip != "::1" {
 			ctx.AbortWithStatus(http.StatusUnauthorized)
