@@ -117,13 +117,14 @@ func WriteJSON(ctx *gin.Context, bts []byte) (int, error) {
 	return ctx.Writer.Write(bts)
 }
 
-func GinPprof(rg *gin.RouterGroup, handlers ...gin.HandlerFunc) {
-	dbg := rg.Group("/debug", handlers...)
-
+func Pprof(rg *gin.RouterGroup, handlers ...gin.HandlerFunc) {
 	///
-	dbg.GET("/healthy", func(ctx *gin.Context) {
+	rg.GET("/debug/healthy", func(ctx *gin.Context) {
 		ctx.AbortWithStatus(http.StatusOK)
 	})
+
+	///
+	dbg := rg.Group("/debug", handlers...)
 
 	buildInfo, _ := debug.ReadBuildInfo()
 	dbg.GET("/build_info", func(ctx *gin.Context) {
@@ -133,7 +134,7 @@ func GinPprof(rg *gin.RouterGroup, handlers ...gin.HandlerFunc) {
 	dbg.GET("/status", gin.WrapH(expvar.Handler()))
 
 	///
-	dbg.GET("/pprof/", gin.WrapF(pprof.Index))
+	dbg.GET("/pprof", gin.WrapF(pprof.Index))
 	for _, v := range []string{
 		"allocs", "block", "goroutine", "heap", "mutex", "threadcreate",
 	} {

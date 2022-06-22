@@ -62,7 +62,14 @@ func NewEngine(release bool) (engi *gin.Engine, err error) {
 	api.Load(rg, resp.NewLogHandler(_ApiLogger))
 	ws.Load(rg, misc.WsUpgrade)
 	site.Load(rg)
-	misc.GinPprof(rg)
+
+	misc.Pprof(rg, func(ctx *gin.Context) {
+		if ip := ctx.ClientIP(); ip != "127.0.0.1" && ip != "::1" {
+			ctx.AbortWithStatus(http.StatusUnauthorized)
+			return
+		}
+		ctx.Next()
+	})
 
 	return
 }
