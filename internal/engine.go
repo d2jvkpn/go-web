@@ -47,13 +47,7 @@ func NewEngine(release bool) (engi *gin.Engine, err error) {
 		})
 	})
 
-	misc.Pprof(rg, func(ctx *gin.Context) {
-		if ip := ctx.ClientIP(); ip != "127.0.0.1" && ip != "::1" {
-			ctx.AbortWithStatus(http.StatusUnauthorized)
-			return
-		}
-		ctx.Next()
-	})
+	misc.Pprof(rg) // TODO: more middlewares
 
 	///
 	if fsys, err = fs.Sub(_Static, "static"); err != nil {
@@ -68,7 +62,7 @@ func NewEngine(release bool) (engi *gin.Engine, err error) {
 	ws.Load(rg, misc.WsUpgrade)
 
 	rg.GET("/api/nts", gin.WrapF(misc.NTSFunc(3)))
-	rg.GET("/api/metrics", misc.PrometheusFunc)
+	rg.GET("/api/metrics", misc.PrometheusFunc) // TODO: more middlewares
 	api.Load(rg, resp.NewLogHandler(_ApiLogger), misc.NewPrometheusMonitor())
 
 	return
