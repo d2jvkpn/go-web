@@ -117,14 +117,15 @@ func WriteJSON(ctx *gin.Context, bts []byte) (int, error) {
 	return ctx.Writer.Write(bts)
 }
 
+func Healthy(ctx *gin.Context) {
+	ctx.AbortWithStatus(http.StatusOK)
+}
+
 func Pprof(rg *gin.RouterGroup) {
-	///
-	rg.GET("/debug/healthy", func(ctx *gin.Context) {
-		ctx.AbortWithStatus(http.StatusOK)
-	})
+	dbg := rg.Group("/debug")
 
 	///
-	dbg := rg.Group("/debug")
+	dbg.GET("/metrics", PrometheusFunc)
 
 	buildInfo, _ := debug.ReadBuildInfo()
 	dbg.GET("/build_info", func(ctx *gin.Context) {

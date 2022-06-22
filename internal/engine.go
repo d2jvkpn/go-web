@@ -47,6 +47,8 @@ func NewEngine(release bool) (engi *gin.Engine, err error) {
 		})
 	})
 
+	rg.GET("/misc/healthy", misc.Healthy)
+	rg.GET("/misc/nts", gin.WrapF(misc.NTSFunc(3)))
 	misc.Pprof(rg) // TODO: more middlewares
 
 	///
@@ -61,8 +63,6 @@ func NewEngine(release bool) (engi *gin.Engine, err error) {
 	site.Load(rg)
 	ws.Load(rg, misc.WsUpgrade)
 
-	rg.GET("/api/nts", gin.WrapF(misc.NTSFunc(3)))
-	rg.GET("/api/metrics", misc.PrometheusFunc) // TODO: more middlewares
 	api.Load(rg, resp.NewLogHandler(_ApiLogger), misc.NewPrometheusMonitor())
 
 	return
