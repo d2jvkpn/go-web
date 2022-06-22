@@ -131,7 +131,7 @@ func Pprof(rg *gin.RouterGroup, handlers ...gin.HandlerFunc) {
 		ctx.JSON(http.StatusOK, gin.H{"buildInfo": buildInfo})
 	})
 
-	dbg.GET("/status", gin.WrapH(expvar.Handler()))
+	dbg.GET("/stats", gin.WrapH(expvar.Handler()))
 
 	///
 	dbg.GET("/pprof/", gin.WrapF(pprof.Index))
