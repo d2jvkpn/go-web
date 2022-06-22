@@ -29,6 +29,15 @@ make run
 
 - deployments:
   - docker (build image, docker-compose)
-  - clould provode mirror service, self-host registry
+  - self-host docker image registry
   - ansible
   - kubernetes
+
+
+#### 3. Subsystems
+- logging: api, cron job, bussiness data;
+- cron job;
+- telemetry, monitoring and alerting;
+- messaging queue;
+- memory cache;
+- rpc;

@@ -3,8 +3,6 @@ package main
 import (
 	_ "embed"
 	"log"
-	"os"
-	"strings"
 
 	"github.com/d2jvkpn/go-web/internal"
 	"github.com/d2jvkpn/go-web/internal/cmd"
@@ -14,19 +12,15 @@ import (
 	"github.com/spf13/viper"
 )
 
-//go:generate bash scripts/build.sh
+//go:generate bash scripts/go_build.sh
 
 var (
 	//go:embed project.yaml
-	projectStr string
-	//go:embed go.mod
-	gomod string
+	_Project string
 )
 
 func init() {
 	misc.RegisterLogPrinter()
-	strs := strings.Fields(strings.Split(gomod, "\n")[0])
-	_ = os.Setenv("APP_Gomod", strs[len(strs)-1])
 }
 
 func main() {
@@ -36,7 +30,7 @@ func main() {
 		project   *viper.Viper
 	)
 
-	if project, err = misc.ReadConfigString("project", projectStr, "yaml"); err != nil {
+	if project, err = misc.ReadConfigString("project", _Project, "yaml"); err != nil {
 		log.Fatalln(err)
 	}
 
@@ -48,11 +42,12 @@ func main() {
 
 	root := &cobra.Command{Use: project.GetString("usage")}
 
-	root.AddCommand(cmd.NewVersion(buildInfo))
-	root.AddCommand(cmd.NewConfig("config"))
 	root.AddCommand(cmd.NewServe())
 	root.AddCommand(cmd.NewApiTest())
 	root.AddCommand(cmd.NewWsTest())
+	root.AddCommand(cmd.NewVersion(buildInfo))
+	root.AddCommand(cmd.NewPrint("print"))
+	root.AddCommand(cmd.NewLog2Tsv())
 
 	root.Execute()
 }

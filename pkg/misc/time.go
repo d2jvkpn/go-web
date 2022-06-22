@@ -2,21 +2,41 @@ package misc
 
 import (
 	"fmt"
+	"regexp"
+	"strings"
 	"time"
+)
+
+var (
+	_DateRE     = regexp.MustCompile(`^\d+-\d{2}-\d{2}$`)
+	_ClockRE    = regexp.MustCompile(`^\d{2}:\d{2}:\d{2}$`)
+	_DatetimeRE = regexp.MustCompile(`^\d+-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$`)
 )
 
 func NowMs() string {
 	return time.Now().Format("2006-01-02T15:04:05.000Z07:00")
 }
 
-// date format: "2021-06-24"
-func ParseDate(value string) (at time.Time, err error) {
-	return time.ParseInLocation("2006-01-02", value, time.Local)
-}
-
-// datetime format: "2021-06-24 09:10:11"
+// datetime format: "2021-06-24", "09:00:01", "2021-06-24 09:10:11" or "2021-06-24T09:10:11"
 func ParseDatetime(value string) (at time.Time, err error) {
-	return time.ParseInLocation("2006-01-02 15:04:05", value, time.Local)
+	value = strings.TrimSpace(value)
+	value = strings.Replace(value, " ", "T", 1)
+
+	switch {
+	case _DateRE.Match([]byte(value)):
+		return time.ParseInLocation("2006-01-02", value, time.Local)
+	case _ClockRE.Match([]byte(value)):
+		now := time.Now()
+		return time.ParseInLocation(
+			"2006-01-02 15:04:05",
+			now.Format("2006-01-02")+" "+value,
+			time.Local,
+		)
+	case _DatetimeRE.Match([]byte(value)):
+		return time.ParseInLocation("2006-01-02T15:04:05", value, time.Local)
+	default:
+		return time.Parse(time.RFC3339, value)
+	}
 }
 
 func GetOClock(shift int) (clock time.Time) {

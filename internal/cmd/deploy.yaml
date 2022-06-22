@@ -12,7 +12,7 @@ services:
     volumes:
     - ./configs/:/opt/go-web/configs/
     - ./logs/:/opt/go-web/logs/
-    command: ["./main", "serve", "--config=configs/${app_env}.yaml", "--addr=:${port}", "--release"]
+    command: ["./main", "serve", "--addr=:${port}", "--config=configs/${app_env}.yaml", "--release"]
 
 networks:
   go-web:

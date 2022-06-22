@@ -77,7 +77,7 @@
   - name: sync_deploy
     synchronize: src={{_wd}}/tmp/deploy.{{app_env}}.yaml dest={{conf.work_path}}/deploy.yaml
 
-  - name: run-container
+  - name: update-service
     args: {chdir: "{{conf.work_path}}"}
     shell:
       cmd: |

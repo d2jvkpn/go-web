@@ -18,9 +18,10 @@ func NewEngine(release bool) (engi *gin.Engine, err error) {
 	var (
 		tmpl *template.Template
 		fsys fs.FS
+		rg   *gin.RouterGroup
 	)
 
-	//
+	///
 	if release {
 		gin.SetMode(gin.ReleaseMode)
 		engi = gin.New()
@@ -29,14 +30,17 @@ func NewEngine(release bool) (engi *gin.Engine, err error) {
 		engi = gin.Default()
 	}
 	engi.RedirectTrailingSlash = false
+	rg = &engi.RouterGroup
 
 	// engi.LoadHTMLGlob("templates/*.tmpl")
-	if tmpl, err = template.ParseFS(_Templates, "templates/*.html"); err != nil {
+	tmpl, err = template.ParseFS(_Templates, "templates/*.html", "templates/*/*.html")
+	if err != nil {
 		return nil, err
 	}
 	engi.SetHTMLTemplate(tmpl)
 	engi.Use(misc.Cors("*"))
 
+	///
 	engi.NoRoute(func(ctx *gin.Context) {
 		// ctx.AbortWithStatus(http.StatusNotFound)
 		ctx.JSON(http.StatusNotFound, gin.H{
@@ -44,10 +48,12 @@ func NewEngine(release bool) (engi *gin.Engine, err error) {
 		})
 	})
 
-	engi.GET("/healthy", func(ctx *gin.Context) {
-		ctx.AbortWithStatus(http.StatusOK)
-	})
+	rg.GET("/healthy", misc.Healthy)
+	rg.GET("/nts", gin.WrapF(misc.NTSFunc(3)))
+	rg.GET("/prometheus", misc.PrometheusFunc)
+	misc.Pprof(rg) // TODO: more middlewares
 
+	///
 	if fsys, err = fs.Sub(_Static, "static"); err != nil {
 		return nil, err
 	}
@@ -56,12 +62,10 @@ func NewEngine(release bool) (engi *gin.Engine, err error) {
 	// ?? w.Header().Set("Cache-Control", "public, max-age=3600")
 	// bts, _ := _Static.ReadFile("static/favicon.png")
 	// engi.RouterGroup.GET("/favicon.ico", "image/x-icon", "favicon.ico", misc.ServeFile(bts))
-
-	//
-	rg := &engi.RouterGroup
-	api.Load(rg, resp.NewLogHandler(_ApiLogger))
-	ws.Load(rg, misc.WsUpgrade)
 	site.Load(rg)
+	ws.Load(rg, misc.WsUpgrade)
+
+	api.Load(rg, resp.NewLogHandler(_ApiLogger), misc.NewPrometheusMonitor())
 
 	return
 }

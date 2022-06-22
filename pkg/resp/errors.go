@@ -4,6 +4,18 @@ import (
 	"net/http"
 )
 
+/*
+- route: match, check authority
+- kv in context: _UserId, Biz, error/event
+- parse data
+
+- valid data
+- precondition: ...
+
+- process: ...
+- return valulue
+*/
+
 /// code ranges:
 // ...=-100 has no right
 // -99=-1   invalid request

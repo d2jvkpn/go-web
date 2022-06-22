@@ -2,9 +2,13 @@ package misc
 
 import (
 	"bytes"
+	"expvar"
 	"fmt"
 	"net/http"
 	// "strings"
+	"net/http/pprof"
+	"runtime/debug"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -91,5 +95,55 @@ func GetCtxValue[T any](ctx *gin.Context, key string) (v T, ok bool) {
 		return
 	}
 	v, ok = intf.(T)
+	return
+}
+
+//func WrapF(f http.HandlerFunc) gin.HandlerFunc {
+//	return func(ctx *gin.Context) {
+//		f(ctx.Writer, ctx.Request)
+//	}
+//}
+
+//func WrapH(h http.Handler) gin.HandlerFunc {
+//	return func(ctx *gin.Context) {
+//		h.ServeHTTP(ctx.Writer, ctx.Request)
+//	}
+//}
+
+func WriteJSON(ctx *gin.Context, bts []byte) (int, error) {
+	ctx.Header("StatusCode", strconv.Itoa(http.StatusOK))
+	ctx.Header("Status", http.StatusText(http.StatusOK))
+	ctx.Header("Content-Type", "application/json") // ; charset=utf-8
+	return ctx.Writer.Write(bts)
+}
+
+func Healthy(ctx *gin.Context) {
+	ctx.AbortWithStatus(http.StatusOK)
+}
+
+func Pprof(rg *gin.RouterGroup, handlers ...gin.HandlerFunc) {
+	dbg := rg.Group("/debug", handlers...)
+
+	///
+	buildInfo, _ := debug.ReadBuildInfo()
+	dbg.GET("/build_info", func(ctx *gin.Context) {
+		ctx.JSON(http.StatusOK, gin.H{"buildInfo": buildInfo})
+	})
+
+	dbg.GET("/stats", gin.WrapH(expvar.Handler()))
+
+	///
+	dbg.GET("/pprof/", gin.WrapF(pprof.Index))
+	for _, v := range []string{
+		"allocs", "block", "goroutine", "heap", "mutex", "threadcreate",
+	} {
+		dbg.GET("/pprof/"+v, gin.WrapH(pprof.Handler(v)))
+	}
+
+	dbg.GET("/pprof/profile", gin.WrapF(pprof.Profile))
+	dbg.GET("/pprof/trace", gin.WrapF(pprof.Trace))
+	dbg.GET("/pprof/cmdline", gin.WrapF(pprof.Cmdline))
+	dbg.GET("/pprof/symbol", gin.WrapF(pprof.Symbol))
+
 	return
 }

@@ -47,4 +47,4 @@ RUN { apk --no-cache update && \
   apk --no-cache add curl tzdata; } &> /dev/null
 
 EXPOSE 8080
-CMD ["./main", "serve", "--addr=:8080", "--release"]
+CMD ["./main", "serve", "--addr=:8080", "--config=configs/prod.yaml", "--release"]

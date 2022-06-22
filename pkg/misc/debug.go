@@ -9,6 +9,10 @@ import (
 	"strings"
 )
 
+var (
+	_StackRE *regexp.Regexp = regexp.MustCompile("\n.*\n\t.*")
+)
+
 func _fn2() {
 	defer func() {
 		var intf any
@@ -33,8 +37,7 @@ func _fn1() {
 func Stack(skip int, prefix string) (slice []string) {
 	bts := bytes.TrimSpace(debug.Stack())
 	// fmt.Printf(">>>\n%s\n<<<\n", bts)
-	re := regexp.MustCompile("\n.*\n\t.*")
-	out := re.FindAllStringSubmatch(string(bts), -1)
+	out := _StackRE.FindAllStringSubmatch(string(bts), -1)
 	if skip < 2 {
 		skip = 2
 	}

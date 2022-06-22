@@ -49,6 +49,8 @@ func Load(fp string, release bool) (err error) {
 		return err
 	}
 
+	setExpvars()
+
 	if engi, err = NewEngine(_Release); err != nil {
 		return err
 	}
@@ -56,7 +58,7 @@ func Load(fp string, release bool) (err error) {
 		ReadTimeout:       10 * time.Second,
 		WriteTimeout:      10 * time.Second,
 		ReadHeaderTimeout: 5 * time.Second,
-		MaxHeaderBytes:    4 << 20,
+		MaxHeaderBytes:    2 << 20,
 		// Addr:              addr,
 		Handler: engi,
 	}
@@ -68,6 +70,7 @@ func Serve(addr string) (err error) {
 	_Cron.Start()
 	logBuildInfo(_ApiLogger.Logger)
 
+	log.Printf(">>> HTTP server listening on %s", addr)
 	_Server.Addr = addr
 	if err = _Server.ListenAndServe(); err == http.ErrServerClosed {
 		err = nil
