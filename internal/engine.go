@@ -10,6 +10,7 @@ import (
 	"github.com/d2jvkpn/go-web/internal/services/ws"
 	"github.com/d2jvkpn/go-web/pkg/misc"
 	"github.com/d2jvkpn/go-web/pkg/resp"
+	"github.com/d2jvkpn/go-web/pkg/wrap"
 
 	"github.com/gin-gonic/gin"
 )
@@ -38,7 +39,7 @@ func NewEngine(release bool) (engi *gin.Engine, err error) {
 		return nil, err
 	}
 	engi.SetHTMLTemplate(tmpl)
-	engi.Use(misc.Cors("*"))
+	engi.Use(wrap.Cors("*"))
 
 	///
 	engi.NoRoute(func(ctx *gin.Context) {
@@ -48,24 +49,24 @@ func NewEngine(release bool) (engi *gin.Engine, err error) {
 		})
 	})
 
-	rg.GET("/healthy", misc.Healthy)
+	rg.GET("/healthy", wrap.Healthy)
 	rg.GET("/nts", gin.WrapF(misc.NTSFunc(3)))
-	rg.GET("/prometheus", misc.PrometheusFunc)
-	misc.Pprof(rg) // TODO: more middlewares
+	rg.GET("/prometheus", wrap.PrometheusFunc)
+	wrap.Pprof(rg) // TODO: more middlewares
 
 	///
 	if fsys, err = fs.Sub(_Static, "static"); err != nil {
 		return nil, err
 	}
-	static := engi.RouterGroup.Group("/static", misc.CacheControl(3600))
+	static := engi.RouterGroup.Group("/static", wrap.CacheControl(3600))
 	static.StaticFS("/", http.FS(fsys))
 	// ?? w.Header().Set("Cache-Control", "public, max-age=3600")
 	// bts, _ := _Static.ReadFile("static/favicon.png")
-	// engi.RouterGroup.GET("/favicon.ico", "image/x-icon", "favicon.ico", misc.ServeFile(bts))
+	// engi.RouterGroup.GET("/favicon.ico", "image/x-icon", "favicon.ico", wrap.ServeFile(bts))
 	site.Load(rg)
-	ws.Load(rg, misc.WsUpgrade)
+	ws.Load(rg, wrap.WsUpgrade)
 
-	api.Load(rg, resp.NewLogHandler(_ApiLogger), misc.NewPrometheusMonitor())
+	api.Load(rg, resp.NewLogHandler(_ApiLogger), wrap.NewPrometheusMonitor())
 
 	return
 }

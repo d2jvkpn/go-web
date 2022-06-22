@@ -8,7 +8,7 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/d2jvkpn/go-web/pkg/misc"
+	"github.com/d2jvkpn/go-web/pkg/wrap"
 
 	"github.com/robfig/cron/v3"
 	"github.com/spf13/viper"
@@ -31,11 +31,11 @@ var (
 	_Cron      *cron.Cron
 	_Config    *viper.Viper
 	_Server    *http.Server
-	_ApiLogger *misc.Logger
+	_ApiLogger *wrap.Logger
 )
 
 func init() {
-	// _InstanceId = misc.RandString(16)
+	// _InstanceId = wrap.RandString(16)
 	_Cron = cron.New(cron.WithSeconds())
 }
 

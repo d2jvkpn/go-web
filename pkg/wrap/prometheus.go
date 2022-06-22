@@ -1,4 +1,4 @@
-package misc
+package wrap
 
 /*
   https://gabrieltanner.org/blog/collecting-prometheus-metrics-in-golang

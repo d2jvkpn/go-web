@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/d2jvkpn/go-web/pkg/misc"
+	"github.com/d2jvkpn/go-web/pkg/wrap"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -15,7 +15,7 @@ func NewApiTest() (command *cobra.Command) {
 	var (
 		fp   string
 		fSet *pflag.FlagSet
-		tmp  *misc.RequestTmpls
+		tmp  *wrap.RequestTmpls
 	)
 
 	command = &cobra.Command{
@@ -31,11 +31,11 @@ func NewApiTest() (command *cobra.Command) {
 				statusCode   int
 				body, errStr string
 				err          error
-				tmpls        []*misc.RequestTmpl
-				rt           *misc.RequestTmpls
+				tmpls        []*wrap.RequestTmpl
+				rt           *wrap.RequestTmpls
 			)
 
-			if rt, err = misc.LoadRequestTmpls("api config", fp); err != nil {
+			if rt, err = wrap.LoadRequestTmpls("api config", fp); err != nil {
 				log.Fatalln(err)
 			}
 

@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/d2jvkpn/go-web/pkg/misc"
+	"github.com/d2jvkpn/go-web/pkg/wrap"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -19,7 +20,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func NewLogHandler(logger *misc.Logger) gin.HandlerFunc {
+func NewLogHandler(logger *wrap.Logger) gin.HandlerFunc {
 	gomod, _ := misc.RootModule()
 
 	return func(ctx *gin.Context) {
@@ -52,12 +53,12 @@ func NewLogHandler(logger *misc.Logger) gin.HandlerFunc {
 			fields = append(fields, zap.Int("status", ctx.Writer.Status()))
 			fields = append(fields, zap.Int64("latency", latency))
 
-			if err, ok = misc.GetCtxValue[*HttpError](ctx, KeyError); ok {
+			if err, ok = wrap.GetCtxValue[*HttpError](ctx, KeyError); ok {
 				fields = append(fields, zap.Any(KeyError, err))
 				code = err.Code
 			}
 
-			if event, ok = misc.GetCtxValue[any](ctx, KeyEvent); ok {
+			if event, ok = wrap.GetCtxValue[any](ctx, KeyEvent); ok {
 				fields = append(fields, zap.Any(KeyEvent, event))
 			}
 

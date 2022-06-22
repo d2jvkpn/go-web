@@ -7,6 +7,7 @@ import (
 	"github.com/d2jvkpn/go-web/internal"
 	"github.com/d2jvkpn/go-web/internal/cmd"
 	"github.com/d2jvkpn/go-web/pkg/misc"
+	"github.com/d2jvkpn/go-web/pkg/wrap"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -30,7 +31,7 @@ func main() {
 		project   *viper.Viper
 	)
 
-	if project, err = misc.ReadConfigString("project", _Project, "yaml"); err != nil {
+	if project, err = wrap.ReadConfigString("project", _Project, "yaml"); err != nil {
 		log.Fatalln(err)
 	}
 

@@ -8,7 +8,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/d2jvkpn/go-web/pkg/misc"
+	"github.com/d2jvkpn/go-web/pkg/wrap"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -32,7 +32,7 @@ func Load(fp string, release bool) (err error) {
 		engi *gin.Engine
 	)
 
-	if _Config, err = misc.ReadConfigFile("config", fp); err != nil {
+	if _Config, err = wrap.ReadConfigFile("config", fp); err != nil {
 		return
 	}
 
@@ -43,7 +43,7 @@ func Load(fp string, release bool) (err error) {
 	}
 	_Release = release
 
-	_ApiLogger = misc.NewLogger("logs/go-web_api.log", zap.InfoLevel, 256, nil)
+	_ApiLogger = wrap.NewLogger("logs/go-web_api.log", zap.InfoLevel, 256, nil)
 
 	if err = _SetupCrons(); err != nil {
 		return err
