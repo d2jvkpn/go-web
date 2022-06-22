@@ -1,0 +1,51 @@
+version: "3"
+
+services:
+  grafana:
+    image: grafana/grafana:main
+    container_name: grafana
+    networks: [go-web]
+    ports: ["3000:3000"]
+    volumes:
+    - grafana-storage:/var/lib/grafana
+
+  go-web:
+    #build:
+    #  context: ./
+    #  dockerfile: Dockerfile
+    image: registry.cn-shanghai.aliyuncs.com/d2jvkpn/go-web:dev
+    container_name: go-web_dev
+    restart: always
+    networks: [go-web]
+    ports: ["8080:8080"]
+    environment: ["TZ=Asia/Shanghai"]
+    volumes:
+    - ./configs/:/opt/go-web/configs/
+    - ./logs/:/opt/go-web/logs/
+    command: ["./main", "serve", "--addr=:8080", "--config=configs/dev.yaml", "--release"]
+
+  prometheus:
+    image: prom/prometheus:main
+    container_name: prometheus
+    networks: [go-web]
+    ports:
+    - 9090:9090
+    volumes:
+    - ./configs/prometheus.yaml:/etc/prometheus/prometheus.yaml
+    - prometheus_data:/prometheus
+    command:
+    - '--config.file=/etc/prometheus/prometheus.yaml'
+    - '--storage.tsdb.path=/prometheus'
+    - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+    - '--web.console.templates=/usr/share/prometheus/consoles'
+    restart: always
+
+volumes:
+  grafana-storage:
+  prometheus_data:
+
+networks:
+  go-web:
+    name: go-web_dev
+    driver: bridge
+    external: false

@@ -42,7 +42,9 @@ WORKDIR /opt/go-web
 COPY --from=builder /opt/go-web/main /opt/go-web/main
 
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
-RUN { apk --no-cache update && apk --no-cache upgrade && apk --no-cache add tzdata; } &> /dev/null
+RUN { apk --no-cache update && \
+  apk --no-cache upgrade && \
+  apk --no-cache add curl tzdata; } &> /dev/null
 
 EXPOSE 8080
-CMD ["./main", "serve", "--addr=:8080"]
+CMD ["./main", "serve", "--addr=:8080", "--release"]
