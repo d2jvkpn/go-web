@@ -18,9 +18,10 @@ func NewEngine(release bool) (engi *gin.Engine, err error) {
 	var (
 		tmpl *template.Template
 		fsys fs.FS
+		rg   *gin.RouterGroup
 	)
 
-	//
+	///
 	if release {
 		gin.SetMode(gin.ReleaseMode)
 		engi = gin.New()
@@ -29,6 +30,7 @@ func NewEngine(release bool) (engi *gin.Engine, err error) {
 		engi = gin.Default()
 	}
 	engi.RedirectTrailingSlash = false
+	rg = &engi.RouterGroup
 
 	// engi.LoadHTMLGlob("templates/*.tmpl")
 	if tmpl, err = template.ParseFS(_Templates, "templates/*.html"); err != nil {
@@ -37,33 +39,13 @@ func NewEngine(release bool) (engi *gin.Engine, err error) {
 	engi.SetHTMLTemplate(tmpl)
 	engi.Use(misc.Cors("*"))
 
+	///
 	engi.NoRoute(func(ctx *gin.Context) {
 		// ctx.AbortWithStatus(http.StatusNotFound)
 		ctx.JSON(http.StatusNotFound, gin.H{
 			"code": -1, "msg": "router not found", "data": gin.H{},
 		})
 	})
-
-	engi.GET("/healthy", func(ctx *gin.Context) {
-		ctx.AbortWithStatus(http.StatusOK)
-	})
-
-	if fsys, err = fs.Sub(_Static, "static"); err != nil {
-		return nil, err
-	}
-	static := engi.RouterGroup.Group("/static", misc.CacheControl(3600))
-	static.StaticFS("/", http.FS(fsys))
-	// ?? w.Header().Set("Cache-Control", "public, max-age=3600")
-	// bts, _ := _Static.ReadFile("static/favicon.png")
-	// engi.RouterGroup.GET("/favicon.ico", "image/x-icon", "favicon.ico", misc.ServeFile(bts))
-
-	//
-	rg := &engi.RouterGroup
-	api.Load(rg, resp.NewLogHandler(_ApiLogger))
-	ws.Load(rg, misc.WsUpgrade)
-	site.Load(rg)
-
-	rg.GET("/api/nts", gin.WrapF(misc.NTSFunc(3)))
 
 	misc.Pprof(rg, func(ctx *gin.Context) {
 		if ip := ctx.ClientIP(); ip != "127.0.0.1" && ip != "::1" {
@@ -72,6 +54,21 @@ func NewEngine(release bool) (engi *gin.Engine, err error) {
 		}
 		ctx.Next()
 	})
+
+	///
+	if fsys, err = fs.Sub(_Static, "static"); err != nil {
+		return nil, err
+	}
+	static := engi.RouterGroup.Group("/static", misc.CacheControl(3600))
+	static.StaticFS("/", http.FS(fsys))
+	// ?? w.Header().Set("Cache-Control", "public, max-age=3600")
+	// bts, _ := _Static.ReadFile("static/favicon.png")
+	// engi.RouterGroup.GET("/favicon.ico", "image/x-icon", "favicon.ico", misc.ServeFile(bts))
+	site.Load(rg)
+	ws.Load(rg, misc.WsUpgrade)
+
+	rg.GET("/api/nts", gin.WrapF(misc.NTSFunc(3)))
+	api.Load(rg, resp.NewLogHandler(_ApiLogger))
 
 	return
 }
