@@ -58,7 +58,7 @@ func Load(fp string, release bool) (err error) {
 		ReadTimeout:       10 * time.Second,
 		WriteTimeout:      10 * time.Second,
 		ReadHeaderTimeout: 5 * time.Second,
-		MaxHeaderBytes:    4 << 20,
+		MaxHeaderBytes:    2 << 20,
 		// Addr:              addr,
 		Handler: engi,
 	}
