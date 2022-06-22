@@ -48,8 +48,9 @@ func NewEngine(release bool) (engi *gin.Engine, err error) {
 		})
 	})
 
-	rg.GET("/misc/healthy", misc.Healthy)
-	rg.GET("/misc/nts", gin.WrapF(misc.NTSFunc(3)))
+	rg.GET("/healthy", misc.Healthy)
+	rg.GET("/nts", gin.WrapF(misc.NTSFunc(3)))
+	rg.GET("/prometheus", misc.PrometheusFunc)
 	misc.Pprof(rg) // TODO: more middlewares
 
 	///

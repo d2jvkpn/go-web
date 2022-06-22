@@ -121,12 +121,10 @@ func Healthy(ctx *gin.Context) {
 	ctx.AbortWithStatus(http.StatusOK)
 }
 
-func Pprof(rg *gin.RouterGroup) {
-	dbg := rg.Group("/debug")
+func Pprof(rg *gin.RouterGroup, handlers ...gin.HandlerFunc) {
+	dbg := rg.Group("/debug", handlers...)
 
 	///
-	dbg.GET("/metrics", PrometheusFunc)
-
 	buildInfo, _ := debug.ReadBuildInfo()
 	dbg.GET("/build_info", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, gin.H{"buildInfo": buildInfo})
