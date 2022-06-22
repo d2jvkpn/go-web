@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	// "strings"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -92,4 +93,23 @@ func GetCtxValue[T any](ctx *gin.Context, key string) (v T, ok bool) {
 	}
 	v, ok = intf.(T)
 	return
+}
+
+func WrapF(f http.HandlerFunc) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		f(ctx.Writer, ctx.Request)
+	}
+}
+
+func WrapH(h http.Handler) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		h.ServeHTTP(ctx.Writer, ctx.Request)
+	}
+}
+
+func WriteJSON(ctx *gin.Context, bts []byte) (int, error) {
+	ctx.Header("StatusCode", strconv.Itoa(http.StatusOK))
+	ctx.Header("Status", http.StatusText(http.StatusOK))
+	ctx.Header("Content-Type", "application/json") // ; charset=utf-8
+	return ctx.Writer.Write(bts)
 }
