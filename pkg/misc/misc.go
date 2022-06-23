@@ -3,7 +3,7 @@ package misc
 import (
 	"errors"
 	"fmt"
-	"log"
+	// "log"
 	"math/rand"
 	"os"
 	"os/signal"
@@ -45,11 +45,11 @@ func ListenOSSignal(ch chan int, sgs ...os.Signal) {
 	}
 
 	select {
-	case sig := <-quit:
-		log.Printf("received os signal: %v\n", sig)
+	case _ = <-quit: // sig := <-quit
+		// log.Printf("received os signal: %v\n", sig)
 		ch <- 0
-	case value := <-ch:
-		log.Printf("received value: %v\n", value)
+	case _ = <-ch:
+		// log.Printf("received value: %v\n", value)
 		ch <- -1
 	}
 
