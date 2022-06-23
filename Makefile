@@ -1,10 +1,10 @@
 build:
-	bash scripts/go-web.sh
+	bash scripts/build_go-web.sh
 
 run:
-	bash scripts/go_build.sh
+	bash scripts/build_main.sh
 	./target/main
 
 go-web:
-	bash scripts/go-web.sh
+	bash scripts/build_go-web.sh
 	./target/go-web serve
