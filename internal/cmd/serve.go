@@ -4,7 +4,7 @@ import (
 	// "fmt"
 	"path/filepath"
 
-	"github.com/d2jvkpn/go-web/internal"
+	"github.com/d2jvkpn/go-web/pkg"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -23,7 +23,7 @@ func NewServe() (command *cobra.Command) {
 		Long:  `running serve http`,
 
 		Run: func(cmd *cobra.Command, args []string) {
-			internal.Run(config, addr, release)
+			pkg.Run(config, addr, release)
 		},
 	}
 
