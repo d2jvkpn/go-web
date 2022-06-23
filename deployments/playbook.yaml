@@ -72,7 +72,7 @@
 
   tasks:
   - name: create-run-dir
-    file: {path: "{{conf.work_path}}", state: "directory"}
+    file: {path: "{{conf.work_path}}/logs", state: "directory"}
 
   - name: sync_deploy
     synchronize: src={{_wd}}/tmp/deploy.{{app_env}}.yaml dest={{conf.work_path}}/deploy.yaml
