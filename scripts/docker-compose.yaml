@@ -22,7 +22,7 @@ services:
     volumes:
     - ./configs/:/opt/go-web/configs/
     - ./logs/:/opt/go-web/logs/
-    command: ["./main", "serve", "--addr=:8080", "--config=configs/dev.yaml", "--release"]
+    command: ["./main", "--config=configs/dev.yaml", "--addr=:8080", "--release"]
 
   prometheus:
     image: prom/prometheus:main
