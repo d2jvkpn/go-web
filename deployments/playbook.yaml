@@ -77,6 +77,14 @@
   - name: sync_deploy
     synchronize: src={{_wd}}/tmp/deploy.{{app_env}}.yaml dest={{conf.work_path}}/deploy.yaml
 
+  - name: check for config.yaml
+    stat: path="{{conf.work_path}}/configs/{{app_env}}.yaml"
+    register: yaml
+
+  - name: fail if config.yaml does not exist
+    fail: msg="config does not exist"
+    when: yaml.stat.exists == false
+
   - name: update-service
     args: {chdir: "{{conf.work_path}}"}
     shell:
