@@ -1,7 +1,7 @@
 build:
 	bash scripts/build_main.sh
 
-run:
+main:
 	bash scripts/build_main.sh
 	./target/main
 
