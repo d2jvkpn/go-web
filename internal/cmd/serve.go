@@ -28,8 +28,8 @@ func NewServe() (command *cobra.Command) {
 	}
 
 	fSet = command.Flags()
-	fSet.StringVar(&addr, "addr", ":8080", "http serve address")
 	fSet.StringVar(&config, "config", filepath.Join("configs", "local.yaml"), "config file path")
+	fSet.StringVar(&addr, "addr", ":8080", "http serve address")
 	fSet.BoolVar(&release, "release", false, "run in release mode")
 
 	return command
