@@ -77,4 +77,4 @@ docker push $image:${tag}-xx
 
 images=$(docker images --filter "dangling=true" --quiet $image)
 for img in $images; do docker rmi $img || true; done &> /dev/null
-[[ -z "$prev" ]] && docker rmi "$prev" || true
+[[ ! -z "$prev" ]] && docker rmi "$prev" || true
