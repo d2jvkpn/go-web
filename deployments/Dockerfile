@@ -20,7 +20,6 @@ RUN { apk --no-cache update && apk --no-cache upgrade && apk --no-cache add tzda
 RUN go env -w GOPROXY="https://goproxy.cn,direct"
 
 WORKDIR /opt/go-web
-# COPY ./main.go ./go.mod ./go.sum ./project.yaml  /opt/go-web/
 COPY ./go.mod ./go.sum ./project.yaml  /opt/go-web/
 COPY ./releases /opt/go-web/releases
 COPY ./internal /opt/go-web/internal
@@ -49,5 +48,4 @@ RUN { apk --no-cache update && \
   apk --no-cache add curl tzdata; } &> /dev/null
 
 EXPOSE 8080
-# CMD ["./main", "serve", "--addr=:8080", "--config=configs/prod.yaml", "--release"]
 CMD ["./main", "--addr=:8080", "--config=configs/prod.yaml", "--release"]

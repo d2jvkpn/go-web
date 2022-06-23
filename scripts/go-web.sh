@@ -28,7 +28,7 @@ ldflags=" \
   -X main.gitTreeState=$gitTreeState"
 
 mkdir -p target
-go build -ldflags="$ldflags" -o target/$Program main.go
+go build -ldflags="$ldflags" -o target/$Program go-web.go
 echo "saved target/$Program"
 # GOOS=windows GOARCH=amd64 go build -ldflags="$ldflags" -o target/$Program.exe main.go
 ls -al target/

@@ -12,7 +12,6 @@ services:
     volumes:
     - ./configs/:/opt/go-web/configs/
     - ./logs/:/opt/go-web/logs/
-    # command: ["./main", "serve", "--config=configs/${app_env}.yaml", "--addr=:${port}", "--release"]
     command: ["./main", "--config=configs/${app_env}.yaml", "--addr=:${port}", "--release"]
 
 networks:
