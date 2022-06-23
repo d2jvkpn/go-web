@@ -105,24 +105,24 @@
         images=$(docker images --filter "dangling=true" --quiet $image || true)
         for img in $images; do docker rmi $img || true; done &> /dev/null
 
-  - name: ping
-    uri:
-      url: "http://localhost:{{conf.port}}/ping"
-      status_code: 200
-
-
-#- hosts: localhost
-#  gather_facts: false
-#  any_errors_fatal: true # stop execute any more tasks when docker build failed
-#  vars_files: ["configs.yaml"]
-#  vars:
-#    _wd: "{{lookup('env', 'PWD')}}"
-#    _hd: "{{lookup('env', 'HOME')}}"
-#    conf: "{{configs[app_env]}}"
-
-#  tasks:
-#  - name: ping_test
-#    when: conf.api_url != ""
+#  - name: ping
 #    uri:
-#      url: "{{conf.api_url}}/ping"
+#      url: "http://localhost:{{conf.port}}/ping"
 #      status_code: 200
+
+
+- hosts: localhost
+  gather_facts: false
+  any_errors_fatal: true # stop execute any more tasks when docker build failed
+  vars_files: ["configs.yaml"]
+  vars:
+    _wd: "{{lookup('env', 'PWD')}}"
+    _hd: "{{lookup('env', 'HOME')}}"
+    conf: "{{configs[app_env]}}"
+
+  tasks:
+  - name: ping_test
+    when: conf.api_url != ""
+    uri:
+      url: "{{conf.api_url}}/ping"
+      status_code: 200
