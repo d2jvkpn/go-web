@@ -1,7 +1,10 @@
 build:
-	bash scripts/go_build.sh
+	bash scripts/go_build2.sh
 
 run:
-	# go build -o main main.go
 	bash scripts/go_build.sh
+	./target/main
+
+go-web:
+	bash scripts/go_build2.sh
 	./target/go-web serve

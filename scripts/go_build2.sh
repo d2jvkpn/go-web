@@ -3,7 +3,7 @@ set -eu -o pipefail
 _wd=$(pwd)
 _path=$(dirname $0 | xargs -i readlink -f {})
 
-Program="main"
+Program="go-web"
 
 buildTime=$(date +'%FT%T%:z')
 gitBranch="$(git rev-parse --abbrev-ref HEAD)" # current branch
@@ -28,7 +28,7 @@ ldflags=" \
   -X main.gitTreeState=$gitTreeState"
 
 mkdir -p target
-go build -ldflags="$ldflags" -o target/$Program releases/serve/main.go
+go build -ldflags="$ldflags" -o target/$Program main.go
 echo "saved target/$Program"
 # GOOS=windows GOARCH=amd64 go build -ldflags="$ldflags" -o target/$Program.exe main.go
 ls -al target/
