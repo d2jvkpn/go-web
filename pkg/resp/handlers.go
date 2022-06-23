@@ -87,7 +87,15 @@ func NewLogHandler(logger *wrap.Logger) gin.HandlerFunc {
 			saveLog()
 		}()
 
+		ctx.Status(1000)
 		ctx.Next()
+
+		select {
+		case <-ctx.Done():
+			fmt.Println("~~~~")
+		default:
+		}
+
 		saveLog()
 	}
 }

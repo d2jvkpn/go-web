@@ -1,4 +1,4 @@
-package wrap
+package misc
 
 import (
 	"bytes"
@@ -37,13 +37,13 @@ type RequestTmpl struct {
 	// Expected // TODO
 }
 
-func CheckJson(bts []byte) (err error) {
+func ValidJSON(bts []byte) (err error) {
 	var js json.RawMessage
 	return json.Unmarshal(bts, &js)
 }
 
 func (output *Output) Get(bts []byte) (value string, err error) {
-	if err = CheckJson(bts); err != nil {
+	if err = ValidJSON(bts); err != nil {
 		return "", err
 	}
 

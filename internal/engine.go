@@ -64,9 +64,9 @@ func NewEngine(release bool) (engi *gin.Engine, err error) {
 	// bts, _ := _Static.ReadFile("static/favicon.png")
 	// engi.RouterGroup.GET("/favicon.ico", "image/x-icon", "favicon.ico", wrap.ServeFile(bts))
 	site.Load(rg)
-	ws.Load(rg, wrap.WsUpgrade)
+	ws.Load(rg, wrap.WsUpgrade, wrap.NewPrometheusMonitor("ws"))
 
-	api.Load(rg, resp.NewLogHandler(_ApiLogger), wrap.NewPrometheusMonitor())
+	api.Load(rg, resp.NewLogHandler(_ApiLogger), wrap.NewPrometheusMonitor("api"))
 
 	return
 }

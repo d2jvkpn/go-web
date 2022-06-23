@@ -1,4 +1,4 @@
-package wrap
+package misc
 
 import (
 	"golang.org/x/exp/constraints"

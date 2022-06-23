@@ -11,7 +11,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/d2jvkpn/go-web/pkg/wrap"
+	"github.com/d2jvkpn/go-web/pkg/misc"
 
 	"github.com/gorilla/websocket"
 	"github.com/spf13/cobra"
@@ -46,7 +46,7 @@ func NewWsTest() (command *cobra.Command) {
 					log.Fatalln(err)
 				}
 
-				if err = wrap.CheckJson(_OneJsonMsg); err != nil {
+				if err = misc.ValidJSON(_OneJsonMsg); err != nil {
 					log.Fatalln(err)
 				}
 			}
@@ -180,7 +180,7 @@ func (client WsClient) HandleMessage() {
 				continue
 			}
 
-			if client.jsonMsg && wrap.CheckJson(bts) != nil {
+			if client.jsonMsg && misc.ValidJSON(bts) != nil {
 				log.Printf("!!! invalid json: %q\n", msg)
 				continue
 			}

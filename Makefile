@@ -1,14 +1,6 @@
 build:
-	bash scripts/build_main.sh
+	bash scripts/go_build.sh
 
-main:
-	bash scripts/build_main.sh
-	./target/main
-
-
-build_go-web:
-	bash scripts/build_go-web.sh
-
-go-web:
-	bash scripts/build_go-web.sh
+run:
+	bash scripts/go_build.sh
 	./target/go-web serve

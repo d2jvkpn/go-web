@@ -20,8 +20,7 @@ RUN { apk --no-cache update && apk --no-cache upgrade && apk --no-cache add tzda
 RUN go env -w GOPROXY="https://goproxy.cn,direct"
 
 WORKDIR /opt/go-web
-COPY ./go.mod ./go.sum ./project.yaml  /opt/go-web/
-COPY ./releases /opt/go-web/releases
+COPY ./main.go ./go.mod ./go.sum ./project.yaml  /opt/go-web/
 COPY ./internal /opt/go-web/internal
 COPY ./pkg      /opt/go-web/pkg
 
@@ -32,7 +31,7 @@ RUN go build  -ldflags="          \
   -X main.gitCommit=${gitCommit}  \
   -X main.gitTime=${gitTime}      \
   -X main.gitTreeState=${gitTreeState}" \
-  -o main releases/serve/main.go
+  -o main main.go
 
 ####
 FROM alpine

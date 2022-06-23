@@ -4,7 +4,9 @@ package wrap
   https://gabrieltanner.org/blog/collecting-prometheus-metrics-in-golang
 */
 import (
+	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus"
@@ -12,10 +14,17 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
-func NewPrometheusMonitor() gin.HandlerFunc {
+func NewPrometheusMonitor(prefix string) gin.HandlerFunc {
+	addPrefix := func(str string) string {
+		if prefix == "" {
+			return str
+		}
+		return fmt.Sprintf("%s_%s", strings.TrimRight(prefix, "_"), str)
+	}
+
 	totalRequests := prometheus.NewCounterVec(
 		prometheus.CounterOpts{
-			Name: "http_requests_total",
+			Name: addPrefix("http_requests_total"),
 			Help: "Number of get requests",
 		},
 		[]string{"path"},
@@ -23,7 +32,7 @@ func NewPrometheusMonitor() gin.HandlerFunc {
 
 	responseStatus := prometheus.NewCounterVec(
 		prometheus.CounterOpts{
-			Name: "response_status",
+			Name: addPrefix("response_status"),
 			Help: "Status of HTTP response",
 		},
 		[]string{"status"},
@@ -31,7 +40,7 @@ func NewPrometheusMonitor() gin.HandlerFunc {
 
 	httpDuration := promauto.NewHistogramVec(
 		prometheus.HistogramOpts{
-			Name: "http_response_time_seconds",
+			Name: addPrefix("http_response_time_seconds"),
 			Help: "Duration of HTTP requests",
 		},
 		[]string{"path"},
