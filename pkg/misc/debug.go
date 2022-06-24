@@ -21,7 +21,7 @@ func _fn2() {
 			return
 		}
 		fmt.Println("!!!", intf)
-		fmt.Println(">>>", Stack(2, ""))
+		fmt.Println(">>>", Stack(""))
 	}()
 
 	_fn1()
@@ -34,13 +34,11 @@ func _fn1() {
 	fmt.Printf("Hello, playground %d", j)
 }
 
-func Stack(skip int, prefix string) (slice []string) {
+func Stack(prefix string) (slice []string) {
 	bts := bytes.TrimSpace(debug.Stack())
 	// fmt.Printf(">>>\n%s\n<<<\n", bts)
 	out := _StackRE.FindAllStringSubmatch(string(bts), -1)
-	if skip < 2 {
-		skip = 2
-	}
+	skip := 2
 	if len(out) < skip {
 		return make([]string, 0)
 	}

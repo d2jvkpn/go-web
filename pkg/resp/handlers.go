@@ -78,7 +78,7 @@ func NewLogHandler(logger *wrap.Logger) gin.HandlerFunc {
 				return
 			}
 
-			stacks := misc.Stack(4, gomod)
+			stacks := misc.Stack(gomod)
 			err = ErrServerError(fmt.Errorf("%v", intf), Skip(5))
 			ctx.Set(KeyError, err)
 			ctx.Set(KeyEvent, gin.H{"kind": "panic", "stacks": stacks})
