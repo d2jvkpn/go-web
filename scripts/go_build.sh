@@ -20,7 +20,7 @@ unpushed=$(git diff origin/$gitBranch..HEAD --name-status)
 #    #- test -z "$unpushed" || { echo "You have unpushed commits!"; exit 1; }
 #fi
 
-ldflags=" \
+ldflags="-w -s \
   -X main.buildTime=${buildTime} \
   -X main.gitBranch=$gitBranch   \
   -X main.gitCommit=$gitCommit   \
