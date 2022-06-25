@@ -9,6 +9,7 @@ configs:
     git_branch: dev
     port: 3012
     # api_url: "http://192.168.122.172:3012"
+    api_url: ""
 
   test:
     work_path: /root/docker_test/go-web_test
