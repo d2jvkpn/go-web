@@ -55,7 +55,7 @@ for base in $(awk '/^FROM/{print $2}' ${_path}/Dockerfile); do
     docker images --filter "dangling=true" --quiet "$bn" | xargs -i docker rmi {}
 done &> /dev/null
 
-prev=$(docker images $image:$tag -q)
+# prev=$(docker images $image:$tag -q)
 echo ">>> build image: $image:$tag..."
 
 docker build --no-cache --file ${_path}/Dockerfile --tag $image:$tag \
@@ -77,4 +77,4 @@ docker push $image:${tag}-xx
 
 images=$(docker images --filter "dangling=true" --quiet $image)
 for img in $images; do docker rmi $img || true; done &> /dev/null
-[[ ! -z "$prev" ]] && docker rmi "$prev" &> /dev/null || true
+# [[ ! -z "$prev" ]] && docker rmi "$prev" &> /dev/null || true

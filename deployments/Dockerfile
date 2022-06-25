@@ -43,9 +43,9 @@ COPY --from=builder /opt/go-web/main /opt/go-web/main
 
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 RUN { apk --no-cache update && \
-  apk --no-cache upgrade && \
-  apk --no-cache add curl tzdata; } &> /dev/null
-# test api with curl
+  apk --no-cache upgrade &&    \
+  apk --no-cache add tzdata; } &> /dev/null
+# curl, test api
 # gcompat, run a program copied from host
 
 EXPOSE 8080
