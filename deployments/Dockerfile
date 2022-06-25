@@ -46,6 +46,7 @@ RUN { apk --no-cache update && \
   apk --no-cache upgrade && \
   apk --no-cache add curl tzdata; } &> /dev/null
 # test api with curl
+# gcompat, run a program copied from host
 
 EXPOSE 8080
 CMD ["./main", "--addr=:8080", "--config=configs/prod.yaml", "--release"]
