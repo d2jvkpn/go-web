@@ -66,11 +66,11 @@ func Load(fp string, release bool) (err error) {
 	return
 }
 
-func Serve(addr string) (err error) {
+func Serve(addr string, parameters map[string]interface{}) (err error) {
 	_Cron.Start()
-	logBuildInfo(_ApiLogger.Logger)
+	logStartup(_ApiLogger.Logger, parameters)
 
-	log.Printf(">>> HTTP server listening on %s", addr)
+	log.Printf(">>> HTTP server listening on %s\n", addr)
 	_Server.Addr = addr
 	if err = _Server.ListenAndServe(); err == http.ErrServerClosed {
 		err = nil

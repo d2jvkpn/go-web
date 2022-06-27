@@ -40,8 +40,10 @@ func NewServe() (command *cobra.Command) {
 			go misc.ListenOSSignal(ch) // goroutine1, send 0 when interrupted, send -1 otherwise
 
 			go func() { // goroutine2
-
-				if err = internal.Serve(addr); err != nil {
+				parameters := map[string]interface{}{
+					"config": config, "addr": addr, "release": release,
+				}
+				if err = internal.Serve(addr, parameters); err != nil {
 					log.Println(err)
 					ch <- 1
 				} else {

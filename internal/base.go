@@ -43,15 +43,15 @@ func LoadBuildInfo(info [][2]string) {
 	_BuildInfo = info
 }
 
-func logBuildInfo(logger *zap.Logger) {
+func logStartup(logger *zap.Logger, parameters map[string]interface{}) {
 	fields := make([]zap.Field, 0, len(_BuildInfo))
 	for _, v := range _BuildInfo {
 		fields = append(fields, zap.String(v[0], v[1]))
 	}
 
-	logger.Info("BuildInfo", zap.Any(
+	logger.Info("Startup", zap.Any(
 		"event",
-		map[string]interface{}{"kind": "info", "fields": fields},
+		map[string]interface{}{"kind": "info", "buildInfo": fields, "parameters": parameters},
 	))
 }
 
