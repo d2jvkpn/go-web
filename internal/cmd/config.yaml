@@ -1,1 +1,2 @@
 public_url: http://localhost:8080
+prometheus_path: /prometheus

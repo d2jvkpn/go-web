@@ -51,7 +51,9 @@ func NewEngine(release bool) (engi *gin.Engine, err error) {
 
 	rg.GET("/healthy", wrap.Healthy)
 	rg.GET("/nts", gin.WrapF(misc.NTSFunc(3)))
-	rg.GET("/prometheus", wrap.PrometheusFunc)
+	if p := _Config.GetString("prometheus_path"); p != "" { // /prometheus
+		rg.GET(p, wrap.PrometheusFunc)
+	}
 	wrap.Pprof(rg) // TODO: more middlewares
 
 	///
