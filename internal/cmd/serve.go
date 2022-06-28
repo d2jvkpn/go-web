@@ -43,24 +43,25 @@ func NewServe() (command *cobra.Command) {
 				parameters := map[string]interface{}{
 					"config": config, "addr": addr, "release": release,
 				}
-				if err = internal.Serve(addr, parameters); err != nil {
+
+				if err = internal.Serve(addr, parameters); err == nil {
+					ch <- 0
+				} else {
 					log.Println(err)
 					ch <- 1
-				} else {
-					ch <- 2
 				}
 			}()
 
 			value = <-ch
 			switch value {
-			case 1, 2: // goroutine2 exit
+			case 0, 1: // goroutine2 exit
 				internal.Down()
 				ch <- value // send to goroutine1
 				<-ch        // goroutine1 exit: -1
-			case 0: // both goroutine1 exit by interrupted
+			case -1: // both goroutine1 exit by interrupted
 				internal.Down()
 				<-ch // goroutine2 exit: 1
-			case -1: // both goroutine1 and goroutine2 exited
+			case -2: // both goroutine1 and goroutine2 exited
 				internal.Down()
 			}
 

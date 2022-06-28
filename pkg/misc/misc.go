@@ -47,10 +47,10 @@ func ListenOSSignal(ch chan int, sgs ...os.Signal) {
 	select {
 	case _ = <-quit: // sig := <-quit
 		// log.Printf("received os signal: %v\n", sig)
-		ch <- 0
+		ch <- -1
 	case _ = <-ch:
 		// log.Printf("received value: %v\n", value)
-		ch <- -1
+		ch <- -2
 	}
 
 	return
