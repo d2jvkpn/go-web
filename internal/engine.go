@@ -51,9 +51,13 @@ func NewEngine(release bool) (engi *gin.Engine, err error) {
 
 	rg.GET("/healthy", wrap.Healthy)
 	rg.GET("/nts", gin.WrapF(misc.NTSFunc(3)))
+
+	aipHandlers := []gin.HandlerFunc{resp.NewLogHandler(_ApiLogger)}
 	if p := _Config.GetString("prometheus_path"); p != "" { // /prometheus
 		rg.GET(p, wrap.PrometheusFunc)
+		aipHandlers = append(aipHandlers, wrap.NewPrometheusMonitor("api"))
 	}
+
 	wrap.Pprof(rg) // TODO: more middlewares
 
 	///
@@ -67,8 +71,7 @@ func NewEngine(release bool) (engi *gin.Engine, err error) {
 	// engi.RouterGroup.GET("/favicon.ico", "image/x-icon", "favicon.ico", wrap.ServeFile(bts))
 	site.Load(rg)
 	ws.Load(rg, wrap.WsUpgrade, wrap.NewPrometheusMonitor("ws"))
-
-	api.Load(rg, resp.NewLogHandler(_ApiLogger), wrap.NewPrometheusMonitor("api"))
+	api.Load(rg, aipHandlers...)
 
 	return
 }
