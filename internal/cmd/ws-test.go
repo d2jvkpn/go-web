@@ -74,7 +74,7 @@ func NewWsTest() (command *cobra.Command) {
 	fSet = command.Flags()
 	fSet.StringVar(
 		&addr, "addr",
-		"ws://localhost:8080/ws/v1/hello?name=Rover",
+		"ws://localhost:8080/ws/hello?name=Rover",
 		"websocket service address",
 	)
 

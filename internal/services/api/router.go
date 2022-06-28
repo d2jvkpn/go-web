@@ -9,7 +9,7 @@ import (
 )
 
 func Load(rg *gin.RouterGroup, handlers ...gin.HandlerFunc) {
-	open := rg.Group("/api/v1/open", handlers...)
+	open := rg.Group("/api/open", handlers...)
 
 	open.GET("/timeout", func(ctx *gin.Context) {
 		time.Sleep(20 * time.Second)
