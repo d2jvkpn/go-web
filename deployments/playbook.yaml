@@ -11,7 +11,7 @@
     image: "{{configs[image]}}"
 
   tasks:
-  - name: create-local-tmp
+  - name: create ./tmp
     file: {path: "{{_wd}}/tmp", state: "directory"}
 # mkdir -p tmp
 
@@ -28,7 +28,7 @@
     image: "{{configs[image]}}"
 
   tasks:
-  - name: create-build-dir
+  - name: create build dir
     # tags: ["build"]
     # shell: {cmd: 'mkdir -p "{{conf.work_path}}/"'}
     file: {path: "{{conf.work_path}}", state: "directory"}
@@ -40,7 +40,7 @@
     # accept_hostkey: yes
     # force: yes
 
-  - name: build-image
+  - name: build image
     args: {chdir: "{{conf.work_path}}"}
     # when: inventory_hostname == 'build_host' ## limit host, or by passing --limit machine_01
     # run_once: true # the first host of group for docker build
@@ -52,7 +52,7 @@
         export PATH=/opt/bin:$PATH
         bash deployments/build.sh {{conf.git_branch}}
 
-  - name: fetch-deploy
+  - name: fetch deploy.yaml
     fetch:
       src: "{{conf.work_path}}/deployments/deploy.yaml"
       dest: "{{_wd}}/tmp/deploy.{{app_env}}.yaml"
@@ -71,21 +71,21 @@
     image: "{{configs[image]}}"
 
   tasks:
-  - name: create-run-dir
+  - name: create work dir
     file: {path: "{{conf.work_path}}/logs", state: "directory"}
 
-  - name: sync_deploy
+  - name: sync deploy
     synchronize: src={{_wd}}/tmp/deploy.{{app_env}}.yaml dest={{conf.work_path}}/deploy.yaml
 
-  - name: check for config.yaml
+  - name: register configs/config.yaml
     stat: path="{{conf.work_path}}/configs/{{app_env}}.yaml"
     register: yaml
 
-  - name: fail if config.yaml does not exist
+  - name: check configs/config.yaml
     fail: msg="config does not exist"
     when: yaml.stat.exists == false
 
-  - name: update-service
+  - name: update service
     args: {chdir: "{{conf.work_path}}"}
     shell:
       cmd: |
@@ -121,7 +121,7 @@
     conf: "{{configs[app_env]}}"
 
   tasks:
-  - name: ping_test
+  - name: ping
     when: conf.api_url != ""
     uri:
       url: "{{conf.api_url}}/ping"
