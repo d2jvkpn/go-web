@@ -21,7 +21,7 @@ uncommitted=$(git status --short)
 unpushed=$(git diff origin/$b1..HEAD --name-status)
 
 git checkout --force $gitBranch
-git mod vendor
+go mod vendor
 # git pull --no-edit
 
 buildTime=$(date +'%FT%T%:z')
