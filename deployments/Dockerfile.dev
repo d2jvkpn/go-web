@@ -1,0 +1,53 @@
+####
+FROM golang:1.18-alpine AS builder
+LABEL stage=go-web_builder
+
+ARG buildTime
+ARG gitBranch
+ARG gitCommit
+ARG gitTime
+ARG gitTreeState
+
+ENV buildTime=$buildTime
+ENV gitBranch=$gitBranch
+ENV gitCommit=$gitCommit
+ENV gitTime=$gitTime
+ENV gitTreeState=$gitTreeState
+ENV TZ="Asia/Shanghai"
+
+# RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+# RUN { apk --no-cache update && apk --no-cache upgrade; } &> /dev/null
+# RUN go env -w GOPROXY="https://goproxy.cn,direct"
+
+WORKDIR /opt/go-web
+COPY ./main.go ./go.mod ./go.sum ./project.yaml  /opt/go-web/
+COPY ./internal /opt/go-web/internal
+COPY ./pkg      /opt/go-web/pkg
+COPY ./vendor   /opt/go-web/vendor
+
+# in alpine, date doesn't parse %:z
+RUN go build -mod vendor -ldflags="-w -s     \
+  -X main.buildTime=${buildTime}  \
+  -X main.gitBranch=${gitBranch}  \
+  -X main.gitCommit=${gitCommit}  \
+  -X main.gitTime=${gitTime}      \
+  -X main.gitTreeState=${gitTreeState}" \
+  -o main main.go
+
+####
+FROM alpine
+
+ENV TZ="Asia/Shanghai"
+
+WORKDIR /opt/go-web
+# COPY --from=builder /opt/go-web/main /opt/go-web/main
+
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+RUN { apk --no-cache update && \
+  apk --no-cache upgrade &&    \
+  apk --no-cache add tzdata; } &> /dev/null
+# curl, test api
+# gcompat, run a program copied from host
+
+EXPOSE 8080
+CMD ["./main", "--addr=:8080", "--config=configs/prod.yaml", "--release"]
