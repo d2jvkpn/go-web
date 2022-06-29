@@ -26,6 +26,8 @@ if [[ $(printenv APP_BuildForce) != "true" ]]; then
 fi
 
 git checkout --force $gitBranch
+git pull --no-edit
+
 buildTime=$(date +'%FT%T%:z')
 gitCommit=$(git rev-parse --verify HEAD) # git log --pretty=format:'%h' -n 1
 gitTime=$(git log -1 --format="%at" | xargs -I{} date -d @{} +%FT%T%:z)
