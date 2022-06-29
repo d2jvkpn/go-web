@@ -15,6 +15,8 @@ gitBranch=dev
 image="registry.cn-shanghai.aliyuncs.com/d2jvkpn/go-web"
 tag=$gitBranch
 
+git mod vendor
+
 ####
 b1="$(git rev-parse --abbrev-ref HEAD)" # current branch
 uncommitted=$(git status --short)
