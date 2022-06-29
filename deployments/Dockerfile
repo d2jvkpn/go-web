@@ -25,13 +25,13 @@ COPY ./internal /opt/go-web/internal
 COPY ./pkg      /opt/go-web/pkg
 
 # in alpine, date doesn't parse %:z
-RUN go build  -ldflags="-w -s     \
+RUN go build -o main -ldflags="-w -s  \
   -X main.buildTime=${buildTime}  \
   -X main.gitBranch=${gitBranch}  \
   -X main.gitCommit=${gitCommit}  \
   -X main.gitTime=${gitTime}      \
   -X main.gitTreeState=${gitTreeState}" \
-  -o main main.go
+  main.go
 
 ####
 FROM alpine
