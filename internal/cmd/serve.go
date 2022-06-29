@@ -57,17 +57,16 @@ func NewServe() (command *cobra.Command) {
 			case 0, 1: // goroutine2 exit
 				internal.Down()
 				ch <- value // send to goroutine1
-				<-ch        // goroutine1 exit: -1
+				_ = <-ch    // goroutine1 exit: -1
 			case -1: // both goroutine1 exit by interrupted
 				internal.Down()
-				<-ch // goroutine2 exit: 1
+				_ = <-ch // goroutine2 exit: 1
+				value = 0
 			case -2: // both goroutine1 and goroutine2 exited
 				internal.Down()
 			}
 
-			if value != 0 {
-				os.Exit(1)
-			}
+			os.Exit(value)
 		},
 	}
 

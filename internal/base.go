@@ -15,11 +15,21 @@ import (
 	"go.uber.org/zap"
 )
 
+const (
+	HTTP_MaxHeaderBytes     = 2 << 20
+	HTTP_ReadTimeout        = 10 * time.Second
+	HTTP_ReadHeaderTimeout  = 5 * time.Second
+	HTTP_WriteTimeout       = 10 * time.Second
+	HTTP_IdleTimeout        = 60
+	HTTP_MaxMultipartMemory = 8 << 20 // 8M
+)
+
 var (
 	//go:embed static
 	_Static embed.FS
 	//go:embed templates
-	_Templates embed.FS
+	_Templates    embed.FS
+	_ServeOptions = make([]ServeOption, 0)
 
 	_Release bool
 	// _InstanceId string

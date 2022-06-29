@@ -23,6 +23,7 @@ import (
 // 1..=99   business error
 // 100...   unexpected error
 
+////
 func ErrBadRequest(cause error, opts ...Option) (err *HttpError) {
 	opts = append(opts, Skip(2))
 	err = NewHttpError(cause, http.StatusBadRequest, -1, opts...)
@@ -42,6 +43,15 @@ func ErrParseFailed(cause error) (err *HttpError) {
 
 func ErrInvalidParameter(err error, msg string) (out *HttpError) {
 	return NewHttpError(err, http.StatusBadRequest, -3, Skip(2))
+}
+
+////
+func ErrConflict(err error, msg string) (out *HttpError) {
+	return NewHttpError(err, http.StatusConflict, -100, Skip(2))
+}
+
+func ErrUnauthorized(err error, msg string) (out *HttpError) {
+	return NewHttpError(err, http.StatusUnauthorized, -101, Skip(2))
 }
 
 ////

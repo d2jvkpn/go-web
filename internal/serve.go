@@ -27,6 +27,14 @@ func StaticDir(dir, local string, listDir bool) ServeOption {
 	}
 }
 
+func AppendServeOptions(opts ...ServeOption) {
+	if len(opts) == 0 {
+		return
+	}
+
+	_ServeOptions = append(_ServeOptions, opts...)
+}
+
 func Load(fp string, release bool) (err error) {
 	var (
 		engi *gin.Engine
@@ -55,10 +63,10 @@ func Load(fp string, release bool) (err error) {
 		return err
 	}
 	_Server = &http.Server{ // TODO: set consts in base.go
-		ReadTimeout:       10 * time.Second,
-		WriteTimeout:      10 * time.Second,
-		ReadHeaderTimeout: 5 * time.Second,
-		MaxHeaderBytes:    2 << 20,
+		ReadTimeout:       HTTP_ReadTimeout,
+		WriteTimeout:      HTTP_WriteTimeout,
+		ReadHeaderTimeout: HTTP_ReadHeaderTimeout,
+		MaxHeaderBytes:    HTTP_MaxHeaderBytes,
 		// Addr:              addr,
 		Handler: engi,
 	}

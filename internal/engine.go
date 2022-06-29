@@ -26,11 +26,12 @@ func NewEngine(release bool) (engi *gin.Engine, err error) {
 	if release {
 		gin.SetMode(gin.ReleaseMode)
 		engi = gin.New()
-		engi.Use(gin.Recovery())
+		// engi.Use(gin.Recovery())
 	} else {
 		engi = gin.Default()
 	}
 	engi.RedirectTrailingSlash = false
+	engi.MaxMultipartMemory = HTTP_MaxMultipartMemory
 	rg = &engi.RouterGroup
 
 	// engi.LoadHTMLGlob("templates/*.tmpl")
@@ -69,6 +70,13 @@ func NewEngine(release bool) (engi *gin.Engine, err error) {
 	// ?? w.Header().Set("Cache-Control", "public, max-age=3600")
 	// bts, _ := _Static.ReadFile("static/favicon.png")
 	// engi.RouterGroup.GET("/favicon.ico", "image/x-icon", "favicon.ico", wrap.ServeFile(bts))
+
+	for i := range _ServeOptions {
+		if err = _ServeOptions[i](rg); err != nil {
+			return nil, err
+		}
+	}
+
 	site.Load(rg)
 	ws.Load(rg, wrap.WsUpgrade, wrap.NewPrometheusMonitor("ws"))
 	api.Load(rg, aipHandlers...)
