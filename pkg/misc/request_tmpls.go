@@ -15,7 +15,7 @@ import (
 
 var (
 	//go:embed request_tmpls.yaml
-	requestTmpls string
+	_ExampleRequestTmpls string
 )
 
 ///
@@ -40,6 +40,10 @@ type RequestTmpl struct {
 func ValidJSON(bts []byte) (err error) {
 	var js json.RawMessage
 	return json.Unmarshal(bts, &js)
+}
+
+func ExampleRequestTmpls() string {
+	return _ExampleRequestTmpls
 }
 
 func (output *Output) Get(bts []byte) (value string, err error) {
@@ -98,10 +102,6 @@ func LoadRequestTmpls(name, fp string) (item *RequestTmpls, err error) {
 	//	}
 
 	return
-}
-
-func (itm *RequestTmpls) Yaml() string {
-	return requestTmpls
 }
 
 func (item *RequestTmpls) request(tmpl *RequestTmpl, prelude bool) (
