@@ -5,17 +5,19 @@ import (
 	"sync"
 
 	. "github.com/d2jvkpn/go-web/pkg/resp"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UsersData struct {
 	m     *sync.RWMutex
-	users map[string]string
+	users map[string][]byte
 }
 
 func NewUsersData() UsersData {
 	ud := UsersData{
 		m:     new(sync.RWMutex),
-		users: make(map[string]string, 100),
+		users: make(map[string][]byte, 100),
 	}
 
 	// ud.users["admin"] = "admin"
@@ -43,12 +45,21 @@ func (ud *UsersData) Register(user, password string) *HttpError {
 	ud.m.Lock()
 	defer ud.m.Unlock()
 
+	var (
+		bts []byte
+		err error
+	)
+
 	if _, ok := ud.users[user]; ok {
 		msg := "user is already exists"
 		return ErrConflict(fmt.Errorf(msg+": "+user), msg)
 	}
 
-	ud.users[user] = password
+	if bts, err = bcrypt.GenerateFromPassword([]byte(password), _HASH_Cost); err != nil {
+		return ErrServerError(err)
+	}
+
+	ud.users[user] = bts
 	return nil
 }
 
@@ -66,10 +77,18 @@ func (ud UsersData) Verify(name, password string) *HttpError {
 	ud.m.RLock()
 	defer ud.m.RUnlock()
 
-	if pw, ok := ud.users[name]; !ok {
-		return ErrUnauthorized(fmt.Errorf("user doesn't exists"), "wrong username or password")
-	} else if pw != password {
-		return ErrUnauthorized(fmt.Errorf("password doesn't match"), "wrong username or password")
+	var (
+		ok  bool
+		bts []byte
+		err error
+	)
+
+	msg := "wrong username or password"
+	if bts, ok = ud.users[name]; !ok {
+		return ErrUnauthorized(fmt.Errorf("user doesn't exists"), msg)
+	}
+	if err = bcrypt.CompareHashAndPassword(bts, []byte(password)); err != nil {
+		return ErrUnauthorized(err, msg)
 	}
 
 	return nil

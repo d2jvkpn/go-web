@@ -5,7 +5,8 @@ import (
 )
 
 const (
-	HTTP_MaxFileHeaderSize = 8 << 20 // 8M
+	HTTP_MaxFileHeaderSize     = 8 << 20 // 8M
+	_HASH_Cost             int = 14
 )
 
 var (
