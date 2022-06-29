@@ -62,7 +62,7 @@ func loadAuthApi(rg *gin.RouterGroup, handlers ...gin.HandlerFunc) {
 	user.PUT("/upload", HandleUploadFile)
 
 	user.POST("/unregister", func(ctx *gin.Context) {
-		user := ctx.GetString("User")
+		user := ctx.GetString(KEY_User)
 		_UsersData.Unregister(user)
 		Ok(ctx)
 	})

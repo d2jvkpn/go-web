@@ -6,7 +6,6 @@ import (
 
 const (
 	HTTP_MaxFileHeaderSize = 8 << 20 // 8M
-	KEY_User               = "User"
 )
 
 var (

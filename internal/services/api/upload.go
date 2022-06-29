@@ -32,7 +32,7 @@ func HandleUploadFile(ctx *gin.Context) {
 		return
 	}
 	files = form.File["files"]
-	user = ctx.GetString("User")
+	user = ctx.GetString(KEY_User)
 	now = time.Now()
 
 	for _, fileHeader = range files {
