@@ -15,14 +15,13 @@ gitBranch=dev
 image="registry.cn-shanghai.aliyuncs.com/d2jvkpn/go-web"
 tag=$gitBranch
 
-git mod vendor
-
 ####
 b1="$(git rev-parse --abbrev-ref HEAD)" # current branch
 uncommitted=$(git status --short)
 unpushed=$(git diff origin/$b1..HEAD --name-status)
 
 git checkout --force $gitBranch
+git mod vendor
 # git pull --no-edit
 
 buildTime=$(date +'%FT%T%:z')
@@ -39,7 +38,7 @@ unpushed=$(git diff origin/$gitBranch..HEAD --name-status)
 # prev=$(docker images $image:$tag -q)
 echo ">>> build image: $image:$tag..."
 
-docker build --no-cache --file ${_path}/Dockerfile.dev --tag $image:$tag \
+docker build --no-cache --file ${_path}/Dockerfile_vendor --tag $image:$tag \
   --build-arg=buildTime="$buildTime"       \
   --build-arg=gitBranch="$gitBranch"       \
   --build-arg=gitCommit="$gitCommit"       \
