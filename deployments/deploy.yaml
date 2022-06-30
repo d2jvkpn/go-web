@@ -11,6 +11,7 @@ services:
     environment: ["TZ=Asia/Shanghai"]
     volumes:
     - ./configs/:/opt/go-web/configs/
+    - ./data/:/opt/go-web/data/
     - ./logs/:/opt/go-web/logs/
     command: ["./main", "serve", "--config=configs/${app_env}.yaml", "--addr=:${port}", "--release"]
 
