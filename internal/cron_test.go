@@ -3,14 +3,16 @@ package internal
 import (
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestCron(t *testing.T) {
 	Cron_At = "*/10 * * * * *"
 
-	if err := _SetupCrons(); err != nil {
-		t.Fatal(err)
-	}
+	err := _SetupCrons()
+	require.NoError(t, err)
+	_Cron.Start()
 
 	time.Sleep(time.Minute)
 	_Cron.Stop()
