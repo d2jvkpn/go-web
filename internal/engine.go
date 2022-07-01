@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"embed"
 	"html/template"
 	"io/fs"
 	"net/http"
@@ -13,6 +14,11 @@ import (
 	"github.com/d2jvkpn/go-web/pkg/wrap"
 
 	"github.com/gin-gonic/gin"
+)
+
+var (
+	//go:embed static/assets/favicon.ico
+	favicon embed.FS
 )
 
 func NewEngine(release bool) (engi *gin.Engine, err error) {
@@ -50,6 +56,7 @@ func NewEngine(release bool) (engi *gin.Engine, err error) {
 		})
 	})
 
+	rg.StaticFileFS("/favicon.ico", "static/assets/favicon.ico", http.FS(favicon))
 	rg.GET("/healthy", wrap.Healthy)
 	rg.GET("/nts", gin.WrapF(misc.NTSFunc(3)))
 
