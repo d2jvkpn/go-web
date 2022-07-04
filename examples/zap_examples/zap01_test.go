@@ -36,11 +36,14 @@ func TestZap01(t *testing.T) {
 		log.Fatal(err)
 	}
 
-	logger.Warn("hello", zap.Int64("code", 100), zap.String("entity", "rover"))
+	logger.Info("hello", zap.Int64("code", 100), zap.String("entity", "rover"))
 
 	logger.Warn(
 		"hello",
 		zap.Int64("code", 101), zap.String("entity", "rover"),
 		zap.Any("data", map[string]int{"hello": 2022, "world": 203}),
 	)
+
+	lg := logger.Named("membership")
+	lg.Info("WORLD", zap.Int64("code", 100), zap.String("entity", "rover"))
 }
