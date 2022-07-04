@@ -69,6 +69,7 @@ func (a *App) Write(ctx context.Context, n uint) {
 		defer span.End()
 		return Fibonacci(n)
 	}(ctx)
+
 	if err != nil {
 		a.l.Printf("Fibonacci(%d): %v\n", n, err)
 	} else {
