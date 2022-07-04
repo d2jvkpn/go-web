@@ -19,7 +19,7 @@ func main() {
 	l := log.New(os.Stdout, "", 0)
 
 	// Write telemetry data to a file.
-	f, err := os.Create("traces.txt")
+	f, err := os.Create("traces.out")
 	if err != nil {
 		l.Fatal(err)
 	}
