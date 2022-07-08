@@ -61,7 +61,7 @@ func NewEngine(release bool) (engi *gin.Engine, err error) {
 	rg.GET("/nts", gin.WrapF(misc.NTSFunc(3)))
 
 	aipHandlers := []gin.HandlerFunc{resp.NewLogHandler(_ApiLogger)}
-	if p := _Config.GetString("prometheus_path"); p != "" { // /prometheus
+	if p := _Config.GetString("prometheus.path"); p != "" { // /prometheus
 		rg.GET(p, wrap.PrometheusFunc)
 		aipHandlers = append(aipHandlers, wrap.NewPrometheusMonitor("api"))
 	}

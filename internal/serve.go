@@ -8,6 +8,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/d2jvkpn/go-web/internal/settings"
 	"github.com/d2jvkpn/go-web/pkg/wrap"
 
 	"github.com/gin-gonic/gin"
@@ -43,6 +44,7 @@ func Load(fp string, release bool) (err error) {
 	if _Config, err = wrap.ReadConfigFile("config", fp); err != nil {
 		return
 	}
+	settings.Config = _Config
 
 	if !release {
 		_ = os.Setenv("APP_DebugMode", "true")

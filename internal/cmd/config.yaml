@@ -1,2 +1,5 @@
-public_url: http://localhost:8080
-prometheus_path: /prometheus
+settings:
+  public_url: http://localhost:8080
+
+prometheus:
+  path: /prometheus
