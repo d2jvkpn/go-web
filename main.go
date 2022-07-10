@@ -44,12 +44,14 @@ func main() {
 
 	root := &cobra.Command{Use: project.GetString("usage")}
 
-	root.AddCommand(cmd.NewServe())
-	root.AddCommand(cmd.NewApiTest())
-	root.AddCommand(cmd.NewWsTest())
-	root.AddCommand(cmd.NewVersion(buildInfo))
-	root.AddCommand(cmd.NewPrint("print"))
-	root.AddCommand(cmd.NewLog2Tsv())
+	root.AddCommand(
+		cmd.NewServe(),
+		cmd.NewApiTest(),
+		cmd.NewWsTest(),
+		cmd.NewVersion(buildInfo),
+		cmd.NewPrint("print"),
+		cmd.NewLog2Tsv(),
+	)
 
 	root.Execute()
 }

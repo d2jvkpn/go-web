@@ -6,4 +6,5 @@ import (
 
 var (
 	Config *viper.Viper
+	// other global workers...
 )
