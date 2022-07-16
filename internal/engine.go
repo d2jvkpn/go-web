@@ -9,6 +9,7 @@ import (
 	"github.com/d2jvkpn/go-web/internal/services/api"
 	"github.com/d2jvkpn/go-web/internal/services/site"
 	"github.com/d2jvkpn/go-web/internal/services/ws"
+	"github.com/d2jvkpn/go-web/internal/settings"
 	"github.com/d2jvkpn/go-web/pkg/misc"
 	"github.com/d2jvkpn/go-web/pkg/resp"
 	"github.com/d2jvkpn/go-web/pkg/wrap"
@@ -60,7 +61,7 @@ func NewEngine(release bool) (engi *gin.Engine, err error) {
 	rg.GET("/healthy", wrap.Healthy)
 	rg.GET("/nts", gin.WrapF(misc.NTSFunc(3)))
 
-	aipHandlers := []gin.HandlerFunc{resp.NewLogHandler(_ApiLogger)}
+	aipHandlers := []gin.HandlerFunc{resp.NewLogHandler(settings.Logger, "api")}
 	if p := _Config.GetString("prometheus.path"); p != "" { // /prometheus
 		rg.GET(p, wrap.PrometheusFunc)
 		aipHandlers = append(aipHandlers, wrap.NewPrometheusMonitor("api"))

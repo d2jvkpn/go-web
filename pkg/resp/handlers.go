@@ -20,7 +20,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func NewLogHandler(logger *wrap.Logger) gin.HandlerFunc {
+func NewLogHandler(logger *wrap.Logger, name string) gin.HandlerFunc {
 	gomod, _ := misc.RootModule()
 
 	return func(ctx *gin.Context) {
@@ -40,6 +40,7 @@ func NewLogHandler(logger *wrap.Logger) gin.HandlerFunc {
 		start := time.Now()
 		requestId := uuid.NewString()
 		ctx.Set(KeyRequestId, requestId)
+		appendString("requestId", requestId)
 		appendString("ip", ctx.ClientIP())
 		appendString("method", ctx.Request.Method)
 		appendString("path", ctx.Request.URL.Path)
@@ -48,10 +49,10 @@ func NewLogHandler(logger *wrap.Logger) gin.HandlerFunc {
 		saveLog := func() {
 			// ctx.Request.Referer()
 			// ctx.GetHeader("User-Agent")
-			latency := time.Since(start).Milliseconds()
+			latencyUs := time.Since(start).Microseconds()
 			appendString("userId", ctx.GetString(KeyUserId))
 			fields = append(fields, zap.Int("status", ctx.Writer.Status()))
-			fields = append(fields, zap.Int64("latency", latency))
+			fields = append(fields, zap.Int64("latencyUs", latencyUs))
 
 			if err, ok = wrap.GetCtxValue[*HttpError](ctx, KeyError); ok {
 				fields = append(fields, zap.Any(KeyError, err))
@@ -64,11 +65,11 @@ func NewLogHandler(logger *wrap.Logger) gin.HandlerFunc {
 
 			switch {
 			case code <= 0:
-				logger.Info(requestId, fields...) // array fields[0:]...
+				logger.Info(name, fields...) // array fields[0:]...
 			case code < 100:
-				logger.Warn(requestId, fields...)
+				logger.Warn(name, fields...)
 			default:
-				logger.Error(requestId, fields...)
+				logger.Error(name, fields...)
 			}
 		}
 
@@ -92,7 +93,7 @@ func NewLogHandler(logger *wrap.Logger) gin.HandlerFunc {
 
 		select {
 		case <-ctx.Done():
-			fmt.Println("~~~~")
+			// fmt.Println("~~~~")
 		default:
 		}
 
@@ -102,16 +103,17 @@ func NewLogHandler(logger *wrap.Logger) gin.HandlerFunc {
 
 func Log2Tsv(fp string, w io.Writer, times ...time.Time) (err error) {
 	type Record struct {
-		Time    string `json:"time"`
-		Level   string `json:"level"`
-		Ip      string `json:"ip"`
-		Msg     string `json:"msg"`
-		Method  string `json:"method"`
-		Path    string `json:"path"`
-		Query   string `json:"query"`
-		UserId  string `json:"userId"`
-		Status  int64  `json:"status"`
-		Latency int64  `json:"latency"`
+		Time      string `json:"time"`
+		Level     string `json:"level"`
+		RequestId string `json:"requestId"`
+		Ip        string `json:"ip"`
+		Msg       string `json:"msg"`
+		Method    string `json:"method"`
+		Path      string `json:"path"`
+		Query     string `json:"query"`
+		UserId    string `json:"userId"`
+		Status    int64  `json:"status"`
+		LatencyUs int64  `json:"latencyUs"`
 		// error any
 		// event any
 	}
@@ -130,9 +132,9 @@ func Log2Tsv(fp string, w io.Writer, times ...time.Time) (err error) {
 
 	record2Str := func(r *Record) string {
 		strs := []string{
-			r.Time, r.Level, r.Ip, r.Msg,
+			r.Time, r.Level, r.Ip, r.Msg, r.RequestId,
 			r.Method, r.Path, r.Query, r.UserId,
-			strconv.FormatInt(r.Status, 10), strconv.FormatInt(r.Latency, 10),
+			strconv.FormatInt(r.Status, 10), strconv.FormatInt(r.LatencyUs, 10),
 		}
 
 		return strings.Join(strs, "\t")

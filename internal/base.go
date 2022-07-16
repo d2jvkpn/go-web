@@ -8,8 +8,6 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/d2jvkpn/go-web/pkg/wrap"
-
 	"github.com/robfig/cron/v3"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
@@ -38,10 +36,9 @@ var (
 	Cron_At   = "0 0 1 * * *" // everyday at 1 o'clock
 	Cron_Name = "Cron Test"
 
-	_Cron      *cron.Cron
-	_Config    *viper.Viper
-	_Server    *http.Server
-	_ApiLogger *wrap.Logger
+	_Cron   *cron.Cron
+	_Config *viper.Viper
+	_Server *http.Server
 )
 
 func init() {
@@ -59,9 +56,9 @@ func logStartup(logger *zap.Logger, parameters map[string]interface{}) {
 		fields = append(fields, zap.String(v[0], v[1]))
 	}
 
-	logger.Info("Startup", zap.Any(
+	logger.Info("startup", zap.Any(
 		"event",
-		map[string]interface{}{"kind": "info", "buildInfo": fields, "parameters": parameters},
+		map[string]interface{}{"buildInfo": fields, "parameters": parameters},
 	))
 }
 

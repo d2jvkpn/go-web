@@ -53,7 +53,7 @@ func Load(fp string, release bool) (err error) {
 	}
 	_Release = release
 
-	_ApiLogger = wrap.NewLogger("logs/go-web_api.log", zap.InfoLevel, 256, nil)
+	settings.Logger = wrap.NewLogger("logs/go-web_api.log", zap.InfoLevel, 256, nil)
 
 	if err = _SetupCrons(); err != nil {
 		return err
@@ -78,7 +78,7 @@ func Load(fp string, release bool) (err error) {
 
 func Serve(addr string, parameters map[string]interface{}) (err error) {
 	_Cron.Start()
-	logStartup(_ApiLogger.Logger, parameters)
+	logStartup(settings.Logger.Logger, parameters)
 
 	log.Printf(">>> HTTP server listening on %s\n", addr)
 	_Server.Addr = addr
@@ -106,5 +106,5 @@ func Down() {
 
 	log.Println("<<< Close Loggers")
 	// close other goroutines or services
-	_ApiLogger.Down()
+	settings.Logger.Down()
 }
