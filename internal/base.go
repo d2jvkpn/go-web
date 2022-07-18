@@ -8,6 +8,8 @@ import (
 	"runtime"
 	"time"
 
+	"github.com/d2jvkpn/go-web/pkg/misc"
+
 	"github.com/robfig/cron/v3"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
@@ -29,7 +31,8 @@ var (
 	_Templates    embed.FS
 	_ServeOptions = make([]ServeOption, 0)
 
-	_Release bool
+	_Release  bool
+	_Instance string
 	// _InstanceId string
 	_BuildInfo [][2]string
 
@@ -44,6 +47,7 @@ var (
 func init() {
 	// _InstanceId = wrap.RandString(16)
 	_Cron = cron.New(cron.WithSeconds())
+	_Instance = misc.RandString(4)
 }
 
 func LoadBuildInfo(info [][2]string) {

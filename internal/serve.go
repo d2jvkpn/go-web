@@ -2,7 +2,7 @@ package internal
 
 import (
 	"context"
-	// "fmt"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -53,7 +53,10 @@ func Load(fp string, release bool) (err error) {
 	}
 	_Release = release
 
-	settings.Logger = wrap.NewLogger("logs/go-web_api.log", zap.InfoLevel, 256, nil)
+	settings.Logger = wrap.NewLogger(
+		fmt.Sprintf("logs/go-web_%s.log", _Instance),
+		zap.InfoLevel, 256, nil,
+	)
 
 	if err = _SetupCrons(); err != nil {
 		return err
