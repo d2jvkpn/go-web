@@ -18,7 +18,14 @@
 #### 3. Status Codes(HTTP & response.Code)
 
 
-#### 4. Log Keys
+#### 4. Logger
+
+#### 4.2 required fields
+- traceId:
+- spanId:
+- eventId(requestId):
+
+#### 4.2 keys
 - apis: api/web, api/mobile...;
 - internals: internal/cron, internal/rpc, internal/panic, internal/conflict...;
 - third parties: thirdParty/CloudProvider::Name...;
