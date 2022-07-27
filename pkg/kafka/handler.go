@@ -109,7 +109,7 @@ LOOP:
 
 			metadata, err := handler.process(msg)
 			if err != nil {
-				handler.Logger.Error("!!! ConsumeClaim process faield: %v", err)
+				handler.Logger.Error("!!! ConsumeClaim process: %v", err)
 			}
 
 			if metadata != "" {
