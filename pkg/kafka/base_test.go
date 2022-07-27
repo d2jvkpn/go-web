@@ -15,11 +15,16 @@ func TestMain(m *testing.M) {
 	)
 
 	mainfs = flag.NewFlagSet("mainfs", flag.ExitOnError)
-	flag.Parse() // must
+	flag.Parse() // must do
 
 	mainfs.StringVar(&addrs, "addrs", "127.0.0.1:9093", "kakfa brokers address seperated by comma")
+	mainfs.StringVar(&_Topic, "topic", "test", "kafka topic")
+	mainfs.StringVar(&_GroupId, "groupId", "default", "kakfa group id")
+	mainfs.StringVar(&_KafkaVersion, "kafkaVersion", "3.2.0", "kakfa version")
+
 	mainfs.IntVar(&_Index, "index", 0, "first message index")
 	mainfs.IntVar(&_Num, "num", 10, "number of messages")
+
 	mainfs.Parse(flag.Args())
 
 	for _, v := range strings.Split(addrs, ",") {

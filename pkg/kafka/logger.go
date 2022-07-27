@@ -15,7 +15,7 @@ type LogIntf interface {
 
 type Logger struct{}
 
-func NewLogger(prefix string) (logger *Logger) {
+func NewLogger() (logger *Logger) {
 	logger = new(Logger)
 	// logger.l = log.New(os.Stdout, prefix, log.Lmsgprefix | log.Lshortfile)
 	// log.SetOutput(logger.l)

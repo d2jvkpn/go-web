@@ -82,7 +82,7 @@ func TestConsumer(t *testing.T) {
 	}
 }
 
-func TestConsumerGroup(t *testing.T) {
+func TestHandler(t *testing.T) {
 	var (
 		err error
 		ctx context.Context
@@ -103,8 +103,20 @@ func TestConsumerGroup(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	process := func(msg *sarama.ConsumerMessage) (metadata string, err error) {
+		tmpl := "<-- msg.Timestamp=%q, msg.Topic=%q, msg.Partition=%d, msg.Offset=%v\n" +
+			"    key: %q, value: %q\n"
+
+		log.Printf(
+			tmpl, msg.Timestamp, msg.Topic, msg.Partition, msg.Offset,
+			msg.Key, msg.Value,
+		)
+
+		return "consumed", nil
+	}
+
 	ctx = context.Background()
-	handler = NewHandler(ctx, group)
+	handler = NewHandler(ctx, group, process)
 	handler.Consume(_Topic)
 
 	time.Sleep(15 * time.Second)

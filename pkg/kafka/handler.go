@@ -10,19 +10,28 @@ import (
 
 type Handler struct {
 	Logger LogIntf
+	// process a message, MarkMessage(msg, metadata) as consumed if return string isn't empty
+	process Process
+	group   sarama.ConsumerGroup
 
-	group sarama.ConsumerGroup
-
+	wg     *sync.WaitGroup
 	ctx    context.Context
 	cancel context.CancelFunc
-	wg     *sync.WaitGroup
 }
 
-func NewHandler(ctx context.Context, group sarama.ConsumerGroup) (handler *Handler) {
-	handler = new(Handler)
-	handler.group, handler.Logger = group, NewLogger("Kafka::ConsumerGroup")
+type Process func(msg *sarama.ConsumerMessage) (metadata string, err error)
+
+func NewHandler(ctx context.Context, group sarama.ConsumerGroup, process Process) (
+	handler *Handler) {
+
+	handler = &Handler{
+		Logger:  NewLogger(),
+		process: process,
+		group:   group,
+		wg:      new(sync.WaitGroup),
+	}
+
 	handler.ctx, handler.cancel = context.WithCancel(ctx)
-	handler.wg = new(sync.WaitGroup)
 
 	return handler
 }
@@ -90,9 +99,6 @@ func (handler *Handler) ConsumeClaim(sess sarama.ConsumerGroupSession,
 	handler.wg.Add(1)
 	defer handler.wg.Done()
 
-	tmpl := "<-- msg.Timestamp=%+v, msg.Topic=%v, msg.Partition=%v, msg.Offset=%v\n" +
-		"    key: %q, value: %q\n"
-
 LOOP:
 	for {
 		select {
@@ -100,14 +106,16 @@ LOOP:
 			if msg == nil {
 				break LOOP
 			}
-			handler.Logger.Info(
-				tmpl, msg.Timestamp, msg.Topic, msg.Partition, msg.Offset,
-				msg.Key, msg.Value,
-			)
 
-			// TODO: process(msg)
-			// sess.MarkOffset(msg.Topic, msg.Partition, msg.Offset, "some-metadata")
-			sess.MarkMessage(msg, "consumed-by-d2jvkpn")
+			metadata, err := handler.process(msg)
+			if err != nil {
+				handler.Logger.Error("!!! ConsumeClaim process faield: %v", err)
+			}
+
+			if metadata != "" {
+				// sess.MarkOffset(msg.Topic, msg.Partition, msg.Offset, "some-metadata")
+				sess.MarkMessage(msg, metadata)
+			}
 		case <-handler.ctx.Done():
 			handler.Logger.Warn("!!! ConsumeClaim canceled")
 			break LOOP
