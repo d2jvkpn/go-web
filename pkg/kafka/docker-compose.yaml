@@ -1,0 +1,50 @@
+version: "3"
+
+# addrs=127.0.0.1:9093
+# kafka-console-producer.sh --broker-list $addrs --topic test
+# kafka-console-consumer.sh --bootstrap-server $addrs --topic test --from-beginning
+
+services:
+  zookeeper:
+    image: docker.io/bitnami/zookeeper:3.8
+    container_name: kafka_zookeeper
+    # restart: always
+    networks: ["kafka_network"]
+    # ports:
+    # - "2181:2181"
+    # volumes: ["zookeeper_data:/bitnami"]
+    environment:
+    - ALLOW_ANONYMOUS_LOGIN=yes
+
+  kafka:
+    image: docker.io/bitnami/kafka:3.2
+    container_name: kafka_app
+    # restart: always
+    depends_on: [zookeeper]
+    networks: ["kafka_network"]
+    ports:
+    - "9092:9092"
+    - "9093:9093"
+    # volumes: ["kafka_data:/bitnami"]
+    environment:
+    - ALLOW_PLAINTEXT_LISTENER=yes
+    - KAFKA_CFG_BROKER_ID=1
+    - KAFKA_CFG_ZOOKEEPER_CONNECT=kafka_zookeeper:2181
+    - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CLIENT:PLAINTEXT,EXTERNAL:PLAINTEXT
+    - KAFKA_CFG_LISTENERS=CLIENT://:9092,EXTERNAL://:9093
+    - KAFKA_CFG_ADVERTISED_LISTENERS=CLIENT://localhost:9092,EXTERNAL://localhost:9093
+    - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=CLIENT
+
+#volumes:
+#  zookeeper_data:
+#    name: kafka_zookeeper
+#    driver: local
+#  kafka_data:
+#    name: kafak_app
+#    driver: local
+
+networks:
+  kafka_network:
+    name: kafka_network
+    driver: bridge
+    external: false

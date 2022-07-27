@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq_app
+    restart: always
+    network_mode: bridge
+    ports: ["127.0.0.1:5672:5672", "127.0.0.1:15672:15672"]
+    
+    
+#home dir       : /var/lib/rabbitmq
+#config file(s) : /etc/rabbitmq/rabbitmq.config
+#database dir   : /var/lib/rabbitmq/mnesia/rabbit@my-rabbit
