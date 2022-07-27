@@ -1,6 +1,7 @@
 package kafka
 
 import (
+	"flag"
 	"log"
 
 	"github.com/Shopify/sarama"
@@ -18,6 +19,8 @@ var (
 
 	testIndex, testNum int
 	testOffset         int64
+
+	testFlag *flag.FlagSet
 )
 
 func init() {
