@@ -51,9 +51,12 @@ func TestConsumer(t *testing.T) {
 	}
 	log.Printf("~~~ partitions of %s: %v\n", topics[0], partitions)
 
+	// topic string, partition int32, offset int64
 	if pconsumer, err = consumer.ConsumePartition(_Topic, 0, 0); err != nil {
 		t.Fatal(err)
 	}
+
+	go TestProducer(t)
 
 	go func() {
 		mc := pconsumer.Messages() // *sarama.ConsumerMessage
@@ -103,20 +106,10 @@ func TestHandler(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	process := func(msg *sarama.ConsumerMessage) (metadata string, err error) {
-		tmpl := "<-- msg.Timestamp=%q, msg.Topic=%q, msg.Partition=%d, msg.Offset=%v\n" +
-			"    key: %q, value: %q\n"
-
-		log.Printf(
-			tmpl, msg.Timestamp, msg.Topic, msg.Partition, msg.Offset,
-			msg.Key, msg.Value,
-		)
-
-		return "consumed", nil
-	}
+	go TestProducer(t)
 
 	ctx = context.Background()
-	handler = NewHandler(ctx, group, process)
+	handler = NewHandler(ctx, group, defaultProcess)
 	handler.Consume(_Topic)
 
 	time.Sleep(15 * time.Second)

@@ -1,4 +1,4 @@
-package x
+package rabbitmq
 
 import (
 	"fmt"

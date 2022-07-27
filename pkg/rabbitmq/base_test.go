@@ -1,4 +1,4 @@
-package x
+package rabbitmq
 
 import (
 	"flag"
@@ -15,4 +15,5 @@ func TestMain(m *testing.M) {
 	}
 
 	fmt.Println("~~~ _TestUri:", _TestUri)
+	m.Run()
 }

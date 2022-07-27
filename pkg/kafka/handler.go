@@ -111,7 +111,6 @@ LOOP:
 			if err != nil {
 				handler.Logger.Error("!!! ConsumeClaim process: %v", err)
 			}
-
 			if metadata != "" {
 				// sess.MarkOffset(msg.Topic, msg.Partition, msg.Offset, "some-metadata")
 				sess.MarkMessage(msg, metadata)
