@@ -11,23 +11,23 @@ import (
 // $ go test -run TestHandler -- -index=10
 func TestMain(m *testing.M) {
 	var (
-		addrs  string
-		mainfs *flag.FlagSet
+		addrs    string
+		mainFlag *flag.FlagSet
 	)
 
-	mainfs = flag.NewFlagSet("mainfs", flag.ExitOnError)
+	mainFlag = flag.NewFlagSet("mainFlag", flag.ExitOnError)
 	flag.Parse() // must do
 
-	mainfs.StringVar(&addrs, "addrs", "127.0.0.1:9093", "kakfa brokers address seperated by comma")
-	mainfs.StringVar(&testTopic, "topic", "test", "kafka topic")
-	mainfs.StringVar(&testGroupId, "groupId", "default", "kakfa group id")
-	mainfs.StringVar(&testKafkaVersion, "kafkaVersion", "3.2.0", "kakfa version")
+	mainFlag.StringVar(&addrs, "addrs", "127.0.0.1:9093", "kakfa brokers address seperated by comma")
+	mainFlag.StringVar(&testTopic, "topic", "test", "kafka topic")
+	mainFlag.StringVar(&testGroupId, "groupId", "default", "kakfa group id")
+	mainFlag.StringVar(&testKafkaVersion, "kafkaVersion", "3.2.0", "kakfa version")
 
-	mainfs.IntVar(&testIndex, "index", 0, "first message index")
-	mainfs.IntVar(&testNum, "num", 10, "number of messages")
-	mainfs.Int64Var(&testOffset, "offset", 0, "offset number")
+	mainFlag.IntVar(&testIndex, "index", 0, "first message index")
+	mainFlag.IntVar(&testNum, "num", 10, "number of messages")
+	mainFlag.Int64Var(&testOffset, "offset", 0, "offset number")
 
-	mainfs.Parse(flag.Args())
+	mainFlag.Parse(flag.Args())
 
 	for _, v := range strings.Split(addrs, ",") {
 		v = strings.TrimSpace(v)
@@ -37,8 +37,9 @@ func TestMain(m *testing.M) {
 	}
 
 	fmt.Printf(
-		"==> TestMain: testAddrs=%v, testIndex=%d, testNum=%d\n",
-		testAddrs, testIndex, testNum,
+		"==> TestMain: testAddrs=%v, testTopic=%q, testGroupId=%q, testKafkaVersion=%q\n"+
+			"    testIndex=%d, testNum=%d, testOffset=%d\n",
+		testAddrs, testTopic, testGroupId, testKafkaVersion, testIndex, testNum, testOffset,
 	)
 	if testNum == 0 {
 		fmt.Println("invalid num:", testNum)

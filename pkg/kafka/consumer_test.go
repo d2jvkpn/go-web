@@ -1,8 +1,8 @@
 package kafka
 
 import (
-	// "fmt"
 	"context"
+	"fmt"
 	"log"
 	"testing"
 	"time"
@@ -40,14 +40,15 @@ func TestConsumer(t *testing.T) {
 	if len(topics) == 0 {
 		t.Fatal("no topics")
 	}
+	fmt.Println("~~~ Avaialble topics:", topics)
 
-	if partitions, err = consumer.Partitions(topics[0]); err != nil {
+	if partitions, err = consumer.Partitions(testTopic); err != nil {
 		t.Fatal(err)
 	}
 	if len(partitions) == 0 {
-		t.Fatalf("topics %s has no partitions\n", topics[0])
+		t.Fatalf("topic %s has no partitions\n", testTopic)
 	}
-	log.Printf("~~~ partitions of %s: %v\n", topics[0], partitions)
+	log.Printf("~~~ topic %s partitions: %v\n", testTopic, partitions)
 
 	// topic string, partition int32, offset int64
 	pconsumer, err = consumer.ConsumePartition(testTopic, 0, testOffset)
@@ -85,12 +86,12 @@ func TestHandler(t *testing.T) {
 
 		config  *sarama.Config
 		group   sarama.ConsumerGroup
-		handler *Handler // sarama.ConsumerGroupHandler
+		handler *Handler // impls sarama.ConsumerGroupHandler
 	)
 
 	config = sarama.NewConfig()
 	config.Consumer.Return.Errors = true
-	config.Consumer.Offsets.Initial = sarama.OffsetOldest
+	config.Consumer.Offsets.Initial = sarama.OffsetOldest // sarama.OffsetNewest
 	if config.Version, err = sarama.ParseKafkaVersion(testKafkaVersion); err != nil {
 		t.Fatal(err)
 	}
@@ -108,8 +109,7 @@ func TestHandler(t *testing.T) {
 	time.Sleep(15 * time.Second)
 	log.Println("<<< Exit")
 
-	handler.Close()
-	if err = group.Close(); err != nil {
+	if err = handler.Close(); err != nil {
 		t.Fatal(err)
 	}
 	time.Sleep(2 * time.Second)

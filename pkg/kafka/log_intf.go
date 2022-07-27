@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-// customize yourself, no concurrency safe gurant
+// customize yourself, no concurrency safe guaranteed
 type LogIntf interface {
 	Info(string, ...any)
 	Warn(string, ...any)

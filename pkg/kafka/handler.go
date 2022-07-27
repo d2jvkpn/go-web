@@ -49,19 +49,22 @@ func (handler *Handler) Consume(topics ...string) {
 				}
 				handler.Logger.Error("!!! Handler.Consume error:", err)
 			} else {
-				handler.Logger.Warn("<== Handler.Consume end")
+				handler.Logger.Warn("<== Handler.Consume end") // occurs when reset offset
 			}
 
-			if handler.ctx.Err() != nil {
+			if err = handler.ctx.Err(); err != nil {
+				handler.Logger.Error("!!! Handler.Consume ctx.Err(): %v", err)
 				return
 			}
 		}
 	}()
 }
 
-func (handler *Handler) Close() {
+func (handler *Handler) Close() error {
 	handler.cancel()
 	handler.wg.Wait()
+
+	return handler.group.Close()
 }
 
 func (handler *Handler) Setup(sess sarama.ConsumerGroupSession) (err error) {
@@ -78,7 +81,7 @@ func (handler *Handler) Setup(sess sarama.ConsumerGroupSession) (err error) {
 				}
 				handler.Logger.Error("!!! Handle.Setup error:", err)
 			case <-handler.ctx.Done():
-				handler.Logger.Warn("~~~ Handle Setup done")
+				handler.Logger.Info("~~~ Handle.Setup done")
 				return
 			}
 		}
@@ -89,12 +92,12 @@ func (handler *Handler) Setup(sess sarama.ConsumerGroupSession) (err error) {
 
 func (handler *Handler) Cleanup(sess sarama.ConsumerGroupSession) (err error) {
 	// TODO
-	handler.Logger.Info(">>> Handler Cleanup")
+	handler.Logger.Info(">>> Handler.Cleanup start")
 	return nil
 }
 
 func (handler *Handler) ConsumeClaim(sess sarama.ConsumerGroupSession,
-	claim sarama.ConsumerGroupClaim) (err error) {
+	claim sarama.ConsumerGroupClaim) error {
 
 	handler.wg.Add(1)
 	defer handler.wg.Done()
@@ -109,14 +112,14 @@ LOOP:
 
 			metadata, err := handler.process(msg)
 			if err != nil {
-				handler.Logger.Error("!!! ConsumeClaim process: %v", err)
+				handler.Logger.Error("!!! Handler.ConsumeClaim process: %v", err)
 			}
 			if metadata != "" {
 				// sess.MarkOffset(msg.Topic, msg.Partition, msg.Offset, "some-metadata")
 				sess.MarkMessage(msg, metadata)
 			}
 		case <-handler.ctx.Done():
-			handler.Logger.Warn("!!! ConsumeClaim canceled")
+			handler.Logger.Warn("!!! Handler.ConsumeClaim canceled")
 			break LOOP
 		}
 	}

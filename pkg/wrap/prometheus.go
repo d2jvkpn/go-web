@@ -48,12 +48,10 @@ func NewPrometheusMonitor(namespace string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		p := ctx.Request.URL.Path
 		timer := prometheus.NewTimer(httpDuration.WithLabelValues(p))
-
 		ctx.Next()
 
 		responseStatus.WithLabelValues(strconv.Itoa(ctx.Writer.Status())).Inc()
 		totalRequests.WithLabelValues(p).Inc()
-
 		timer.ObserveDuration()
 	}
 }

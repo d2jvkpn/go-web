@@ -31,8 +31,8 @@ func init() {
 }
 
 func defaultProcess(msg *sarama.ConsumerMessage) (metadata string, err error) {
-	tmpl := "<-- msg.Timestamp=%q, msg.Topic=%q, msg.Partition=%d, msg.Offset=%v, " +
-		"key=%q, value=%q\n"
+	tmpl := "<-- msg.Timestamp=%q, msg.Topic=%q, msg.Partition=%d, msg.Offset=%v,\n" +
+		"    key=%q, value=%q\n"
 
 	// msg.BlockTimestamp
 	log.Printf(
