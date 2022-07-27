@@ -28,4 +28,5 @@
 #### 4.2 keys
 - apis: api/web, api/mobile...;
 - internals: internal/cron, internal/rpc, internal/panic, internal/conflict...;
+- business: biz/xxxx;
 - third parties: thirdParty/CloudProvider::Name...;
