@@ -23,7 +23,7 @@ func NewLogger() (logger *Logger) {
 }
 
 func (logger *Logger) Printf(format string, a ...any) (int, error) {
-	t := time.Now().Format("2006-01-02T15:04:05.000Z07:00")
+	t := time.Now().Format(RFC3339ms)
 	return fmt.Printf(t+" "+strings.TrimSpace(format)+"\n", a...) // bytes.TrimSpace(bts)
 }
 

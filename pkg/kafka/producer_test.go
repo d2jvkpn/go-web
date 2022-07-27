@@ -16,21 +16,21 @@ func TestProducer(t *testing.T) {
 	)
 
 	config = sarama.NewConfig()
-	if config.Version, err = sarama.ParseKafkaVersion(_KafkaVersion); err != nil {
+	if config.Version, err = sarama.ParseKafkaVersion(testKafkaVersion); err != nil {
 		t.Fatal(err)
 	}
 
-	if producer, err = sarama.NewAsyncProducer(_Addrs, config); err != nil {
+	if producer, err = sarama.NewAsyncProducer(testAddrs, config); err != nil {
 		t.Fatal(err)
 	}
 
-	for i := _Index; i < _Index+_Num; i++ {
+	for i := testIndex; i < testIndex+testNum; i++ {
 		msg := fmt.Sprintf("hello message: %d", i)
 		log.Println("--> send msg:", msg)
 
 		pmsg := &sarama.ProducerMessage{
-			Topic: _Topic,
-			Key:   sarama.StringEncoder("e0001"),
+			Topic: testTopic,
+			Key:   sarama.StringEncoder("key0001"),
 			Value: sarama.ByteEncoder([]byte(msg)),
 		}
 

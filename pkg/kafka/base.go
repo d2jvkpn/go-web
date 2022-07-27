@@ -6,30 +6,37 @@ import (
 	"github.com/Shopify/sarama"
 )
 
-var (
-	_KafkaVersion string
-	_Addrs        []string
-	_Topic        string
-	_GroupId      string
+const (
+	RFC3339ms = "2006-01-02T15:04:05.000Z07:00"
+)
 
-	_Index, _Num int
+var (
+	testKafkaVersion string
+	testAddrs        []string
+	testTopic        string
+	testGroupId      string
+
+	testIndex, testNum int
+	testOffset         int64
 )
 
 func init() {
-	// _Addrs = []string{"127.0.0.1:9093"}
-	// _Topic = "test"
-	// _GroupId = "default"
-	// _KafkaVersion = "3.2.0"
-	// _Index = 0
-	// _Num = 10
+	// testAddrs = []string{"127.0.0.1:9093"}
+	// testTopic = "test"
+	// testGroupId = "default"
+	// testKafkaVersion = "3.2.0"
+	// testIndex = 0
+	// testNum = 10
+	// testOffset = 0
 }
 
 func defaultProcess(msg *sarama.ConsumerMessage) (metadata string, err error) {
-	tmpl := "<-- msg.Timestamp=%q, msg.Topic=%q, msg.Partition=%d, msg.Offset=%v\n" +
-		"    key: %q, value: %q\n"
+	tmpl := "<-- msg.Timestamp=%q, msg.Topic=%q, msg.Partition=%d, msg.Offset=%v, " +
+		"key=%q, value=%q\n"
 
+	// msg.BlockTimestamp
 	log.Printf(
-		tmpl, msg.Timestamp, msg.Topic, msg.Partition, msg.Offset,
+		tmpl, msg.Timestamp.Format(RFC3339ms), msg.Topic, msg.Partition, msg.Offset,
 		msg.Key, msg.Value,
 	)
 
