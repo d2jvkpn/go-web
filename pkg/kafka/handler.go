@@ -68,7 +68,7 @@ func (handler *Handler) Close() error {
 }
 
 func (handler *Handler) Setup(sess sarama.ConsumerGroupSession) (err error) {
-	handler.Logger.Info(">>> Handler.Setup Start")
+	handler.Logger.Info("==> Handler.Setup Start")
 
 	go func() {
 		var err error
@@ -92,7 +92,7 @@ func (handler *Handler) Setup(sess sarama.ConsumerGroupSession) (err error) {
 
 func (handler *Handler) Cleanup(sess sarama.ConsumerGroupSession) (err error) {
 	// TODO
-	handler.Logger.Info(">>> Handler.Cleanup start")
+	handler.Logger.Info("==> Handler.Cleanup start")
 	return nil
 }
 
