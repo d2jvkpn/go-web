@@ -6,7 +6,7 @@ import (
 )
 
 func TestTopicQueue(t *testing.T) {
-	q, err := NewTopicQueue(_TestUri, "articles", "collect", "xxxxxx")
+	q, err := NewTopicQueue(testUri, "articles", "collect", "xxxxxx")
 
 	if err != nil {
 		t.Fatal(err)
@@ -16,7 +16,7 @@ func TestTopicQueue(t *testing.T) {
 }
 
 func TestTopicSender_t1(t *testing.T) {
-	sender, err := NewTopicSender(_TestUri, "articles", "collect")
+	sender, err := NewTopicSender(testUri, "articles", "collect")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -27,7 +27,7 @@ func TestTopicSender_t1(t *testing.T) {
 }
 
 func TestTopicReceiver_t1(t *testing.T) {
-	rec, err := NewTopicReceiver(_TestUri, "articles", "collect", "collect_link", "")
+	rec, err := NewTopicReceiver(testUri, "articles", "collect", "collect_link", "")
 	if err != nil {
 		t.Fatal(err)
 	}

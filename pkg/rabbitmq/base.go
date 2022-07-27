@@ -5,5 +5,5 @@ import (
 )
 
 var (
-	_TestUri = "amqp://guest:guest@localhost:5672"
+	testUri = "amqp://guest:guest@localhost:5672"
 )
