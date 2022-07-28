@@ -19,33 +19,32 @@ type Config struct {
 	ExpiredSeconds int    `mapstructure:"expired_seconds"` // sts
 }
 
-func NewConfig(fp, field string) (config *Config, err error) {
+func NewConfig(fp, field string) (config Config, err error) {
 	var conf *viper.Viper
 
 	conf = viper.New()
 	conf.SetConfigName("aliyun_config")
 
-	switch {
-	case strings.HasSuffix(fp, ".toml"):
-		conf.SetConfigType("toml")
-	case strings.HasSuffix(fp, ".yaml"):
-		conf.SetConfigType("yaml")
-	default:
-		return nil, fmt.Errorf("unkonw config file, use .yaml or .toml")
-	}
+	//	switch {
+	//	case strings.HasSuffix(fp, ".toml"):
+	//		conf.SetConfigType("toml")
+	//	case strings.HasSuffix(fp, ".yaml"):
+	//		conf.SetConfigType("yaml")
+	//	default:
+	//		return config, fmt.Errorf("unkonw config file, use .yaml or .toml")
+	//	}
 	conf.SetConfigFile(fp)
 
 	if err = conf.ReadInConfig(); err != nil {
-		return nil, err
+		return config, err
 	}
 
-	config = new(Config)
-	if err = conf.UnmarshalKey(field, config); err != nil {
-		return nil, err
+	if err = conf.UnmarshalKey(field, &config); err != nil {
+		return config, err
 	}
 
 	if err = config.Valid(); err != nil {
-		return nil, err
+		return config, err
 	}
 	return config, nil
 }
@@ -67,15 +66,11 @@ func (config *Config) Valid() (err error) {
 }
 
 func NewOssClient(fp, field string) (client *OssClient, err error) {
-	var config *Config
-
+	var config Config
 	if config, err = NewConfig(fp, field); err != nil {
 		return nil, err
 	}
-
-	client = &OssClient{
-		config: *config,
-	}
+	client = &OssClient{config: config}
 
 	client.Client, err = oss.New(
 		fmt.Sprintf("https://oss-%s.aliyuncs.com", config.RegionId),
@@ -89,13 +84,11 @@ func NewOssClient(fp, field string) (client *OssClient, err error) {
 }
 
 func NewStsClient(fp, field string) (client *StsClient, err error) {
-	var config *Config
-
+	var config Config
 	if config, err = NewConfig(fp, field); err != nil {
 		return nil, err
 	}
-
-	client = &StsClient{config: *config}
+	client = &StsClient{config: config}
 
 	if config.RoleArn == "" {
 		return nil, fmt.Errorf("role_arn is unset")

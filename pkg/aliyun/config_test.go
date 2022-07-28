@@ -7,6 +7,7 @@ import (
 	"testing"
 )
 
+// default config: wk_config/test.yaml
 func TestMain(m *testing.M) {
 	var (
 		configFile         string
@@ -39,6 +40,31 @@ func TestMain(m *testing.M) {
 	}
 
 	m.Run()
+}
+
+func TestConfig(t *testing.T) {
+	var (
+		config Config
+		err    error
+	)
+
+	if config, err = NewConfig("config.demo.toml", "aliyun_oss"); err != nil {
+		t.Fatal(err)
+	}
+
+	if config, err = NewConfig("config.demo.toml", "aliyun_sts"); err != nil {
+		t.Fatal(err)
+	}
+
+	if config, err = NewConfig("config.demo.yaml", "aliyun_oss"); err != nil {
+		t.Fatal(err)
+	}
+
+	if config, err = NewConfig("config.demo.yaml", "aliyun_sts"); err != nil {
+		t.Fatal(err)
+	}
+
+	fmt.Println(config)
 }
 
 func TestConfigDemo(t *testing.T) {
