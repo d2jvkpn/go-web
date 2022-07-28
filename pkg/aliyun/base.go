@@ -11,13 +11,13 @@ const (
 )
 
 var (
+	//go:embed config.demo.md
+	configDemo string
+
 	testConfig    *Config
 	testOssClient *OssClient
 	testStsClient *StsClient
 	testFlag      *flag.FlagSet
-
-	//go:embed config.demo.md
-	configDemo string
 )
 
 func init() {

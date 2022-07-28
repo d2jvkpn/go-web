@@ -106,7 +106,7 @@ func NewStsClient(fp, field string) (client *StsClient, err error) {
 	return client, nil
 }
 
-func (config *Config) Url(ps ...string) (link string) {
+func (config *Config) Url(ps ...string) string {
 	if len(ps) == 0 {
 		return fmt.Sprintf("https://%s.oss-%s.%s", config.Bucket, config.RegionId, ALIYUN_Domain)
 	}
