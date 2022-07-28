@@ -18,6 +18,22 @@ func ReadConfigFile(name, fp string) (conf *viper.Viper, err error) {
 	return conf, nil
 }
 
+func LoadConfig(name, fp string, objects map[string]any) (err error) {
+	var conf *viper.Viper
+
+	if conf, err = ReadConfigFile(name, fp); err != nil {
+		return err
+	}
+
+	for k, v := range objects {
+		if err = conf.UnmarshalKey(k, v); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 func ReadConfigString(name, str, typ string) (conf *viper.Viper, err error) {
 	buf := bytes.NewBufferString(str)
 
