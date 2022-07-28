@@ -2,27 +2,28 @@ package wrap
 
 import (
 	"fmt"
+	"net/http"
+	"strings"
 
+	"github.com/gin-gonic/gin"
 	jwt "github.com/golang-jwt/jwt/v4"
 )
 
 type JwtHSAuth struct {
-	key      []byte
-	hsMethod *jwt.SigningMethodHMAC // SigningMethodHS{256,384,512}
+	key    []byte
+	method *jwt.SigningMethodHMAC // SigningMethodHS{256,384,512}
 }
 
 func NewHSAuth(key string, hsCode uint) (auth *JwtHSAuth, err error) {
-	auth = &JwtHSAuth{
-		key: []byte(key),
-	}
+	auth = &JwtHSAuth{key: []byte(key)}
 
 	switch hsCode {
 	case 256:
-		auth.hsMethod = jwt.SigningMethodHS256
+		auth.method = jwt.SigningMethodHS256
 	case 384:
-		auth.hsMethod = jwt.SigningMethodHS384
+		auth.method = jwt.SigningMethodHS384
 	case 512:
-		auth.hsMethod = jwt.SigningMethodHS512
+		auth.method = jwt.SigningMethodHS512
 	default:
 		return nil, fmt.Errorf("invalid hsCode")
 	}
@@ -37,11 +38,11 @@ func (auth *JwtHSAuth) Sign(data map[string]any) (str string, err error) {
 	)
 
 	claims = make(jwt.MapClaims, len(data))
-	for k, v := range data {
+	for k, v := range data { // TODO: can't do type assertion, how to avoid copy
 		claims[k] = v
 	}
 
-	token = jwt.NewWithClaims(auth.hsMethod, claims)
+	token = jwt.NewWithClaims(auth.method, claims)
 	return token.SignedString(auth.key)
 }
 
@@ -52,9 +53,10 @@ func (auth *JwtHSAuth) Parse(str string) (data map[string]any, err error) {
 		claims jwt.MapClaims
 	)
 
+	// options ...ParserOption
 	token, err = jwt.Parse(str, func(token *jwt.Token) (any, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
 		return auth.key, nil
 	})
@@ -76,4 +78,40 @@ func (auth *JwtHSAuth) Parse(str string) (data map[string]any, err error) {
 	}
 
 	return data, nil
+}
+
+func GinJwtHSAuth(auth *JwtHSAuth, handle func(*gin.Context, map[string]any) error,
+) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		var (
+			head string
+			data map[string]any
+			err  error
+		)
+
+		if head = ctx.Request.Header.Get("Authorization"); head == "" {
+			ctx.AbortWithStatus(http.StatusForbidden)
+			return
+		}
+
+		if !strings.HasPrefix(head, "Bearer ") {
+			ctx.AbortWithStatus(http.StatusForbidden)
+			return
+		}
+
+		if data, err = auth.Parse(head[7:]); err != nil {
+			ctx.AbortWithStatus(http.StatusUnauthorized)
+			return
+		}
+
+		if handle != nil {
+			if err = handle(ctx, data); err != nil {
+				ctx.Abort()
+				return
+			}
+			// for k, v := range data { ctx.Set(k, v) }
+		}
+
+		ctx.Next()
+	}
 }
