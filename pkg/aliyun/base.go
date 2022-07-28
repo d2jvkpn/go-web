@@ -16,7 +16,7 @@ var (
 	testStsClient *StsClient
 	testFlag      *flag.FlagSet
 
-	//go:embed config.demo.yaml
+	//go:embed config.demo.md
 	configDemo string
 )
 
