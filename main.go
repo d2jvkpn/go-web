@@ -40,7 +40,10 @@ func main() {
 	}
 	buildInfo = misc.BuildInfo(extract("project"), extract("version"))
 	internal.LoadBuildInfo(buildInfo)
-	internal.AppendServeOptions(internal.StaticDir("/uploads", "./data/uploads", false))
+
+	internal.AppendStaticDir(wrap.ServeStatic(
+		"/uploads", "./data/uploads", false,
+	))
 
 	root := &cobra.Command{Use: project.GetString("usage")}
 

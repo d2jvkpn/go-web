@@ -5,10 +5,10 @@ import (
 	"expvar"
 	"fmt"
 	"net/http"
-	// "strings"
 	"net/http/pprof"
 	"runtime/debug"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -146,4 +146,53 @@ func Pprof(rg *gin.RouterGroup, handlers ...gin.HandlerFunc) {
 	dbg.GET("/pprof/symbol", gin.WrapF(pprof.Symbol))
 
 	return
+}
+
+type StaticDir func(*gin.RouterGroup) error
+
+func ServeStatic(dir, local string, listDir bool) StaticDir {
+	return func(rg *gin.RouterGroup) (err error) {
+		if listDir {
+			rg.StaticFS(dir, http.Dir(local))
+		} else {
+			rg.Static(dir, local)
+		}
+		return nil
+	}
+}
+
+func GinJwtHSAuth(auth *JwtHSAuth, handle func(*gin.Context, map[string]any) error,
+) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		var (
+			head string
+			data map[string]any
+			err  error
+		)
+
+		if head = ctx.Request.Header.Get("Authorization"); head == "" {
+			ctx.AbortWithStatus(http.StatusForbidden)
+			return
+		}
+		if !strings.HasPrefix(head, "Bearer ") {
+			ctx.AbortWithStatus(http.StatusForbidden)
+			return
+		}
+
+		if data, err = auth.Parse(head[7:]); err != nil {
+			ctx.AbortWithStatus(http.StatusUnauthorized)
+			return
+		}
+
+		if handle != nil {
+			// use ctx.Set in handle, response inside handle if an error occurs
+			if err = handle(ctx, data); err != nil {
+				ctx.Abort()
+				return
+			}
+
+		}
+
+		ctx.Next()
+	}
 }

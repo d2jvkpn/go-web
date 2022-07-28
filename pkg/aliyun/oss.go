@@ -20,6 +20,7 @@ type OssClient struct {
 	config Config
 }
 
+// oss.ForbidOverWrite(forbidWrite bool) oss.Option
 func (client *OssClient) UploadLocal(fp, subpath string, options ...oss.Option) (
 	link string, err error) {
 	var (

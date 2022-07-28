@@ -79,8 +79,8 @@ func NewEngine(release bool) (engi *gin.Engine, err error) {
 	// bts, _ := _Static.ReadFile("static/favicon.png")
 	// engi.RouterGroup.GET("/favicon.ico", "image/x-icon", "favicon.ico", wrap.ServeFile(bts))
 
-	for i := range _ServeOptions {
-		if err = _ServeOptions[i](rg); err != nil {
+	for i := range _StaticDirs {
+		if err = _StaticDirs[i](rg); err != nil {
 			return nil, err
 		}
 	}

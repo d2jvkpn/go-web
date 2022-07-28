@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/d2jvkpn/go-web/pkg/misc"
+	"github.com/d2jvkpn/go-web/pkg/wrap"
 
 	"github.com/robfig/cron/v3"
 	"github.com/spf13/viper"
@@ -28,8 +29,8 @@ var (
 	//go:embed static
 	_Static embed.FS
 	//go:embed templates
-	_Templates    embed.FS
-	_ServeOptions = make([]ServeOption, 0)
+	_Templates  embed.FS
+	_StaticDirs []wrap.StaticDir
 
 	_Release  bool
 	_Instance string
@@ -48,6 +49,7 @@ func init() {
 	// _InstanceId = wrap.RandString(16)
 	_Cron = cron.New(cron.WithSeconds())
 	_Instance = misc.RandString(4)
+	_StaticDirs = make([]wrap.StaticDir, 0)
 }
 
 func LoadBuildInfo(info [][2]string) {

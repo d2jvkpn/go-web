@@ -15,31 +15,16 @@ import (
 	"go.uber.org/zap"
 )
 
-type ServeOption func(*gin.RouterGroup) error
-
-func StaticDir(dir, local string, listDir bool) ServeOption {
-	return func(rg *gin.RouterGroup) (err error) {
-		if listDir {
-			rg.StaticFS(dir, http.Dir(local))
-		} else {
-			rg.Static(dir, local)
-		}
-		return nil
-	}
-}
-
-func AppendServeOptions(opts ...ServeOption) {
-	if len(opts) == 0 {
+func AppendStaticDir(dirs ...wrap.StaticDir) {
+	if len(dirs) == 0 {
 		return
 	}
 
-	_ServeOptions = append(_ServeOptions, opts...)
+	_StaticDirs = append(_StaticDirs, dirs...)
 }
 
 func Load(fp string, release bool) (err error) {
-	var (
-		engi *gin.Engine
-	)
+	var engi *gin.Engine
 
 	if _Config, err = wrap.ReadConfigFile("config", fp); err != nil {
 		return

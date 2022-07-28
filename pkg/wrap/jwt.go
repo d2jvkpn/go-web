@@ -2,10 +2,7 @@ package wrap
 
 import (
 	"fmt"
-	"net/http"
-	"strings"
 
-	"github.com/gin-gonic/gin"
 	jwt "github.com/golang-jwt/jwt/v4"
 )
 
@@ -78,39 +75,4 @@ func (auth *JwtHSAuth) Parse(str string) (data map[string]any, err error) {
 	}
 
 	return data, nil
-}
-
-func GinJwtHSAuth(auth *JwtHSAuth, handle func(*gin.Context, map[string]any) error,
-) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		var (
-			head string
-			data map[string]any
-			err  error
-		)
-
-		if head = ctx.Request.Header.Get("Authorization"); head == "" {
-			ctx.AbortWithStatus(http.StatusForbidden)
-			return
-		}
-		if !strings.HasPrefix(head, "Bearer ") {
-			ctx.AbortWithStatus(http.StatusForbidden)
-			return
-		}
-
-		if data, err = auth.Parse(head[7:]); err != nil {
-			ctx.AbortWithStatus(http.StatusUnauthorized)
-			return
-		}
-
-		if handle != nil {
-			if err = handle(ctx, data); err != nil {
-				ctx.Abort()
-				return
-			}
-			// for k, v := range data { ctx.Set(k, v) }
-		}
-
-		ctx.Next()
-	}
 }

@@ -19,8 +19,8 @@ func TestMain(m *testing.M) {
 	flag.Parse() // must do
 
 	testFlag.StringVar(&configFile, "config", "wk_config/test.yaml", "config filepath")
-	testFlag.StringVar(&ossField, "ossField", "aliyun_oss", "aliyun oss field in config")
-	testFlag.StringVar(&stsField, "stsField", "aliyun_sts", "aliyun sts field in config")
+	testFlag.StringVar(&ossField, "oss", "aliyun_oss", "aliyun oss field in config")
+	testFlag.StringVar(&stsField, "sts", "aliyun_sts", "aliyun sts field in config")
 
 	testFlag.Parse(flag.Args())
 
