@@ -12,6 +12,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
+// demo
 func NewPrometheusMonitor(namespace string) gin.HandlerFunc {
 	totalRequests := prometheus.NewCounterVec(
 		prometheus.CounterOpts{

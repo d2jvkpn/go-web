@@ -44,10 +44,10 @@ func (handler *Handler) Consume(topics ...string) {
 			err = handler.group.Consume(handler.ctx, topics, handler)
 			if err != nil {
 				if errors.Is(sarama.ErrClosedConsumerGroup, err) {
-					handler.Logger.Warn("!!! Handler.Consume closed:", err)
+					handler.Logger.Warn("!!! Handler.Consume closed: %v", err)
 					return
 				}
-				handler.Logger.Error("!!! Handler.Consume error:", err)
+				handler.Logger.Error("!!! Handler.Consume error: %v", err)
 			} else {
 				handler.Logger.Warn("<== Handler.Consume end") // occurs when reset offset
 			}
