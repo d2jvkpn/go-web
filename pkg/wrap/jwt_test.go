@@ -5,6 +5,8 @@ import (
 	"testing"
 
 	jwt "github.com/golang-jwt/jwt/v4"
+
+	. "github.com/stretchr/testify/require"
 )
 
 func TestJwt(t *testing.T) {
@@ -20,22 +22,22 @@ func TestJwtHSAuth(t *testing.T) {
 		auth  *JwtHSAuth
 	)
 
-	if auth, err = NewHSAuth("123456", 256); err != nil {
-		t.Fatal(err)
-	}
+	auth, err = NewHSAuth("123456", 256)
+	NoError(t, err)
 
 	data = map[string]any{
 		"key1": "value1",
 		"key2": 42.24,
 	}
 
-	if str, err = auth.Sign(data); err != nil {
-		t.Fatal(err)
-	}
+	str, err = auth.Sign(data)
+	NoError(t, err)
 	fmt.Println(">>> signed token:", str)
 
-	if data2, err = auth.Parse(str); err != nil {
-		t.Fatal(err)
-	}
+	data2, err = auth.Parse(str)
+	NoError(t, err)
 	fmt.Println(">>> parsed token:", data2)
+
+	Equal(t, data["key1"], data2["key1"])
+	Equal(t, data["key2"], data2["key2"])
 }

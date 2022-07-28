@@ -93,7 +93,6 @@ func GinJwtHSAuth(auth *JwtHSAuth, handle func(*gin.Context, map[string]any) err
 			ctx.AbortWithStatus(http.StatusForbidden)
 			return
 		}
-
 		if !strings.HasPrefix(head, "Bearer ") {
 			ctx.AbortWithStatus(http.StatusForbidden)
 			return
