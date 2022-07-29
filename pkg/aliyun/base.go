@@ -11,7 +11,7 @@ const (
 )
 
 var (
-	//go:embed config.demo.md
+	//go:embed config_demo.md
 	configDemo string
 
 	testConfig    *Config
