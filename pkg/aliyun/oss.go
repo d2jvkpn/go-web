@@ -155,54 +155,18 @@ func (client *OssClient) Upload(fp string, subpath string, overWrite bool) (
 	return link, fsize, nil
 }
 
-func (client *OssClient) UploadDir(d string, dir string) (
+func (client *OssClient) UploadDir(source string, target string, conc uint) (
 	link string, err error) {
-
-	//	if d, err = filepath.Abs(d); err != nil {
-	//		return "", err
-	//	}
-
-	err = filepath.Walk(d, func(fp string, info fs.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-
-		// fmt.Println(fp, info.Size())
-		if info.IsDir() {
-			return nil
-		}
-		// fmt.Println("~~~", time.Now().Format(time.RFC3339), fp)
-		t := filepath.Join(dir, strings.Replace(fp, d, "", 1))
-		_, err = client.UploadLocal(fp, t)
-		return err
-	})
-
-	if err != nil {
-		return "", err
-	}
-
-	// link is a dir path, try to access html like dir + "index/html"
-	return client.config.Url(strings.Trim(dir, "/")), err
-}
-
-func (client *OssClient) UploadDirV2(d string, dir string, conc uint) (
-	link string, err error) {
-
-	//	if d, err = filepath.Abs(d); err != nil {
-	//		return "", err
-	//	}
-
 	if conc == 0 {
 		conc = 1
 	}
 	n, done, once := uint(0), make(chan bool, conc), new(sync.Once)
 
 	// err = filepath.Walk(...)
-	filepath.Walk(d, func(fp string, info fs.FileInfo, e1 error) error {
+	filepath.Walk(source, func(fp string, info fs.FileInfo, e1 error) error {
 		if e1 != nil {
 			return e1
 		}
-
 		// fmt.Println(fp, info.Size())
 		if err != nil || info.IsDir() {
 			return nil
@@ -214,7 +178,7 @@ func (client *OssClient) UploadDirV2(d string, dir string, conc uint) (
 		}
 
 		go func() {
-			t := filepath.Join(dir, strings.Replace(fp, d, "", 1))
+			t := filepath.Join(target, strings.Replace(fp, source, "", 1))
 			// fmt.Println("~~~", time.Now().Format(time.RFC3339), fp)
 			if _, e2 := client.UploadLocal(fp, t); e2 != nil {
 				once.Do(func() {
@@ -235,7 +199,7 @@ func (client *OssClient) UploadDirV2(d string, dir string, conc uint) (
 	}
 
 	// link is a dir path, try to access html like dir + "index/html"
-	return client.config.Url(strings.Trim(dir, "/")), err
+	return client.config.Url(strings.Trim(target, "/")), err
 }
 
 func (client *OssClient) CopyFile(src, target string, options ...oss.Option) (

@@ -42,7 +42,7 @@ func TestUploadDir(t *testing.T) {
 		err  error
 	)
 
-	link, err = testOssClient.UploadDir("dir", "test/oss/dir")
+	link, err = testOssClient.UploadDir("dir", "test/oss/dir-target", 4)
 	if err != nil {
 		t.Fatal(err)
 	}
