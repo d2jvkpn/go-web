@@ -73,7 +73,7 @@ func NewOssClient(fp, field string) (client *OssClient, err error) {
 	client = &OssClient{config: config}
 
 	client.Client, err = oss.New(
-		fmt.Sprintf("https://oss-%s.aliyuncs.com", config.RegionId),
+		fmt.Sprintf("https://oss-%s.%s", config.RegionId, ALIYUN_Domain),
 		config.AccessKeyId, config.AccessKeySecret,
 	)
 	if err != nil {
@@ -115,7 +115,7 @@ func (config *Config) Url(ps ...string) string {
 	return fmt.Sprintf("https://%s.oss-%s.%s/%s", config.Bucket, config.RegionId, ALIYUN_Domain, p)
 }
 
-func ValidSubpath(p string) (out string, err error) {
+func ValidRemoteFilepath(p string) (out string, err error) {
 	if out = strings.Trim(p, "/"); out == "" {
 		return "", fmt.Errorf("invalid subpath")
 	}

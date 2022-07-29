@@ -21,7 +21,7 @@ type OssClient struct {
 }
 
 // oss.ForbidOverWrite(forbidWrite bool) oss.Option
-func (client *OssClient) UploadLocal(fp, subpath string, options ...oss.Option) (
+func (client *OssClient) UploadLocal(source, target string, options ...oss.Option) (
 	link string, err error) {
 	var (
 		bucket *oss.Bucket
@@ -36,18 +36,18 @@ func (client *OssClient) UploadLocal(fp, subpath string, options ...oss.Option) 
 	// urlpath = strings.Trim(fmt.Sprintf("%s/%s", strings.Trim(config.Path, "/"), subpath), "/")
 	// additional slash in middle will cause error: The specified object is not valid.
 	// subpath with slash tail will create a new directory
-	if subpath, err = ValidSubpath(subpath); err != nil {
+	if target, err = ValidRemoteFilepath(target); err != nil {
 		return "", err
 	}
 
-	if err = bucket.PutObjectFromFile(subpath, fp, options...); err != nil {
+	if err = bucket.PutObjectFromFile(target, source, options...); err != nil {
 		return "", err
 	}
 
-	return client.config.Url(subpath), nil
+	return client.config.Url(target), nil
 }
 
-func (client *OssClient) UploadFromUrl(urlSrc string, subpath string, options ...oss.Option) (
+func (client *OssClient) UploadFromUrl(source string, target string, options ...oss.Option) (
 	link string, fsize int64, err error) {
 	var (
 		httpRes *http.Response
@@ -62,16 +62,16 @@ func (client *OssClient) UploadFromUrl(urlSrc string, subpath string, options ..
 		return "", 0, err
 	}
 
-	if subpath, err = ValidSubpath(subpath); err != nil {
+	if target, err = ValidRemoteFilepath(target); err != nil {
 		return "", 0, err
 	}
 
-	if httpRes, err = http.Head(urlSrc); err != nil {
+	if httpRes, err = http.Head(source); err != nil {
 		return "", 0, err
 	}
 	fsize, _ = strconv.ParseInt(httpRes.Header.Get("Content-Length"), 10, 64)
 
-	if httpRes, err = http.Get(urlSrc); err != nil {
+	if httpRes, err = http.Get(source); err != nil {
 		return "", 0, err
 	}
 	// ?? no Content-Length here
@@ -82,7 +82,7 @@ func (client *OssClient) UploadFromUrl(urlSrc string, subpath string, options ..
 	defer httpRes.Body.Close()
 
 	ossReq = &oss.PutObjectRequest{
-		ObjectKey: subpath,
+		ObjectKey: target,
 		Reader:    httpRes.Body,
 	}
 
@@ -91,10 +91,10 @@ func (client *OssClient) UploadFromUrl(urlSrc string, subpath string, options ..
 	}
 	// fmt.Printf("%#v\n", ossRes)
 
-	return client.config.Url(subpath), fsize, nil
+	return client.config.Url(target), fsize, nil
 }
 
-func (client *OssClient) PutObject(reader io.Reader, subpath string, options ...oss.Option) (
+func (client *OssClient) PutObject(reader io.Reader, target string, options ...oss.Option) (
 	link string, err error) {
 	var (
 		bucket *oss.Bucket
@@ -103,7 +103,7 @@ func (client *OssClient) PutObject(reader io.Reader, subpath string, options ...
 		// ossRes  *oss.Response
 	)
 
-	if subpath, err = ValidSubpath(subpath); err != nil {
+	if target, err = ValidRemoteFilepath(target); err != nil {
 		return "", err
 	}
 
@@ -113,7 +113,7 @@ func (client *OssClient) PutObject(reader io.Reader, subpath string, options ...
 	}
 
 	ossReq = &oss.PutObjectRequest{
-		ObjectKey: subpath,
+		ObjectKey: target,
 		Reader:    reader,
 	}
 
@@ -121,10 +121,10 @@ func (client *OssClient) PutObject(reader io.Reader, subpath string, options ...
 		return "", err
 	}
 	// fmt.Printf("%#v\n", ossRes)
-	return client.config.Url(subpath), nil
+	return client.config.Url(target), nil
 }
 
-func (client *OssClient) Upload(fp string, subpath string, overWrite bool) (
+func (client *OssClient) Upload(source string, target string, overWrite bool) (
 	link string, fsize int64, err error) {
 
 	var (
@@ -132,12 +132,12 @@ func (client *OssClient) Upload(fp string, subpath string, overWrite bool) (
 		fi   fs.FileInfo
 	)
 
-	if strings.HasPrefix(fp, "http://") || strings.HasPrefix(fp, "https://") {
-		return client.UploadFromUrl(fp, subpath, oss.ForbidOverWrite(!overWrite))
+	if strings.HasPrefix(source, "http://") || strings.HasPrefix(source, "https://") {
+		return client.UploadFromUrl(source, target, oss.ForbidOverWrite(!overWrite))
 	}
 
 	////
-	if file, err = os.Open(fp); err != nil {
+	if file, err = os.Open(source); err != nil {
 		return "", 0, err
 	}
 
@@ -148,7 +148,8 @@ func (client *OssClient) Upload(fp string, subpath string, overWrite bool) (
 	fsize = fi.Size()
 	file.Close()
 
-	if link, err = client.UploadLocal(fp, subpath, oss.ForbidOverWrite(!overWrite)); err != nil {
+	link, err = client.UploadLocal(source, target, oss.ForbidOverWrite(!overWrite))
+	if err != nil {
 		return "", 0, err
 	}
 
@@ -202,7 +203,7 @@ func (client *OssClient) UploadDir(source string, target string, conc uint) (
 	return client.config.Url(strings.Trim(target, "/")), err
 }
 
-func (client *OssClient) CopyFile(src, target string, options ...oss.Option) (
+func (client *OssClient) CopyFile(source, target string, options ...oss.Option) (
 	code string, err error) {
 	var (
 		bucket       *oss.Bucket
@@ -217,7 +218,7 @@ func (client *OssClient) CopyFile(src, target string, options ...oss.Option) (
 	}
 
 	// result oss.CopyObjectResult
-	if _, err = bucket.CopyObject(src, target, options...); err != nil {
+	if _, err = bucket.CopyObject(source, target, options...); err != nil {
 		serviceError, _ = err.(oss.ServiceError)
 		return serviceError.Code, err
 	}

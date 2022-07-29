@@ -59,7 +59,7 @@ func (client *StsClient) GetSTS(userId, key string) (result *StsResult, err erro
 	return result, nil
 }
 
-func (result *StsResult) UploadLocal(fp, subpath string, options ...oss.Option) (
+func (result *StsResult) UploadLocal(source, target string, options ...oss.Option) (
 	link string, err error) {
 	var (
 		bucket *oss.Bucket
@@ -67,7 +67,7 @@ func (result *StsResult) UploadLocal(fp, subpath string, options ...oss.Option) 
 	)
 
 	if client, err = oss.New(
-		fmt.Sprintf("https://oss-%s.aliyuncs.com", result.RegionId),
+		fmt.Sprintf("https://oss-%s.%s", result.RegionId, ALIYUN_Domain),
 		result.AccessKeyId, result.AccessKeySecret,
 		oss.SecurityToken(result.SecurityToken)); err != nil {
 		return "", err
@@ -77,24 +77,27 @@ func (result *StsResult) UploadLocal(fp, subpath string, options ...oss.Option) 
 		return "", err
 	}
 
-	if subpath, err = ValidSubpath(subpath); err != nil {
+	if target, err = ValidRemoteFilepath(target); err != nil {
 		return "", err
 	}
-	if err = bucket.PutObjectFromFile(subpath, fp, options...); err != nil {
+	if err = bucket.PutObjectFromFile(target, source, options...); err != nil {
 		return "", err
 	}
 
 	// https://fileserver-cim.oss-cn-hangzhou.aliyuncs.com/meshes/PrivateModels/hello.txt
-	link = fmt.Sprintf("https://%s.oss-%s.aliyuncs.com/%s", result.Bucket, result.RegionId, subpath)
+	link = fmt.Sprintf(
+		"https://%s.oss-%s.%s/%s",
+		result.Bucket, result.RegionId, ALIYUN_Domain, target,
+	)
 	return link, nil
 }
 
-func (client *StsClient) UploadLocal(userId string, fp, subpath string, options ...oss.Option) (
+func (client *StsClient) UploadLocal(userId string, source, target string, options ...oss.Option) (
 	link string, err error) {
 	var result *StsResult
 
 	if result, err = client.GetSTS(userId, ""); err != nil {
 		return "", err
 	}
-	return result.UploadLocal(fp, subpath, options...)
+	return result.UploadLocal(source, target, options...)
 }
