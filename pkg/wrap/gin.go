@@ -199,7 +199,6 @@ func GinJwtHSAuth(auth *JwtHSAuth, handle func(*gin.Context, map[string]any) err
 				ctx.Abort()
 				return
 			}
-
 		}
 
 		ctx.Next()
