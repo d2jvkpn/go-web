@@ -21,7 +21,7 @@ func TestConfig(t *testing.T) {
 
 	var err error
 
-	err = LoadConfig("testConfig", "config.demo.yaml", map[string]any{
+	err = LoadConfig("testConfig", "config_demo.yaml", map[string]any{
 		"github": github,
 		"gitlab": gitlab,
 	})
