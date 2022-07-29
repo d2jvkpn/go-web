@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"sync"
+	"time"
 
 	"github.com/Shopify/sarama"
 )
@@ -38,7 +39,15 @@ func NewHandler(ctx context.Context, group sarama.ConsumerGroup, process Process
 
 func (handler *Handler) Consume(topics ...string) {
 	go func() {
-		var err error
+		var (
+			err        error
+			n          int
+			maxRetries int
+			wait       time.Duration
+		)
+		n, maxRetries = 0, 5
+		wait = 2 * time.Second
+
 		handler.Logger.Info("==> Handler.Consume start")
 		for {
 			err = handler.group.Consume(handler.ctx, topics, handler)
@@ -52,10 +61,16 @@ func (handler *Handler) Consume(topics ...string) {
 				handler.Logger.Warn("<== Handler.Consume end") // occurs when reset offset
 			}
 
+			if n++; n > maxRetries {
+				handler.Logger.Warn("<== Handler.Consume exceeds max retries limit: %d", maxRetries)
+				return
+			}
+
 			if err = handler.ctx.Err(); err != nil {
 				handler.Logger.Error("!!! Handler.Consume ctx.Err(): %v", err)
 				return
 			}
+			time.Sleep(wait)
 		}
 	}()
 }
