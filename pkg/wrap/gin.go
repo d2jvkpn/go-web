@@ -171,16 +171,25 @@ func GinJwtHSAuth(auth *JwtHSAuth, handle func(*gin.Context, map[string]any) err
 		)
 
 		if head = ctx.Request.Header.Get("Authorization"); head == "" {
-			ctx.AbortWithStatus(http.StatusForbidden)
+			// ctx.AbortWithStatus(http.StatusUnauthorized)
+			ctx.JSON(http.StatusUnauthorized, gin.H{
+				"code": -100, "msg": "unauthorized", "data": gin.H{},
+			})
 			return
 		}
 		if !strings.HasPrefix(head, "Bearer ") {
-			ctx.AbortWithStatus(http.StatusForbidden)
+			// ctx.AbortWithStatus(http.StatusUnauthorized)
+			ctx.JSON(http.StatusUnauthorized, gin.H{
+				"code": -101, "msg": "unauthorized", "data": gin.H{},
+			})
 			return
 		}
 
 		if data, err = auth.Parse(head[7:]); err != nil {
-			ctx.AbortWithStatus(http.StatusUnauthorized)
+			// ctx.AbortWithStatus(http.StatusForbidden)
+			ctx.JSON(http.StatusForbidden, gin.H{
+				"code": -102, "msg": "forbidden", "data": gin.H{},
+			})
 			return
 		}
 
