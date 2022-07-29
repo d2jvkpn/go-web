@@ -44,7 +44,7 @@ func TestJwtHSAuth(t *testing.T) {
 	Equal(t, data["key2"], data2["key2"])
 }
 
-// $ openssl req -newkey rsa:2048 -new -nodes -x509 -days 365 -subj "/C=US/ST=New Sweden/L=Stockholm/O=.../OU=.../CN=.../emailAddress=..." -keyout rsa_private.pem -out rsa_public.pem
+// $ openssl req -newkey rsa:2048 -new -nodes -x509 -days 365 -subj "/C=US/ST=New Sweden/L=Stockholm/O=.../OU=.../CN=.../emailAddress=..." -keyout wk_pem/rsa_private.pem -out wk_pem/rsa_public.pem
 func TestRSAPem(t *testing.T) {
 	var (
 		bts        []byte
@@ -54,13 +54,13 @@ func TestRSAPem(t *testing.T) {
 		publicKey  *rsa.PublicKey
 	)
 
-	bts, err = os.ReadFile("rsa_private.pem")
+	bts, err = os.ReadFile("wk_pem/rsa_private.pem")
 	NoError(t, err)
 	privateKey, err = jwt.ParseRSAPrivateKeyFromPEM(bts)
 	NoError(t, err)
 	fmt.Println(">>> privateKey:", privateKey)
 
-	bts, err = os.ReadFile("rsa_public.pem")
+	bts, err = os.ReadFile("wk_pem/rsa_public.pem")
 	NoError(t, err)
 	publicKey, err = jwt.ParseRSAPublicKeyFromPEM(bts)
 	NoError(t, err)
@@ -84,7 +84,7 @@ func TestJwtRSAAuth(t *testing.T) {
 		auth  *JwtRSAAuth
 	)
 
-	auth, err = NewRSAAuth("rsa_private.pem", "rsa_public.pem", 256)
+	auth, err = NewRSAAuth("wk_pem/rsa_private.pem", "wk_pem/rsa_public.pem", 256)
 	NoError(t, err)
 
 	data = map[string]any{
