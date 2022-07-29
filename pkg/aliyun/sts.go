@@ -59,12 +59,11 @@ func (client *StsClient) GetSTS(userId, key string) (result *StsResult, err erro
 	return result, nil
 }
 
-func (result *StsResult) Upload(fp, subpath string, options ...oss.Option) (
+func (result *StsResult) UploadLocal(fp, subpath string, options ...oss.Option) (
 	link string, err error) {
 	var (
-		urlpath string
-		bucket  *oss.Bucket
-		client  *oss.Client
+		bucket *oss.Bucket
+		client *oss.Client
 	)
 
 	if client, err = oss.New(
@@ -78,25 +77,24 @@ func (result *StsResult) Upload(fp, subpath string, options ...oss.Option) (
 		return "", err
 	}
 
-	// urlpath = strings.Trim(fmt.Sprintf("%s/%s", strings.Trim(result.Path, "/"), subpath), "/")
 	if subpath, err = ValidSubpath(subpath); err != nil {
 		return "", err
 	}
-	if err = bucket.PutObjectFromFile(urlpath, fp, options...); err != nil {
+	if err = bucket.PutObjectFromFile(subpath, fp, options...); err != nil {
 		return "", err
 	}
 
 	// https://fileserver-cim.oss-cn-hangzhou.aliyuncs.com/meshes/PrivateModels/hello.txt
-	link = fmt.Sprintf("https://%s.oss-%s.aliyuncs.com/%s", result.Bucket, result.RegionId, urlpath)
+	link = fmt.Sprintf("https://%s.oss-%s.aliyuncs.com/%s", result.Bucket, result.RegionId, subpath)
 	return link, nil
 }
 
-func (client *StsClient) Upload(userId string, fp, subpath string, options ...oss.Option) (
+func (client *StsClient) UploadLocal(userId string, fp, subpath string, options ...oss.Option) (
 	link string, err error) {
 	var result *StsResult
 
 	if result, err = client.GetSTS(userId, ""); err != nil {
 		return "", err
 	}
-	return result.Upload(fp, subpath, options...)
+	return result.UploadLocal(fp, subpath, options...)
 }

@@ -18,7 +18,7 @@ func TestStsResult(t *testing.T) {
 	fmt.Println(">>> TestStsResult:", result)
 }
 
-func TestStsUpload(t *testing.T) {
+func TestStsUploadLocal(t *testing.T) {
 	var (
 		link   string
 		err    error
@@ -29,7 +29,7 @@ func TestStsUpload(t *testing.T) {
 		t.Fatal("GetSTS:", err)
 	}
 
-	if link, err = result.Upload("hello.txt", "test/sts/hello1.txt"); err != nil {
+	if link, err = result.UploadLocal("hello.txt", "test/sts/hello1.txt"); err != nil {
 		t.Fatal(err)
 	}
 	fmt.Println(">>> TestStsUpload:", link)
