@@ -34,7 +34,7 @@ func TestMain(m *testing.M) {
 	}
 
 	fmt.Printf(
-		"==> TestMain: testAddrs=%v, testTopic=%q, testGroupId=%q, testKafkaVersion=%q\n"+
+		"==> TestMain: testAddrs=%v, testTopic=%q, testGroupId=%q, testKafkaVersion=%q,\n"+
 			"    testIndex=%d, testNum=%d, testOffset=%d\n",
 		testAddrs, testTopic, testGroupId, testKafkaVersion, testIndex, testNum, testOffset,
 	)

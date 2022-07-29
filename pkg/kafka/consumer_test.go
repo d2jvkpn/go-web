@@ -79,6 +79,10 @@ func TestConsumer(t *testing.T) {
 	}
 }
 
+// $ go test -run TestHandler -o TestHandler.out
+// $ docker exec -it broker-1 bash
+// $ ./TestHandler.out -- --help
+// $ ./TestHandler.out -- -addrs=broker-1:9091,broker-2:9092,broker-3:9093 -num=1000
 func TestHandler(t *testing.T) {
 	var (
 		err error
