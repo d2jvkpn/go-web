@@ -14,8 +14,9 @@ type Config struct {
 	AccessKeySecret string `mapstructure:"access_key_secret"`
 	RegionId        string `mapstructure:"region_id"`
 	Bucket          string `mapstructure:"bucket"`
-	Site            string `mapstructure:"site"` // use bind domain instead .../aliyunc.com
 
+	// use custom domain instead https://BUCKET.oss-{REGION_ID}.aliyunc.com
+	Site           string `mapstructure:"site"`
 	RoleArn        string `mapstructure:"role_arn"`        // sts
 	ExpiredSeconds int    `mapstructure:"expired_seconds"` // sts
 }
