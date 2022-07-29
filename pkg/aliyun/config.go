@@ -14,6 +14,7 @@ type Config struct {
 	AccessKeySecret string `mapstructure:"access_key_secret"`
 	RegionId        string `mapstructure:"region_id"`
 	Bucket          string `mapstructure:"bucket"`
+	Site            string `mapstructure:"site"` // use bind domain instead .../aliyunc.com
 
 	RoleArn        string `mapstructure:"role_arn"`        // sts
 	ExpiredSeconds int    `mapstructure:"expired_seconds"` // sts
@@ -46,6 +47,15 @@ func NewConfig(fp, field string) (config Config, err error) {
 	if err = config.Valid(); err != nil {
 		return config, err
 	}
+
+	if config.Site != "" {
+		config.Site = strings.TrimRight(config.Site, "/")
+	} else {
+		config.Site = fmt.Sprintf(
+			"https://%s.oss-%s.%s", config.Bucket, config.RegionId, ALIYUN_Domain,
+		)
+	}
+
 	return config, nil
 }
 
@@ -108,11 +118,11 @@ func NewStsClient(fp, field string) (client *StsClient, err error) {
 
 func (config *Config) Url(ps ...string) string {
 	if len(ps) == 0 {
-		return fmt.Sprintf("https://%s.oss-%s.%s", config.Bucket, config.RegionId, ALIYUN_Domain)
+		return config.Site
 	}
 
 	p := strings.TrimLeft(ps[0], "/")
-	return fmt.Sprintf("https://%s.oss-%s.%s/%s", config.Bucket, config.RegionId, ALIYUN_Domain, p)
+	return fmt.Sprintf("%s/%s", config.Site, p)
 }
 
 func ValidRemoteFilepath(p string) (out string, err error) {
