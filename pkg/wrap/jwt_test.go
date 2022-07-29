@@ -6,8 +6,9 @@ import (
 	"os"
 	"testing"
 
-	jwt "github.com/golang-jwt/jwt/v4"
+	"github.com/d2jvkpn/go-web/pkg/misc"
 
+	jwt "github.com/golang-jwt/jwt/v4"
 	. "github.com/stretchr/testify/require"
 )
 
@@ -44,23 +45,30 @@ func TestJwtHSAuth(t *testing.T) {
 	Equal(t, data["key2"], data2["key2"])
 }
 
-// $ openssl req -newkey rsa:2048 -new -nodes -x509 -days 365 -subj "/C=US/ST=New Sweden/L=Stockholm/O=.../OU=.../CN=.../emailAddress=..." -keyout wk_pem/rsa_private.pem -out wk_pem/rsa_public.pem
+// $ openssl req -newkey rsa:2048 -new -nodes -x509 -days 365 -subj "/C=US/ST=New Sweden/L=Stockholm/O=.../OU=.../CN=.../emailAddress=..." -keyout configs/test_rsa_private.pem -out configs/test_rsa_public.pem
 func TestRSAPem(t *testing.T) {
 	var (
 		bts        []byte
 		sig        string
+		privatePem string
+		publicPem  string
 		err        error
 		privateKey *rsa.PrivateKey
 		publicKey  *rsa.PublicKey
 	)
 
-	bts, err = os.ReadFile("wk_pem/rsa_private.pem")
+	privatePem, err = misc.RootFile("configs", "test_rsa_private.pem")
+	NoError(t, err)
+	publicPem, err = misc.RootFile("configs", "test_rsa_public.pem")
+	NoError(t, err)
+
+	bts, err = os.ReadFile(privatePem)
 	NoError(t, err)
 	privateKey, err = jwt.ParseRSAPrivateKeyFromPEM(bts)
 	NoError(t, err)
 	fmt.Println(">>> privateKey:", privateKey)
 
-	bts, err = os.ReadFile("wk_pem/rsa_public.pem")
+	bts, err = os.ReadFile(publicPem)
 	NoError(t, err)
 	publicKey, err = jwt.ParseRSAPublicKeyFromPEM(bts)
 	NoError(t, err)
@@ -77,14 +85,21 @@ func TestRSAPem(t *testing.T) {
 
 func TestJwtRSAAuth(t *testing.T) {
 	var (
-		str   string
-		err   error
-		data  map[string]any
-		data2 map[string]any
-		auth  *JwtRSAAuth
+		str        string
+		privatePem string
+		publicPem  string
+		err        error
+		data       map[string]any
+		data2      map[string]any
+		auth       *JwtRSAAuth
 	)
 
-	auth, err = NewRSAAuth("wk_pem/rsa_private.pem", "wk_pem/rsa_public.pem", 256)
+	privatePem, err = misc.RootFile("configs", "test_rsa_private.pem")
+	NoError(t, err)
+	publicPem, err = misc.RootFile("configs", "test_rsa_public.pem")
+	NoError(t, err)
+
+	auth, err = NewRSAAuth(privatePem, publicPem, 256)
 	NoError(t, err)
 
 	data = map[string]any{

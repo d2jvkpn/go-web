@@ -5,20 +5,27 @@ import (
 	"fmt"
 	"os"
 	"testing"
+
+	"github.com/d2jvkpn/go-web/pkg/misc"
 )
 
 // default config: wk_config/test.yaml
 func TestMain(m *testing.M) {
 	var (
-		configFile         string
-		ossField, stsField string
-		err                error
+		configFile, testYaml string
+		ossField, stsField   string
+		err                  error
 	)
+
+	if testYaml, err = misc.RootFile("configs", "aliyun_test.yaml"); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 
 	testFlag = flag.NewFlagSet("testFlag", flag.ExitOnError)
 	flag.Parse() // must do
 
-	testFlag.StringVar(&configFile, "config", "wk_config/test.yaml", "config filepath")
+	testFlag.StringVar(&configFile, "config", testYaml, "config filepath")
 	testFlag.StringVar(&ossField, "oss", "aliyun_oss", "aliyun oss field in config")
 	testFlag.StringVar(&stsField, "sts", "aliyun_sts", "aliyun sts field in config")
 
@@ -48,11 +55,11 @@ func TestConfig(t *testing.T) {
 		err    error
 	)
 
-	if config, err = NewConfig("config.demo.toml", "aliyun_oss"); err != nil {
+	if config, err = NewConfig("config_demo.toml", "aliyun_oss"); err != nil {
 		t.Fatal(err)
 	}
 
-	if config, err = NewConfig("config.demo.toml", "aliyun_sts"); err != nil {
+	if config, err = NewConfig("config_demo.toml", "aliyun_sts"); err != nil {
 		t.Fatal(err)
 	}
 
