@@ -28,7 +28,7 @@ func (client *StsClient) AssumeRole(userId string) (response *sts.AssumeRoleResp
 	request.Scheme = "https"
 
 	request.RoleArn = client.config.RoleArn
-	request.RoleSessionName = userId // 用于统计
+	request.RoleSessionName = userId
 	if client.config.ExpiredSeconds > 0 {
 		request.DurationSeconds = requests.NewInteger(client.config.ExpiredSeconds)
 	}

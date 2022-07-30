@@ -15,7 +15,7 @@ type Config struct {
 	RegionId        string `mapstructure:"region_id"`
 	Bucket          string `mapstructure:"bucket"`
 
-	// use custom domain instead https://BUCKET.oss-{REGION_ID}.aliyunc.com
+	// use custom domain instead of https://BUCKET.oss-{REGION_ID}.aliyunc.com
 	Site           string `mapstructure:"site"`
 	RoleArn        string `mapstructure:"role_arn"`        // sts
 	ExpiredSeconds int    `mapstructure:"expired_seconds"` // sts
@@ -128,7 +128,7 @@ func (config *Config) Url(ps ...string) string {
 
 func ValidRemoteFilepath(p string) (out string, err error) {
 	if out = strings.Trim(p, "/"); out == "" {
-		return "", fmt.Errorf("invalid subpath")
+		return "", fmt.Errorf("invalid remote file path")
 	}
 
 	return out, nil

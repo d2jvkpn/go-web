@@ -15,9 +15,9 @@ var (
 	configDemo string
 
 	testConfig    *Config
+	testFlag      *flag.FlagSet
 	testOssClient *OssClient
 	testStsClient *StsClient
-	testFlag      *flag.FlagSet
 )
 
 func init() {
